@@ -1,0 +1,31 @@
+{
+  "theme": "flat-motion-graphics",
+  "width": 360,
+  "height": 640,
+  "cuts": [
+    {
+      "id": "scene-00",
+      "source": "",
+      "in_seconds": 0.0,
+      "out_seconds": 2.5,
+      "type": "hero_title",
+      "text": "Three free AI tools you should know."
+    },
+    {
+      "id": "scene-01",
+      "source": "",
+      "in_seconds": 2.5,
+      "out_seconds": 5.0,
+      "type": "text_card",
+      "text": "Perplexity answers with real sources."
+    },
+    {
+      "id": "scene-02",
+      "source": "",
+      "in_seconds": 5.0,
+      "out_seconds": 7.0,
+      "type": "text_card",
+      "text": "Follow for more."
+    }
+  ]
+}

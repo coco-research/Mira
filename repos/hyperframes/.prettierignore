@@ -1,0 +1,16 @@
+docs/
+DOCS_GUIDELINES.md
+packages/producer/tests/
+*.generated.ts
+
+# Cloud Workflows GCL — uses ${...} expressions that are not standard YAML.
+packages/gcp-cloud-run/terraform/workflow.yaml
+
+# toMatchFileSnapshot golden files — vitest writes these; oxfmt must not reformat them.
+packages/**/__goldens__/
+
+# vendored third-party bundles inside skills — never reformat
+skills/**/assets/vendor/
+skills/**/*.min.js
+# reference snippets with intentional pseudo-markup (literal "..." attributes)
+skills/graphic-overlays/references/frames/polaroid.html

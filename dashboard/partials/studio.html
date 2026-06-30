@@ -1,0 +1,934 @@
+<style data-screen="studio">
+/* ──────────────────────────────────────────────
+   Studio screen — scoped styles
+   All new classes prefixed with "studio-"
+   Shared classes reused: .card, .grid, .field, .badge,
+   .note, .btn, .btn.ghost, .btn.sm, .row, .muted, .right,
+   .tag, .opt, .opt.sel
+────────────────────────────────────────────── */
+
+/* Topic row */
+.studio-topic-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.studio-topic-wrap input {
+  flex: 1;
+  padding-right: 6.75rem;
+}
+.studio-suggest {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.72rem !important;
+  padding: 0.22rem 0.6rem !important;
+  color: var(--clay) !important;
+  border-color: var(--clay) !important;
+  white-space: nowrap;
+  line-height: 1.4;
+}
+
+/* Segmented length picker */
+.studio-seg {
+  display: inline-flex;
+  border: 1.5px solid var(--border-strong);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.studio-seg button {
+  padding: 0.38rem 1rem;
+  font-size: 0.84rem;
+  font-family: var(--sans);
+  border: none;
+  border-right: 1.5px solid var(--border-strong);
+  background: var(--panel-2);
+  color: var(--ink-2);
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+}
+.studio-seg button:last-child { border-right: none; }
+.studio-seg button.active {
+  background: var(--ink);
+  color: var(--paper);
+}
+.studio-seg button:hover:not(.active) { background: var(--panel); }
+
+/* Lane list */
+.studio-lane-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+.studio-lane {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  border: 1.5px solid var(--border);
+  background: var(--panel-2);
+  cursor: pointer;
+  transition: border-color 0.13s, background 0.13s;
+}
+.studio-lane:hover { border-color: var(--border-strong); }
+.studio-lane.sel {
+  border-color: var(--clay);
+  background: #fdf5f1;
+}
+.studio-lane input[type="radio"] {
+  margin-top: 3px;
+  flex-shrink: 0;
+  accent-color: var(--clay);
+}
+.studio-lane-title {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.studio-lane-desc {
+  font-size: 0.78rem;
+  color: var(--ink-2);
+  margin-top: 0.2rem;
+  line-height: 1.4;
+}
+.studio-lane-warn {
+  font-size: 0.75rem;
+  color: var(--amber);
+  margin-top: 0.3rem;
+  line-height: 1.4;
+}
+
+/* Resolved engines strip */
+.studio-engines-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.6rem;
+}
+.studio-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.28rem 0.65rem 0.28rem 0.55rem;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  font-size: 0.78rem;
+  color: var(--ink);
+  white-space: nowrap;
+}
+.studio-chip .stage { color: var(--ink-2); font-size: 0.7rem; margin-right: 0.05rem; }
+.studio-chip .ovr {
+  font-size: 0.66rem;
+  color: var(--clay);
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0 0 0 0.2rem;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  font-family: var(--sans);
+  line-height: 1;
+}
+.studio-chip .ovr:hover { color: var(--clay-hover); }
+
+.studio-cost-line {
+  margin-top: 0.85rem;
+  font-size: 0.82rem;
+  color: var(--ink-2);
+}
+.studio-cost-line strong { color: var(--ink); }
+
+/* Progress steps */
+.studio-steps-wrap {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  overflow-x: auto;
+  padding-bottom: 0.25rem;
+}
+.studio-step {
+  flex: 1;
+  min-width: 62px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  position: relative;
+}
+.studio-step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 11px;
+  left: calc(50% + 12px);
+  right: calc(-50% + 12px);
+  height: 2px;
+  background: var(--border);
+  z-index: 0;
+}
+.studio-step.s-done::after { background: var(--green); }
+.studio-step-dot {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--panel);
+  border: 2px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  color: white;
+  z-index: 1;
+  position: relative;
+  transition: background 0.2s, border-color 0.2s;
+  flex-shrink: 0;
+}
+.studio-step.s-done .studio-step-dot {
+  background: var(--green);
+  border-color: var(--green);
+}
+.studio-step.s-running .studio-step-dot {
+  background: var(--amber);
+  border-color: var(--amber);
+  animation: studio-pulse 1.2s ease-in-out infinite;
+}
+@keyframes studio-pulse {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.18); }
+}
+.studio-step-lbl {
+  font-size: 0.7rem;
+  color: var(--ink-2);
+  text-align: center;
+  white-space: nowrap;
+}
+.studio-step.s-done .studio-step-lbl,
+.studio-step.s-running .studio-step-lbl {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+/* Packaging output */
+.studio-thumbs {
+  display: flex;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+  margin-top: 0.65rem;
+}
+.studio-thumb-opt {
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 2px solid var(--border);
+  cursor: pointer;
+  transition: border-color 0.13s;
+  flex-shrink: 0;
+}
+.studio-thumb-opt.sel { border-color: var(--clay); }
+.studio-thumb-opt input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.studio-thumb-body {
+  width: 96px;
+  height: 170px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  font-size: 0.66rem;
+  color: var(--ink-2);
+  padding: 0.4rem;
+}
+.studio-thumb-opt:nth-child(1) .studio-thumb-body { background: #e7e3d8; }
+.studio-thumb-opt:nth-child(2) .studio-thumb-body { background: #dce4df; }
+.studio-thumb-opt:nth-child(3) .studio-thumb-body { background: #e5dce1; }
+.studio-thumb-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--ink);
+  text-align: center;
+  line-height: 1.2;
+}
+.studio-thumb-check {
+  position: absolute;
+  top: 0.3rem;
+  right: 0.3rem;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--clay);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6rem;
+  opacity: 0;
+  transition: opacity 0.13s;
+}
+.studio-thumb-opt.sel .studio-thumb-check { opacity: 1; }
+
+.studio-title-opts {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin-top: 0.65rem;
+}
+.studio-title-opt {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  padding: 0.6rem 0.85rem;
+  border-radius: 10px;
+  border: 1.5px solid var(--border);
+  cursor: pointer;
+  font-size: 0.86rem;
+  color: var(--ink);
+  line-height: 1.4;
+  transition: border-color 0.13s, background 0.13s;
+}
+.studio-title-opt input[type="radio"] {
+  margin-top: 3px;
+  flex-shrink: 0;
+  accent-color: var(--clay);
+}
+.studio-title-opt.sel {
+  border-color: var(--clay);
+  background: #fdf5f1;
+}
+
+/* Long-form scene outline */
+.studio-scenes { display: flex; flex-direction: column; gap: 0.35rem; margin-top: 0.75rem; }
+.studio-scene {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  padding: 0.45rem 0.75rem;
+  border-radius: 8px;
+  background: var(--panel-2);
+  font-size: 0.82rem;
+}
+.studio-scene-n { font-weight: 600; color: var(--ink-2); min-width: 1.4rem; font-size: 0.74rem; }
+.studio-scene-t { flex: 1; color: var(--ink); }
+.studio-scene-d { color: var(--ink-2); font-size: 0.74rem; white-space: nowrap; }
+
+/* Generate row */
+.studio-gen-row {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin: 1.25rem 0 1rem;
+  flex-wrap: wrap;
+}
+</style>
+
+<section class="page" id="studio">
+  <div class="content">
+
+    <!-- ─── Header ──────────────────────────────────────────── -->
+    <div class="row" style="margin-bottom:1.5rem;flex-wrap:wrap;gap:0.75rem">
+      <div>
+        <h1 style="margin-bottom:0.15rem">Studio</h1>
+        <p class="lede">Make one video — pick a channel, topic, lane, then generate.</p>
+      </div>
+    </div>
+
+    <!-- ─── ① Setup: Channel + Topic ────────────────────────── -->
+    <div class="card" style="margin-bottom:1rem">
+      <h2 style="margin-bottom:1rem">Setup</h2>
+      <div class="grid cols-2" style="gap:1rem">
+
+        <div class="field">
+          <label for="studio-channel-sel">Channel</label>
+          <select id="studio-channel-sel">
+            <option value="chn_aitools" selected>🛠️ Mira AI Tools</option>
+            <option value="chn_deepdives">🔬 Mira Deep Dives</option>
+            <option value="chn_quickwins">⚡ Mira Quick Wins</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="studio-topic-input">Topic</label>
+          <div class="studio-topic-wrap">
+            <input
+              id="studio-topic-input"
+              type="text"
+              value="5 free AI tools that feel illegal to know"
+              placeholder="What's this video about?">
+            <button class="btn ghost studio-suggest" title="Suggest topics from trending ideas">✦ Suggest</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ─── ② Target Length ──────────────────────────────────── -->
+    <div class="card" style="margin-bottom:1rem">
+      <!-- Short-form controls (AI Tools / Quick Wins) -->
+      <div id="studio-len-short">
+        <div class="muted" style="font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem">Target Length</div>
+        <div class="studio-seg" id="studio-seg-btns" role="group" aria-label="Target length">
+          <button class="active" data-sec="30">30 s</button>
+          <button data-sec="45">45 s</button>
+          <button data-sec="60">60 s</button>
+        </div>
+        <p class="muted" id="studio-budget-note" style="font-size:0.77rem;margin-top:0.45rem;margin-bottom:0">
+          Word budget ≈ <strong>75–90 words</strong> · drives script length · channel cap 75 s
+        </p>
+      </div>
+      <!-- Long-form controls (Deep Dives) — toggled by JS -->
+      <div id="studio-len-long" style="display:none">
+        <div class="muted" style="font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem">Target Length</div>
+        <div class="studio-seg" id="studio-seg-long" role="group" aria-label="Target length long-form">
+          <button data-min="3">3 min</button>
+          <button class="active" data-min="4">4 min</button>
+          <button data-min="5">5 min</button>
+        </div>
+        <p class="muted" style="font-size:0.77rem;margin-top:0.45rem;margin-bottom:0">
+          Word budget ≈ <strong>600–750 words</strong> · 9 scenes · 16:9 explainer pipeline
+        </p>
+      </div>
+    </div>
+
+    <!-- ─── ③a Lane Picker — Short Faceless ─────────────────── -->
+    <div class="card" id="studio-lanes-short" style="margin-bottom:1rem">
+      <h2 style="margin-bottom:0.2rem">Production Lane</h2>
+      <p class="muted" style="font-size:0.8rem;margin-bottom:1rem">Faceless 9:16 · choose how visuals are sourced for this video.</p>
+
+      <div class="studio-lane-list lane-pick" role="radiogroup" aria-label="Production lane">
+
+        <label class="studio-lane sel">
+          <input type="radio" name="studio-lane" value="stock" checked>
+          <div style="flex:1">
+            <div class="studio-lane-title">
+              Stock + graphics
+              <span class="badge free">free</span>
+            </div>
+            <div class="studio-lane-desc">Pexels / Pixabay clips with simple motion-text cards — $0 every run, most reliable.</div>
+          </div>
+        </label>
+
+        <label class="studio-lane">
+          <input type="radio" name="studio-lane" value="hf">
+          <div style="flex:1">
+            <div class="studio-lane-title">
+              Designed graphics (HyperFrames)
+              <span class="badge free">free</span>
+            </div>
+            <div class="studio-lane-desc">Branded motion-graphic templates — crisp, consistent visual identity, still $0.</div>
+          </div>
+        </label>
+
+        <label class="studio-lane">
+          <input type="radio" name="studio-lane" value="aicl">
+          <div style="flex:1">
+            <div class="studio-lane-title">
+              AI clips (Veo quota)
+              <span class="badge quota">quota</span>
+            </div>
+            <div class="studio-lane-desc">AI-generated b-roll from Veo on your free quota — no $ cost, uses monthly allowance.</div>
+          </div>
+        </label>
+
+        <label class="studio-lane">
+          <input type="radio" name="studio-lane" value="story">
+          <div style="flex:1">
+            <div class="studio-lane-title">
+              Cinematic story (StoryGen chain, Veo)
+              <span class="badge quota">quota-heavy</span>
+            </div>
+            <div class="studio-lane-desc">StoryGen interpolation pipeline → coherent visual narrative. Consumes significant Veo quota — save for hero videos.</div>
+          </div>
+        </label>
+
+        <label class="studio-lane" style="border-style:dashed">
+          <input type="radio" name="studio-lane" value="motion">
+          <div style="flex:1">
+            <div class="studio-lane-title">
+              Premium motion-transfer (Kling)
+              <span class="badge metered">metered</span>
+            </div>
+            <div class="studio-lane-desc">Open-Generative-AI + Kling 3 Turbo Motion Control — cinematic motion transfer from a still. ≈ $0.18/run.</div>
+            <div class="studio-lane-warn">⚠ Likeness guardrail: do not use identifiable faces without consent. Music beds must be royalty-free — brand kit default qualifies.</div>
+          </div>
+        </label>
+
+      </div>
+
+      <!-- B-roll pull -->
+      <div class="row" style="margin-top:1.1rem;gap:0.75rem">
+        <button class="btn ghost sm" onclick="go('assets')">↗ Pull from Assets</button>
+        <span class="muted" style="font-size:0.79rem">Add enhanced photos or clips from your media library as B-roll on any lane.</span>
+      </div>
+    </div>
+
+    <!-- ─── ③b Long-form Outline — Deep Dives ───────────────── -->
+    <div class="card" id="studio-lanes-long" style="margin-bottom:1rem;display:none">
+      <h2 style="margin-bottom:0.2rem">Chapter Outline</h2>
+      <p class="muted" style="font-size:0.8rem;margin-bottom:1rem">Long-form 16:9 · explainer / documentary pipeline · short 9:16 lanes don't apply here.</p>
+
+      <!-- Summary row -->
+      <div class="row" style="gap:2rem;flex-wrap:wrap;margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px solid var(--border)">
+        <div>
+          <div class="muted" style="font-size:0.73rem;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:0.15rem">Scenes</div>
+          <strong>9</strong>
+        </div>
+        <div>
+          <div class="muted" style="font-size:0.73rem;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:0.15rem">Est. Duration</div>
+          <strong>4:12</strong>
+        </div>
+        <div>
+          <div class="muted" style="font-size:0.73rem;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:0.15rem">Est. Cost</div>
+          <strong>$0.00</strong> <span class="muted" style="font-size:0.78rem">(Veo quota)</span>
+        </div>
+        <div>
+          <div class="muted" style="font-size:0.73rem;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:0.15rem">Pipeline</div>
+          <span class="badge quota">Veo quota</span>
+        </div>
+      </div>
+
+      <!-- Collapsible scene list -->
+      <details open>
+        <summary style="cursor:pointer;font-size:0.86rem;font-weight:600;color:var(--ink);margin-bottom:0.25rem;list-style:none;display:flex;align-items:center;gap:0.4rem">
+          <span>Scene breakdown</span>
+          <span class="muted" style="font-size:0.78rem;font-weight:400">(9 scenes · 4:12 total)</span>
+        </summary>
+        <div class="studio-scenes">
+          <div class="studio-scene"><span class="studio-scene-n">01</span><span class="studio-scene-t">Hook — the problem with paying for AI</span><span class="studio-scene-d">0:18</span></div>
+          <div class="studio-scene"><span class="studio-scene-n">02</span><span class="studio-scene-t">What makes a tool feel "illegal to know"</span><span class="studio-scene-d">0:27</span></div>
+          <div class="studio-scene"><span class="studio-scene-n">03</span><span class="studio-scene-t">Tool #1 — intro + live demo</span><span class="studio-scene-d">0:30</span></div>
+          <div class="studio-scene"><span class="studio-scene-n">04</span><span class="studio-scene-t">Tool #2 — intro + live demo</span><span class="studio-scene-d">0:28</span></div>
+          <div class="studio-scene"><span class="studio-scene-n">05</span><span class="studio-scene-t">Tool #3 — intro + live demo</span><span class="studio-scene-d">0:28</span></div>
+          <div class="studio-scene"><span class="studio-scene-n">06</span><span class="studio-scene-t">Tool #4 — intro + live demo</span><span class="studio-scene-d">0:27</span></div>
+          <div class="studio-scene"><span class="studio-scene-n">07</span><span class="studio-scene-t">Tool #5 — intro + live demo</span><span class="studio-scene-d">0:25</span></div>
+          <div class="studio-scene"><span class="studio-scene-n">08</span><span class="studio-scene-t">The stack that beats ChatGPT Pro</span><span class="studio-scene-d">0:30</span></div>
+          <div class="studio-scene"><span class="studio-scene-n">09</span><span class="studio-scene-t">Outro + subscribe CTA</span><span class="studio-scene-d">0:19</span></div>
+        </div>
+      </details>
+
+      <div class="row" style="margin-top:1rem;gap:0.75rem">
+        <button class="btn ghost sm" onclick="go('assets')">↗ Pull from Assets</button>
+        <span class="muted" style="font-size:0.79rem">Enhanced clips from your media library become B-roll for this chapter.</span>
+      </div>
+    </div>
+
+    <!-- ─── ④ Resolved Engines ───────────────────────────────── -->
+    <div class="card" style="margin-bottom:1rem">
+      <div class="row" style="margin-bottom:0.1rem">
+        <h2 style="margin:0">Resolved Engines</h2>
+        <span class="muted right" style="font-size:0.78rem">
+          Global defaults ·
+          <a href="#" onclick="go('engines');return false;" style="color:var(--clay);text-decoration:none;font-size:0.78rem">Edit in Engines ↗</a>
+        </span>
+      </div>
+      <p class="muted" style="font-size:0.79rem;margin-bottom:0.75rem">Each stage resolves to a provider — override any for this run only.</p>
+
+      <div class="studio-engines-row" id="studio-engines-row">
+        <div class="studio-chip">
+          <span class="stage">Script</span>
+          LM Studio
+          <span class="badge local">local</span>
+          <button class="ovr" title="Override for this run">override</button>
+        </div>
+        <div class="studio-chip">
+          <span class="stage">Voice</span>
+          edge-tts
+          <span class="badge free">free</span>
+          <button class="ovr" title="Override for this run">override</button>
+        </div>
+        <div class="studio-chip">
+          <span class="stage">Images</span>
+          SDXL-Flux
+          <span class="badge local">local</span>
+          <button class="ovr" title="Override for this run">override</button>
+        </div>
+        <div class="studio-chip">
+          <span class="stage">Video</span>
+          Veo quota
+          <span class="badge quota">quota</span>
+          <button class="ovr" title="Override for this run">override</button>
+        </div>
+        <div class="studio-chip">
+          <span class="stage">Music</span>
+          Pixabay
+          <span class="badge free">free</span>
+          <button class="ovr" title="Override for this run">override</button>
+        </div>
+        <div class="studio-chip">
+          <span class="stage">Captions</span>
+          faster-whisper
+          <span class="badge local">local</span>
+          <button class="ovr" title="Override for this run">override</button>
+        </div>
+      </div>
+
+      <div class="studio-cost-line" id="studio-cost-line">
+        <strong id="studio-cost-val">≈ $0.00 on this lane</strong>
+        · ~2 min
+        · <span class="muted">from your last 9 runs (±15%)</span>
+      </div>
+    </div>
+
+    <!-- ─── ⑤ Generate CTA ────────────────────────────────────── -->
+    <div class="studio-gen-row">
+      <button class="btn" id="studio-gen-btn" style="font-size:0.98rem;padding:0.6rem 1.65rem">▶ Generate Video</button>
+      <button class="btn ghost" id="studio-cancel-btn" style="display:none">✕ Cancel</button>
+      <span class="muted" id="studio-status-txt" style="font-size:0.82rem"></span>
+    </div>
+
+    <!-- ─── ⑥ Progress Strip (hidden until Generate) ─────────── -->
+    <div class="card" id="studio-progress-card" style="margin-bottom:1rem;display:none">
+      <div class="row" style="margin-bottom:1rem">
+        <h2 style="margin:0">Generating</h2>
+        <span class="muted right" id="studio-eta-txt" style="font-size:0.82rem">~2 min remaining</span>
+      </div>
+      <div class="studio-steps-wrap steps" role="list" id="studio-steps-row">
+
+        <div class="studio-step s-done" role="listitem" data-label="Script">
+          <div class="studio-step-dot">✓</div>
+          <div class="studio-step-lbl">Script</div>
+        </div>
+        <div class="studio-step s-done" role="listitem" data-label="Voice">
+          <div class="studio-step-dot">✓</div>
+          <div class="studio-step-lbl">Voice</div>
+        </div>
+        <div class="studio-step s-running" role="listitem" data-label="Visuals">
+          <div class="studio-step-dot">▶</div>
+          <div class="studio-step-lbl">Visuals</div>
+        </div>
+        <div class="studio-step" role="listitem" data-label="Music">
+          <div class="studio-step-dot"></div>
+          <div class="studio-step-lbl">Music</div>
+        </div>
+        <div class="studio-step" role="listitem" data-label="Captions">
+          <div class="studio-step-dot"></div>
+          <div class="studio-step-lbl">Captions</div>
+        </div>
+        <div class="studio-step" role="listitem" data-label="Packaging">
+          <div class="studio-step-dot"></div>
+          <div class="studio-step-lbl">Packaging</div>
+        </div>
+        <div class="studio-step" role="listitem" data-label="Done">
+          <div class="studio-step-dot"></div>
+          <div class="studio-step-lbl">Done</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ─── ⑦ Packaging Output (hidden until done) ──────────── -->
+    <div class="card" id="studio-output-card" style="margin-bottom:1rem;display:none">
+      <h2 style="margin-bottom:0.2rem">Choose Thumbnail &amp; Title</h2>
+      <p class="muted" style="font-size:0.8rem;margin-bottom:0.2rem">Auto-generated variants — pick one for the final video.</p>
+      <p style="font-size:0.79rem;color:var(--ink-2);margin-bottom:1rem">
+        Language: <span class="tag en">EN</span>
+        &nbsp;·
+        <a href="#" style="color:var(--clay);text-decoration:none;font-size:0.79rem">+ HI dub available ↗</a>
+      </p>
+
+      <!-- Thumbnail picker -->
+      <div class="muted" style="font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem">Thumbnail</div>
+      <div class="studio-thumbs" role="radiogroup" aria-label="Thumbnail variants">
+
+        <label class="studio-thumb-opt sel">
+          <input type="radio" name="studio-thumb" value="A" checked>
+          <div class="studio-thumb-body">
+            <span style="font-size:1.6rem">🛠️</span>
+            <div class="studio-thumb-label">5 FREE<br>AI TOOLS</div>
+            <span style="font-size:0.6rem;color:var(--ink-2)">Variant A</span>
+          </div>
+          <div class="studio-thumb-check">✓</div>
+        </label>
+
+        <label class="studio-thumb-opt">
+          <input type="radio" name="studio-thumb" value="B">
+          <div class="studio-thumb-body">
+            <span style="font-size:1.6rem">🤫</span>
+            <div class="studio-thumb-label">FEELS<br>ILLEGAL</div>
+            <span style="font-size:0.6rem;color:var(--ink-2)">Variant B</span>
+          </div>
+          <div class="studio-thumb-check">✓</div>
+        </label>
+
+        <label class="studio-thumb-opt">
+          <input type="radio" name="studio-thumb" value="C">
+          <div class="studio-thumb-body">
+            <span style="font-size:1.6rem">⚡</span>
+            <div class="studio-thumb-label">FREE AI<br>TOOLS 2026</div>
+            <span style="font-size:0.6rem;color:var(--ink-2)">Variant C</span>
+          </div>
+          <div class="studio-thumb-check">✓</div>
+        </label>
+
+      </div>
+
+      <!-- Title picker -->
+      <div class="muted" style="font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-top:1.25rem;margin-bottom:0.5rem">Title</div>
+      <div class="studio-title-opts" role="radiogroup" aria-label="Title variants">
+        <label class="studio-title-opt sel">
+          <input type="radio" name="studio-title" value="1" checked>
+          5 free AI tools that feel illegal to know
+        </label>
+        <label class="studio-title-opt">
+          <input type="radio" name="studio-title" value="2">
+          These 5 AI tools are too good to be free (but they are)
+        </label>
+        <label class="studio-title-opt">
+          <input type="radio" name="studio-title" value="3">
+          Nobody's talking about these 5 free AI tools
+        </label>
+      </div>
+
+      <!-- Action row -->
+      <div class="row" style="margin-top:1.25rem;gap:0.7rem;flex-wrap:wrap">
+        <button class="btn" onclick="go('review')">Send to Review ↗</button>
+        <button class="btn ghost sm">↺ Re-pick visuals</button>
+        <button class="btn ghost sm">↺ Re-voice</button>
+      </div>
+    </div>
+
+    <!-- ─── Command note ─────────────────────────────────────── -->
+    <div class="note">
+      Behind this button: <code id="studio-cmd-note">mira generate --channel chn_aitools --lane faceless</code> — the same command n8n runs on a schedule and the one I can run from Cursor.
+    </div>
+
+  </div><!-- /content -->
+</section>
+
+<script data-screen="studio">
+(function () {
+  'use strict';
+
+  /* ── DOM refs ─────────────────────────────────────── */
+  var chanSel      = document.getElementById('studio-channel-sel');
+  var topicInput   = document.getElementById('studio-topic-input');
+  var segBtns      = document.getElementById('studio-seg-btns');
+  var segLong      = document.getElementById('studio-seg-long');
+  var lenShort     = document.getElementById('studio-len-short');
+  var lenLong      = document.getElementById('studio-len-long');
+  var lanesShort   = document.getElementById('studio-lanes-short');
+  var lanesLong    = document.getElementById('studio-lanes-long');
+  var genBtn       = document.getElementById('studio-gen-btn');
+  var cancelBtn    = document.getElementById('studio-cancel-btn');
+  var progressCard = document.getElementById('studio-progress-card');
+  var outputCard   = document.getElementById('studio-output-card');
+  var statusTxt    = document.getElementById('studio-status-txt');
+  var etaTxt       = document.getElementById('studio-eta-txt');
+  var cmdNote      = document.getElementById('studio-cmd-note');
+
+  /* ── Channel config ───────────────────────────────── */
+  var CHANNELS = {
+    chn_aitools:   { short: true,  defaultSec: 30,  cap: '75 s',   wc: '75–90 words'  },
+    chn_deepdives: { short: false, defaultMin: 4,   cap: '5 min',  wc: '600–750 words' },
+    chn_quickwins: { short: true,  defaultSec: 30,  cap: '60 s',   wc: '60–75 words'  }
+  };
+
+  /* ── Lane cost/ETA map ────────────────────────────── */
+  var LANE_INFO = {
+    stock:  { cost: '≈ $0.00',  eta: '~1 min',   variance: '±15%', samples: 9 },
+    hf:     { cost: '≈ $0.00',  eta: '~1.5 min', variance: '±15%', samples: 9 },
+    aicl:   { cost: '≈ $0.00',  eta: '~2 min',   variance: '±15%', samples: 9 },
+    story:  { cost: '≈ $0.00',  eta: '~4 min',   variance: '±15%', samples: 9 },
+    motion: { cost: '≈ $0.18',  eta: '~3 min',   variance: '±20%', samples: 9 }
+  };
+
+  /* ── Update channel-driven UI ─────────────────────── */
+  function applyChannel() {
+    var ch  = chanSel.value;
+    var cfg = CHANNELS[ch];
+
+    /* Toggle short vs long-form blocks */
+    var isShort = cfg.short;
+    lenShort.style.display   = isShort ? '' : 'none';
+    lenLong.style.display    = isShort ? 'none' : '';
+    lanesShort.style.display = isShort ? '' : 'none';
+    lanesLong.style.display  = isShort ? 'none' : '';
+
+    /* Update short-form seg default */
+    if (isShort && segBtns) {
+      segBtns.querySelectorAll('button').forEach(function (b) {
+        b.classList.toggle('active', parseInt(b.dataset.sec) === cfg.defaultSec);
+      });
+      applyBudgetNote(cfg);
+    }
+
+    /* Update command note */
+    if (cmdNote) cmdNote.textContent = 'mira generate --channel ' + ch + ' --lane faceless';
+  }
+
+  function applyBudgetNote(cfg) {
+    var note = document.getElementById('studio-budget-note');
+    if (!note) return;
+    note.innerHTML =
+      'Word budget ≈ <strong>' + cfg.wc + '</strong> · drives script length · channel cap ' + cfg.cap;
+  }
+
+  /* ── Update lane cost line ────────────────────────── */
+  function applyLaneCost() {
+    var sel = document.querySelector('input[name="studio-lane"]:checked');
+    if (!sel) return;
+    var info = LANE_INFO[sel.value];
+    if (!info) return;
+    var costLine = document.getElementById('studio-cost-line');
+    if (!costLine) return;
+    costLine.innerHTML =
+      '<strong class="studio-cost-val">' + info.cost + ' on this lane</strong>' +
+      ' · ' + info.eta +
+      ' · <span class="muted">from your last ' + info.samples + ' runs (' + info.variance + ')</span>';
+  }
+
+  /* ── Segmented buttons ────────────────────────────── */
+  function wireSegButtons(container, key) {
+    if (!container) return;
+    container.addEventListener('click', function (e) {
+      var btn = e.target.closest('button[data-' + key + ']');
+      if (!btn) return;
+      container.querySelectorAll('button').forEach(function (b) {
+        b.classList.remove('active');
+      });
+      btn.classList.add('active');
+      /* refresh budget note if short */
+      var ch = chanSel.value;
+      var cfg = CHANNELS[ch];
+      if (cfg && cfg.short) applyBudgetNote(cfg);
+    });
+  }
+  wireSegButtons(segBtns, 'sec');
+  wireSegButtons(segLong, 'min');
+
+  /* ── Lane radio selection ─────────────────────────── */
+  document.querySelectorAll('input[name="studio-lane"]').forEach(function (r) {
+    r.addEventListener('change', function () {
+      document.querySelectorAll('.studio-lane').forEach(function (l) {
+        l.classList.remove('sel');
+      });
+      r.closest('.studio-lane').classList.add('sel');
+      applyLaneCost();
+    });
+  });
+
+  /* ── Thumbnail radio ──────────────────────────────── */
+  document.querySelectorAll('input[name="studio-thumb"]').forEach(function (r) {
+    r.addEventListener('change', function () {
+      document.querySelectorAll('.studio-thumb-opt').forEach(function (o) {
+        o.classList.remove('sel');
+      });
+      r.closest('.studio-thumb-opt').classList.add('sel');
+    });
+  });
+
+  /* ── Title radio ──────────────────────────────────── */
+  document.querySelectorAll('input[name="studio-title"]').forEach(function (r) {
+    r.addEventListener('change', function () {
+      document.querySelectorAll('.studio-title-opt').forEach(function (o) {
+        o.classList.remove('sel');
+      });
+      r.closest('.studio-title-opt').classList.add('sel');
+    });
+  });
+
+  /* ── Channel change ───────────────────────────────── */
+  chanSel && chanSel.addEventListener('change', applyChannel);
+
+  /* ── Override buttons (stub — show tooltip) ──────── */
+  document.querySelectorAll('.studio-chip .ovr').forEach(function (btn) {
+    btn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var chip = btn.closest('.studio-chip');
+      var stage = chip ? chip.querySelector('.stage').textContent : 'stage';
+      alert('Override ' + stage + ' engine for this run\n(picker would open here in the real app)');
+    });
+  });
+
+  /* ── Suggest button (stub) ────────────────────────── */
+  var suggestBtn = document.querySelector('.studio-suggest');
+  suggestBtn && suggestBtn.addEventListener('click', function () {
+    var ideas = [
+      'The $0 AI stack that replaces Midjourney',
+      'Run ChatGPT on your laptop for free',
+      '5 AI browser extensions nobody knows about',
+      'Best free AI tools of 2026 — actually tested'
+    ];
+    var pick = ideas[Math.floor(Math.random() * ideas.length)];
+    if (topicInput) topicInput.value = pick;
+  });
+
+  /* ── Generate flow ────────────────────────────────── */
+  var genTimer = null;
+
+  function resetSteps() {
+    var steps = progressCard.querySelectorAll('.studio-step');
+    steps.forEach(function (s, i) {
+      s.classList.remove('s-done', 's-running');
+      s.querySelector('.studio-step-dot').textContent = '';
+      if (i < 2) { s.classList.add('s-done');    s.querySelector('.studio-step-dot').textContent = '✓'; }
+      if (i === 2) { s.classList.add('s-running'); s.querySelector('.studio-step-dot').textContent = '▶'; }
+    });
+  }
+
+  genBtn && genBtn.addEventListener('click', function () {
+    if (genTimer) clearInterval(genTimer);
+    resetSteps();
+    outputCard.style.display = 'none';
+
+    progressCard.style.display = '';
+    genBtn.style.display = 'none';
+    cancelBtn.style.display = '';
+    statusTxt.textContent = 'Running…';
+    if (etaTxt) etaTxt.textContent = '~2 min remaining';
+    progressCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+    var steps = progressCard.querySelectorAll('.studio-step');
+    var idx = 2; /* visuals is running; advance from here */
+
+    genTimer = setInterval(function () {
+      /* Mark current running step done */
+      steps[idx].classList.remove('s-running');
+      steps[idx].classList.add('s-done');
+      steps[idx].querySelector('.studio-step-dot').textContent = '✓';
+      idx++;
+
+      if (idx >= steps.length) {
+        /* All done */
+        clearInterval(genTimer);
+        genTimer = null;
+        cancelBtn.style.display = 'none';
+        statusTxt.textContent = '';
+        if (etaTxt) etaTxt.textContent = 'Complete ✓';
+        outputCard.style.display = '';
+        outputCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        return;
+      }
+
+      /* Advance running indicator */
+      steps[idx].classList.add('s-running');
+      steps[idx].querySelector('.studio-step-dot').textContent = '▶';
+      var secsLeft = (steps.length - idx) * 18;
+      if (etaTxt) etaTxt.textContent = '~' + secsLeft + 's remaining';
+    }, 1300);
+  });
+
+  cancelBtn && cancelBtn.addEventListener('click', function () {
+    if (genTimer) { clearInterval(genTimer); genTimer = null; }
+    progressCard.style.display = 'none';
+    genBtn.style.display = '';
+    cancelBtn.style.display = 'none';
+    statusTxt.textContent = 'Cancelled.';
+    setTimeout(function () { statusTxt.textContent = ''; }, 2000);
+    resetSteps();
+  });
+
+  /* ── Init ─────────────────────────────────────────── */
+  applyChannel();
+  applyLaneCost();
+
+})();
+</script>

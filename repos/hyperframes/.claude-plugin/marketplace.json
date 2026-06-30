@@ -1,0 +1,17 @@
+{
+  "name": "hyperframes",
+  "owner": {
+    "name": "HeyGen",
+    "email": "hyperframes@heygen.com",
+    "url": "https://hyperframes.heygen.com"
+  },
+  "plugins": [
+    {
+      "name": "hyperframes",
+      "source": "./",
+      "description": "HyperFrames by HeyGen. Write HTML, render video. Compositions, GSAP and runtime adapter animations, captions, voiceovers, audio-reactive visuals, and website-to-video capture for HyperFrames.",
+      "homepage": "https://hyperframes.heygen.com",
+      "license": "Apache-2.0"
+    }
+  ]
+}

@@ -1,0 +1,785 @@
+<style data-screen="review">
+/* ── Layout ──────────────────────────────────────────────── */
+.review-grid {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.player {
+  border-radius: var(--radius);
+  aspect-ratio: 9 / 16;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #111;
+  box-shadow: var(--shadow);
+}
+
+.review-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+
+/* ── Check rows (shared in shell; defined here as fallback) ─ */
+.check {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.84rem;
+  color: var(--ink-2);
+  line-height: 1.45;
+}
+.check:last-child { border-bottom: none; }
+
+.check .box {
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  border-radius: 5px;
+  background: var(--green);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.68rem;
+  font-weight: 700;
+  margin-top: 2px;
+}
+.check .box.gate  { background: var(--clay); }
+.check .box.warn  { background: var(--amber); color: #fff; }
+
+/* ── Screen-specific classes (rev- prefix) ───────────────── */
+.rev-batch-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.rev-counter {
+  font-family: var(--serif);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+/* player internals */
+.rev-caption-bar {
+  position: absolute;
+  bottom: 36px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  padding: 0 14px;
+}
+.rev-caption-text {
+  background: rgba(0,0,0,0.72);
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 5px;
+  text-align: center;
+  line-height: 1.35;
+}
+.rev-dur-chip {
+  position: absolute;
+  bottom: 8px;
+  right: 10px;
+  background: rgba(0,0,0,0.7);
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 4px;
+  letter-spacing: 0.03em;
+}
+
+/* right column */
+.rev-channel-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+.rev-channel-name { font-weight: 600; font-size: 0.88rem; color: var(--ink); }
+
+.rev-video-title {
+  font-family: var(--serif);
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.4;
+  margin-bottom: 16px;
+}
+
+.rev-section-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  margin: 14px 0 5px;
+}
+
+.rev-checklist-wrap { margin-bottom: 4px; }
+
+.rev-compliance-block {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 8px 12px;
+}
+
+.rev-warn-action {
+  display: inline-block;
+  margin-top: 5px;
+  font-size: 0.74rem;
+  padding: 3px 10px;
+}
+
+/* thumbnail picker */
+.rev-thumb-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 7px;
+}
+.rev-thumb-opt {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid transparent;
+  cursor: pointer;
+  aspect-ratio: 16 / 9;
+  transition: border-color 0.15s;
+}
+.rev-thumb-opt.sel { border-color: var(--clay); }
+.rev-thumb-opt input[type=radio] {
+  position: absolute; inset: 0; opacity: 0; cursor: pointer; z-index: 2; width: 100%; height: 100%;
+}
+.rev-thumb-face {
+  width: 100%; height: 100%;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  font-size: 1rem; gap: 2px; padding: 4px;
+  color: rgba(255,255,255,0.8); font-weight: 600;
+}
+.rev-thumb-face span { font-size: 0.62rem; opacity: 0.65; }
+
+/* title picker */
+.rev-title-opts { display: flex; flex-direction: column; gap: 5px; }
+.rev-title-opt {
+  display: flex; align-items: flex-start; gap: 8px;
+  padding: 7px 10px; border-radius: 8px;
+  border: 1.5px solid var(--border); background: var(--paper);
+  font-size: 0.83rem; color: var(--ink); line-height: 1.4;
+  cursor: pointer; transition: border-color 0.15s;
+}
+.rev-title-opt.sel { border-color: var(--clay); background: #fdf8f5; }
+.rev-title-opt input[type=radio] { margin-top: 3px; accent-color: var(--clay); flex-shrink: 0; }
+
+/* disclosure row */
+.rev-disclosure-row {
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--panel); border-radius: 9px; padding: 10px 12px;
+  gap: 14px; margin-top: 14px; border: 1px solid var(--border);
+}
+.rev-disclosure-label { font-size: 0.82rem; color: var(--ink); line-height: 1.4; flex: 1; }
+.rev-disclosure-label small { color: var(--ink-2); display: block; margin-top: 2px; font-size: 0.74rem; }
+
+/* audit tab */
+.rev-audit-banner {
+  display: flex; align-items: flex-start; gap: 10px;
+  background: var(--panel); border-left: 3px solid var(--border-strong);
+  border-radius: 9px; padding: 10px 14px; margin-bottom: 18px;
+  font-size: 0.82rem; color: var(--ink-2); line-height: 1.5;
+}
+.rev-audit-list { display: flex; flex-direction: column; }
+.rev-audit-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 0; border-bottom: 1px solid var(--border);
+}
+.rev-audit-row:last-child { border-bottom: none; }
+.rev-audit-thumb {
+  width: 72px; height: 40px; border-radius: 7px;
+  background: var(--panel-2); display: flex; align-items: center; justify-content: center;
+  font-size: 1.15rem; flex-shrink: 0;
+}
+.rev-audit-info { flex: 1; min-width: 0; }
+.rev-audit-title { font-size: 0.87rem; font-weight: 600; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rev-audit-meta { font-size: 0.76rem; color: var(--ink-2); margin-top: 2px; }
+.rev-conf {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 0.76rem; font-weight: 600; white-space: nowrap;
+}
+.rev-conf-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.rev-conf.clean { color: var(--green); }
+.rev-conf.clean .rev-conf-dot { background: var(--green); }
+.rev-conf.low   { color: var(--amber); }
+.rev-conf.low   .rev-conf-dot { background: var(--amber); }
+
+@media (max-width: 680px) {
+  .review-grid { grid-template-columns: 1fr; }
+  .player { max-width: 200px; margin: 0 auto; }
+}
+
+/* ── Engine A/B bench ─────────────────────────────────────── */
+.bench-banner {
+  display: flex; align-items: flex-start; gap: 10px;
+  background: var(--panel); border-left: 3px solid var(--clay);
+  border-radius: 9px; padding: 10px 14px; margin-bottom: 18px;
+  font-size: 0.82rem; color: var(--ink-2); line-height: 1.5;
+}
+.bench-script {
+  background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
+  padding: 10px 14px; margin-bottom: 18px; font-size: 0.84rem; color: var(--ink-2);
+  line-height: 1.5;
+}
+.bench-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 22px; align-items: start;
+}
+.bench-col { display: flex; flex-direction: column; gap: 10px; }
+.bench-label {
+  display: flex; align-items: center; gap: 8px;
+  font-weight: 700; font-size: 0.92rem; color: var(--ink);
+}
+.bench-label .opt {
+  background: var(--clay); color: #fff; font-size: 0.7rem; font-weight: 800;
+  width: 20px; height: 20px; border-radius: 5px; display: inline-flex;
+  align-items: center; justify-content: center;
+}
+.bench-video {
+  width: 100%; aspect-ratio: 9 / 16; background: #111; border-radius: var(--radius);
+  box-shadow: var(--shadow); object-fit: contain;
+}
+.bench-meta { font-size: 0.76rem; color: var(--ink-2); }
+.bench-missing {
+  display: flex; align-items: center; justify-content: center; text-align: center;
+  aspect-ratio: 9 / 16; background: var(--panel-2); border: 1px dashed var(--border-strong);
+  border-radius: var(--radius); color: var(--ink-2); font-size: 0.8rem; padding: 18px;
+}
+.bench-pick { margin-top: 6px; }
+@media (max-width: 680px) { .bench-grid { grid-template-columns: 1fr; } }
+</style>
+
+<section class="page" id="review">
+  <div class="content">
+
+    <!-- ── Tabs ─────────────────────────────────────────── -->
+    <div class="tabs" role="tablist" aria-label="Review sections">
+      <button class="tab active" id="rev-tab-review" role="tab"
+              aria-selected="true" aria-controls="rev-panel-review">To review (3)</button>
+      <button class="tab" id="rev-tab-audit" role="tab"
+              aria-selected="false" aria-controls="rev-panel-audit">Audit</button>
+      <button class="tab" id="rev-tab-bench" role="tab"
+              aria-selected="false" aria-controls="rev-panel-bench">Engine A/B</button>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════ -->
+    <!--  TO REVIEW PANEL                                  -->
+    <!-- ══════════════════════════════════════════════════ -->
+    <div id="rev-panel-review" role="tabpanel" aria-labelledby="rev-tab-review">
+
+      <!-- Batch header -->
+      <div class="rev-batch-header">
+        <span class="rev-counter" id="rev-counter">1 of 3</span>
+        <span class="muted" style="font-size:0.82rem;">Swipe through each video to approve or send back</span>
+        <div class="right row" style="gap:8px;">
+          <button class="btn ghost sm" id="rev-btn-prev" aria-label="Previous video" onclick="revNav(-1)" disabled>← Prev</button>
+          <button class="btn ghost sm" id="rev-btn-next" aria-label="Next video"     onclick="revNav(+1)">Next →</button>
+        </div>
+      </div>
+
+      <!-- Two-column grid: player + controls -->
+      <div class="review-grid">
+
+        <!-- LEFT: 9:16 player -->
+        <div>
+          <div class="player" id="rev-player" aria-label="Video preview">
+            <!-- simulated frame -->
+            <div id="rev-player-bg" style="position:absolute;inset:0;background:linear-gradient(160deg,#14161e 0%,#252a3a 60%,#181b27 100%);"></div>
+            <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;pointer-events:none;">
+              <div style="color:rgba(255,255,255,0.14);font-size:2.6rem;">▶</div>
+              <div style="color:rgba(255,255,255,0.18);font-size:0.66rem;letter-spacing:0.1em;font-weight:700;">PREVIEW</div>
+            </div>
+            <!-- Caption overlay — in safe zone -->
+            <div class="rev-caption-bar">
+              <div class="rev-caption-text" id="rev-caption">5 free AI tools that feel illegal to know</div>
+            </div>
+            <div class="rev-dur-chip" id="rev-dur">0:47</div>
+          </div>
+          <p class="muted" style="font-size:0.73rem;text-align:center;margin-top:6px;">Tap to play · sound-off default</p>
+        </div>
+
+        <!-- RIGHT: review controls -->
+        <div>
+
+          <!-- Channel + status -->
+          <div class="rev-channel-row">
+            <span class="tag en">EN</span>
+            <span class="rev-channel-name" id="rev-channel">🛠️ Mira AI Tools</span>
+            <span class="pill review">Needs review</span>
+          </div>
+
+          <!-- Video title (editable display) -->
+          <div class="rev-video-title" id="rev-vtitle">5 free AI tools that feel illegal to know</div>
+
+          <!-- ── 90-second checklist ─────────────────────── -->
+          <div class="rev-section-label">90-second checklist</div>
+          <div class="rev-checklist-wrap">
+            <div class="check">
+              <span class="box" aria-label="Pass">✓</span>
+              <span>Hook works in first 2 s — <strong>sound-off</strong> (text on screen, no audio reliance)</span>
+            </div>
+            <div class="check">
+              <span class="box" aria-label="Pass">✓</span>
+              <span>Payoff delivered <strong>before 60% mark</strong> — at ≈ 0:28 of <span id="rev-dur-inline">0:47</span></span>
+            </div>
+            <div class="check">
+              <span class="box" aria-label="Pass">✓</span>
+              <span>Captions <strong>synced &amp; in safe zone</strong> — faster-whisper local, no UI overlap</span>
+            </div>
+            <div class="check">
+              <span class="box" aria-label="Pass">✓</span>
+              <span><strong>No watermark</strong> or letterbox detected (ffprobe clean)</span>
+            </div>
+            <div class="check">
+              <span class="box" aria-label="Pass">✓</span>
+              <span>Voice <strong>natural</strong> — edge-tts EN · no robotic artefacts</span>
+            </div>
+            <div class="check">
+              <span class="box" aria-label="Pass">✓</span>
+              <span>Duration <strong>in-band</strong> — <strong id="rev-dur-check">0:47</strong> · target 30–60 s (hard cap 75 s) <span class="badge free" style="margin-left:4px;font-size:0.65rem;">ffprobe</span></span>
+            </div>
+          </div>
+
+          <!-- ── Compliance gate ─────────────────────────── -->
+          <div class="rev-section-label" style="margin-top:16px;">Compliance gate</div>
+          <div class="rev-compliance-block">
+
+            <!-- HARD GATE: Originality -->
+            <div class="check">
+              <span class="box gate" aria-label="Gate — pass">✓</span>
+              <span>
+                <strong>Originality: passes variation + slideshow check</strong><br>
+                <span style="font-size:0.76rem;color:var(--clay);">Hard gate — auto-blocked if it fails · required to publish</span>
+              </span>
+            </div>
+
+            <!-- WARN: Distinct cut per platform -->
+            <div class="check" id="rev-platform-row">
+              <span class="box warn" id="rev-platform-box" aria-label="Action needed">!</span>
+              <span id="rev-platform-label">
+                <strong>Distinct cut per platform</strong> — YT 9:16 ✓ · <span style="color:var(--amber);">IG Reel not generated yet</span><br>
+                <button class="btn ghost sm rev-warn-action" onclick="revGenerateIG()">Generate IG variant</button>
+              </span>
+            </div>
+
+            <!-- Audio: royalty-free -->
+            <div class="check">
+              <span class="box" aria-label="Pass">✓</span>
+              <span><strong>Audio royalty-free</strong> — Pixabay bed "upbeat-tech-01" · no claims risk</span>
+            </div>
+
+          </div>
+
+          <!-- ── Thumbnail picker ────────────────────────── -->
+          <div class="rev-section-label">Thumbnail — pick one</div>
+          <div class="rev-thumb-grid" id="rev-thumb-grid">
+            <!-- rendered by JS -->
+          </div>
+
+          <!-- ── Title picker ───────────────────────────── -->
+          <div class="rev-section-label" style="margin-top:12px;">Title variant</div>
+          <div class="rev-title-opts" id="rev-title-opts">
+            <!-- rendered by JS -->
+          </div>
+
+          <!-- ── AI-disclosure toggle (default ON) ─────── -->
+          <div class="rev-disclosure-row">
+            <div class="rev-disclosure-label">
+              <strong>Mark as AI-assisted</strong>
+              <small>YouTube "Altered or Synthetic" label + IG AI info · no reach penalty · disclosure is free insurance</small>
+            </div>
+            <label class="switch" title="AI disclosure toggle">
+              <input type="checkbox" id="rev-disclosure" checked aria-label="AI disclosure — default on">
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <!-- ── Actions ───────────────────────────────── -->
+          <div class="review-actions">
+            <button class="btn" id="rev-btn-approve" onclick="revApprove()">Approve &amp; schedule</button>
+            <button class="btn ghost" onclick="revSendBack()">Send back with a note</button>
+          </div>
+
+        </div><!-- /right col -->
+      </div><!-- /review-grid -->
+    </div><!-- /rev-panel-review -->
+
+
+    <!-- ══════════════════════════════════════════════════ -->
+    <!--  AUDIT PANEL                                      -->
+    <!-- ══════════════════════════════════════════════════ -->
+    <div id="rev-panel-audit" role="tabpanel" aria-labelledby="rev-tab-audit" hidden>
+
+      <div class="rev-audit-banner">
+        <span style="font-size:1.1rem;margin-top:-1px;">⚡</span>
+        <span>
+          <strong>Trusted channel — Mira Quick Wins</strong> auto-publishes when the full compliance gate clears (originality hard gate + sameness cap).
+          Videos land here for after-the-fact spot checks. The headless lane (MoneyPrinterTurbo) only auto-publishes when every gate passes — otherwise it routes to human Review above.
+        </span>
+      </div>
+
+      <div class="rev-audit-list">
+
+        <div class="rev-audit-row">
+          <div class="rev-audit-thumb">⚡</div>
+          <div class="rev-audit-info">
+            <div class="rev-audit-title">7 AI sites every creator should bookmark</div>
+            <div class="rev-audit-meta">vid_m3n4 · Mira Quick Wins · 0:36 · <span class="pill posted" style="font-size:0.7rem;padding:1px 7px;">Posted</span> · 31 k views</div>
+          </div>
+          <div class="rev-conf clean">
+            <span class="rev-conf-dot"></span>clean
+          </div>
+          <button class="btn ghost sm" onclick="revFlag(this,'vid_m3n4')">Flag</button>
+        </div>
+
+        <div class="rev-audit-row">
+          <div class="rev-audit-thumb">⚡</div>
+          <div class="rev-audit-info">
+            <div class="rev-audit-title">The one productivity shortcut I use every day</div>
+            <div class="rev-audit-meta">vid_q8r9 · Mira Quick Wins · 0:33 · <span class="pill posted" style="font-size:0.7rem;padding:1px 7px;">Posted</span> · 8.2 k views</div>
+          </div>
+          <div class="rev-conf low">
+            <span class="rev-conf-dot"></span>low confidence · spot check
+          </div>
+          <button class="btn ghost sm" onclick="revFlag(this,'vid_q8r9')">Flag</button>
+        </div>
+
+        <div class="rev-audit-row">
+          <div class="rev-audit-thumb">⚡</div>
+          <div class="rev-audit-info">
+            <div class="rev-audit-title">3 AI shortcuts that save 2 hours a week</div>
+            <div class="rev-audit-meta">vid_s1t2 · Mira Quick Wins · 0:40 · <span class="pill posted" style="font-size:0.7rem;padding:1px 7px;">Posted</span> · 14.7 k views</div>
+          </div>
+          <div class="rev-conf clean">
+            <span class="rev-conf-dot"></span>clean
+          </div>
+          <button class="btn ghost sm" onclick="revFlag(this,'vid_s1t2')">Flag</button>
+        </div>
+
+      </div><!-- /rev-audit-list -->
+    </div><!-- /rev-panel-audit -->
+
+
+    <!-- ══════════════════════════════════════════════════ -->
+    <!--  ENGINE A/B PANEL — key-free visual comparison    -->
+    <!-- ══════════════════════════════════════════════════ -->
+    <div id="rev-panel-bench" role="tabpanel" aria-labelledby="rev-tab-bench" hidden>
+
+      <div class="bench-banner">
+        <span style="font-size:1.1rem;margin-top:-1px;">🎬</span>
+        <span>
+          <strong>Key-free visual comparison.</strong> The same script + voiceover rendered two ways —
+          <strong>Remotion</strong> (OpenMontage React components) vs <strong>HyperFrames</strong> (HTML + GSAP).
+          Both run locally with zero API keys. Run <code>mira bench --topic "your idea"</code>, then pick the look you prefer.
+        </span>
+      </div>
+
+      <div id="bench-empty" class="bench-missing" style="margin-bottom:18px;">
+        No bench rendered yet. Run <code>mira bench --topic "…"</code> (with the backend up via <code>mira up</code>) to compare engines here.
+      </div>
+
+      <div id="bench-script" class="bench-script" hidden></div>
+
+      <div id="bench-grid" class="bench-grid" hidden>
+        <div class="bench-col">
+          <div class="bench-label"><span class="opt">A</span> Remotion</div>
+          <div id="bench-a-slot"></div>
+          <div class="bench-meta" id="bench-a-meta"></div>
+          <button class="btn ghost sm bench-pick" onclick="benchPick('remotion')">Pick A (Remotion)</button>
+        </div>
+        <div class="bench-col">
+          <div class="bench-label"><span class="opt">B</span> HyperFrames</div>
+          <div id="bench-b-slot"></div>
+          <div class="bench-meta" id="bench-b-meta"></div>
+          <button class="btn ghost sm bench-pick" onclick="benchPick('hyperframes')">Pick B (HyperFrames)</button>
+        </div>
+      </div>
+
+    </div><!-- /rev-panel-bench -->
+
+  </div><!-- /content -->
+</section>
+
+<script data-screen="review">
+(function () {
+
+  /* ── Video data fixtures ──────────────────────────────── */
+  const VIDEOS = [
+    {
+      id: 'vid_a1b2',
+      title: '5 free AI tools that feel illegal to know',
+      channel: '🛠️ Mira AI Tools',
+      dur: '0:47',
+      caption: '5 free AI tools that feel illegal to know',
+      igReady: false,
+      playerBg: 'linear-gradient(160deg,#14161e 0%,#252a3a 60%,#181b27 100%)',
+      thumbs: [
+        { bg: 'linear-gradient(135deg,#1a2a3a,#2d4a6e)', emoji: '🤖', label: 'AI collage' },
+        { bg: 'linear-gradient(135deg,#2a1a1a,#5a2a1a)', emoji: '🔥', label: 'Bold text' },
+        { bg: 'linear-gradient(135deg,#1a2a1a,#2a4a2a)', emoji: '⚡', label: 'Minimal' }
+      ],
+      titles: [
+        '5 free AI tools that feel illegal to know',
+        'These free AI tools should NOT be this powerful',
+        'I found 5 AI tools nobody talks about (all free)'
+      ]
+    },
+    {
+      id: 'vid_c3d4',
+      title: 'Turn one photo into a talking video (free)',
+      channel: '🛠️ Mira AI Tools',
+      dur: '0:52',
+      caption: 'Turn one photo into a talking video',
+      igReady: true,
+      playerBg: 'linear-gradient(160deg,#1e1420 0%,#3a253e 60%,#1b1720 100%)',
+      thumbs: [
+        { bg: 'linear-gradient(135deg,#2a1a3a,#4a2a6e)', emoji: '📷', label: 'Photo anim' },
+        { bg: 'linear-gradient(135deg,#1a2a2a,#1a4a4a)', emoji: '💬', label: 'Talk AI' },
+        { bg: 'linear-gradient(135deg,#3a2a1a,#6e4a2a)', emoji: '✨', label: 'Sparkle' }
+      ],
+      titles: [
+        'Turn one photo into a talking video (free)',
+        'Make any photo talk with free AI — no skills needed',
+        'This free AI tool animates any image instantly'
+      ]
+    },
+    {
+      id: 'vid_e5f6',
+      title: 'Stop paying for ChatGPT — do this instead',
+      channel: '⚡ Mira Quick Wins',
+      dur: '0:38',
+      caption: 'Stop paying for ChatGPT',
+      igReady: false,
+      playerBg: 'linear-gradient(160deg,#1e1420 0%,#3a1a2e 60%,#1e1424 100%)',
+      thumbs: [
+        { bg: 'linear-gradient(135deg,#2a1a2a,#5a1a5a)', emoji: '💡', label: 'Tip card' },
+        { bg: 'linear-gradient(135deg,#1a1a2a,#2a2a5a)', emoji: '🔄', label: 'Switch' },
+        { bg: 'linear-gradient(135deg,#2a2a1a,#4a4a1a)', emoji: '❌', label: 'Cancel' }
+      ],
+      titles: [
+        'Stop paying for ChatGPT — do this instead',
+        'Free ChatGPT alternative that actually works (2026)',
+        'Cancel ChatGPT today — this free option is better'
+      ]
+    }
+  ];
+
+  let idx = 0;
+  // track which igVariant we auto-generated per index
+  const igGenerated = {};
+
+  /* ── Render current video ─────────────────────────────── */
+  function render() {
+    const v = VIDEOS[idx];
+
+    document.getElementById('rev-counter').textContent       = `${idx + 1} of ${VIDEOS.length}`;
+    document.getElementById('rev-channel').textContent       = v.channel;
+    document.getElementById('rev-vtitle').textContent        = v.title;
+    document.getElementById('rev-caption').textContent       = v.caption;
+    document.getElementById('rev-dur').textContent           = v.dur;
+    document.getElementById('rev-dur-inline').textContent    = v.dur;
+    document.getElementById('rev-dur-check').textContent     = v.dur;
+    document.getElementById('rev-player-bg').style.background = v.playerBg;
+
+    // Platform row
+    const generated = v.igReady || igGenerated[idx];
+    const box   = document.getElementById('rev-platform-box');
+    const label = document.getElementById('rev-platform-label');
+    if (generated) {
+      box.className   = 'box';
+      box.textContent = '✓';
+      label.innerHTML = '<strong>Distinct cut per platform</strong> — YT 9:16 ✓ · <span style="color:var(--green);">IG Reel ✓</span>';
+    } else {
+      box.className   = 'box warn';
+      box.textContent = '!';
+      label.innerHTML = '<strong>Distinct cut per platform</strong> — YT 9:16 ✓ · <span style="color:var(--amber);">IG Reel not generated yet</span><br><button class="btn ghost sm rev-warn-action" onclick="revGenerateIG()">Generate IG variant</button>';
+    }
+
+    // Thumbnails
+    const tg = document.getElementById('rev-thumb-grid');
+    tg.innerHTML = '';
+    v.thumbs.forEach(function (t, i) {
+      const lbl = document.createElement('label');
+      lbl.className = 'rev-thumb-opt' + (i === 0 ? ' sel' : '');
+      lbl.title     = 'Option ' + String.fromCharCode(65 + i);
+      lbl.innerHTML =
+        '<input type="radio" name="rev-thumb-' + idx + '" value="' + i + '"' + (i === 0 ? ' checked' : '') + ' aria-label="Thumbnail option ' + String.fromCharCode(65+i) + '">' +
+        '<div class="rev-thumb-face" style="background:' + t.bg + '">' +
+          t.emoji + '<span>' + t.label + '</span>' +
+        '</div>';
+      lbl.querySelector('input').addEventListener('change', function () {
+        tg.querySelectorAll('.rev-thumb-opt').forEach(function (el) { el.classList.remove('sel'); });
+        lbl.classList.add('sel');
+      });
+      tg.appendChild(lbl);
+    });
+
+    // Title options
+    const to = document.getElementById('rev-title-opts');
+    to.innerHTML = '';
+    v.titles.forEach(function (t, i) {
+      const lbl = document.createElement('label');
+      lbl.className = 'rev-title-opt' + (i === 0 ? ' sel' : '');
+      lbl.innerHTML = '<input type="radio" name="rev-title-' + idx + '" value="' + i + '"' + (i === 0 ? ' checked' : '') + ' aria-label="Title option ' + (i+1) + '">' + t;
+      lbl.querySelector('input').addEventListener('change', function () {
+        to.querySelectorAll('.rev-title-opt').forEach(function (el) { el.classList.remove('sel'); });
+        lbl.classList.add('sel');
+      });
+      to.appendChild(lbl);
+    });
+
+    // Disclosure reset to ON for each new video (default ON per policy)
+    document.getElementById('rev-disclosure').checked = true;
+
+    // Nav buttons
+    document.getElementById('rev-btn-prev').disabled    = idx === 0;
+    document.getElementById('rev-btn-next').disabled    = idx === VIDEOS.length - 1;
+    document.getElementById('rev-btn-approve').disabled = false;
+    document.getElementById('rev-btn-approve').textContent = 'Approve & schedule';
+  }
+
+  /* ── Navigation ───────────────────────────────────────── */
+  window.revNav = function (delta) {
+    const next = idx + delta;
+    if (next >= 0 && next < VIDEOS.length) { idx = next; render(); }
+  };
+
+  /* ── Approve ──────────────────────────────────────────── */
+  window.revApprove = function () {
+    const btn = document.getElementById('rev-btn-approve');
+    btn.textContent = '✓ Scheduled';
+    btn.disabled    = true;
+    setTimeout(function () {
+      if (idx < VIDEOS.length - 1) {
+        idx++;
+        render();
+      } else {
+        document.getElementById('rev-counter').textContent = 'All 3 reviewed ✓';
+        btn.textContent = 'All reviewed';
+      }
+    }, 700);
+  };
+
+  /* ── Send back ────────────────────────────────────────── */
+  window.revSendBack = function () {
+    var note = prompt('Send back with a note — what needs fixing?', 'Hook not strong enough in first 2 s. Please revise opening line.');
+    if (note) {
+      alert('Sent back to Studio.\n\n"' + note + '"\n\nJob re-queued for revision.');
+    }
+  };
+
+  /* ── Generate IG variant ──────────────────────────────── */
+  window.revGenerateIG = function () {
+    igGenerated[idx] = true;
+    const box   = document.getElementById('rev-platform-box');
+    const label = document.getElementById('rev-platform-label');
+    box.className   = 'box';
+    box.textContent = '✓';
+    label.innerHTML = '<strong>Distinct cut per platform</strong> — YT 9:16 ✓ · <span style="color:var(--green);">IG Reel ✓ generated</span>';
+  };
+
+  /* ── Audit: flag a video ──────────────────────────────── */
+  window.revFlag = function (btn, id) {
+    btn.textContent = 'Flagged ✓';
+    btn.disabled    = true;
+    btn.style.color = 'var(--amber)';
+    btn.closest('.rev-audit-row').querySelector('.rev-conf').innerHTML =
+      '<span class="rev-conf-dot" style="background:var(--amber);display:inline-block;width:8px;height:8px;border-radius:50%;"></span>' +
+      '<span style="color:var(--amber);">flagged for review</span>';
+  };
+
+  /* ── Tab switching (generic, 3 tabs) ──────────────────── */
+  var TABS = [
+    { tab: 'rev-tab-review', panel: 'rev-panel-review' },
+    { tab: 'rev-tab-audit',  panel: 'rev-panel-audit'  },
+    { tab: 'rev-tab-bench',  panel: 'rev-panel-bench'  }
+  ];
+  function activateTab(panelId) {
+    TABS.forEach(function (t) {
+      var on = t.panel === panelId;
+      var tabEl = document.getElementById(t.tab);
+      tabEl.classList.toggle('active', on);
+      tabEl.setAttribute('aria-selected', on ? 'true' : 'false');
+      document.getElementById(t.panel).hidden = !on;
+    });
+    if (panelId === 'rev-panel-bench') benchRender();
+  }
+  TABS.forEach(function (t) {
+    document.getElementById(t.tab).addEventListener('click', function () { activateTab(t.panel); });
+  });
+
+  /* ── Engine A/B bench ─────────────────────────────────── */
+  function fmtDur(s) {
+    if (s == null) return '';
+    var m = Math.floor(s / 60), sec = Math.round(s % 60);
+    return m + ':' + (sec < 10 ? '0' : '') + sec;
+  }
+  function benchSlot(slotId, metaId, entry) {
+    var slot = document.getElementById(slotId);
+    var meta = document.getElementById(metaId);
+    if (entry && entry.ok && entry.video) {
+      var base = (window.mira && window.mira.base) ? window.mira.base : 'http://127.0.0.1:8770';
+      slot.innerHTML =
+        '<video class="bench-video" controls muted playsinline preload="metadata" ' +
+        'src="' + base + '/bench/video?engine=' + encodeURIComponent(entry.engine) + '"></video>';
+      meta.textContent = fmtDur(entry.duration_s) + ' · h264 · key-free';
+    } else {
+      slot.innerHTML = '<div class="bench-missing">Not rendered' +
+        (entry && entry.reason ? ' — ' + entry.reason : '') + '</div>';
+      meta.textContent = '';
+    }
+  }
+  function benchRender() {
+    if (!(window.mira && window.mira.fetchJSON)) return;
+    window.mira.fetchJSON('/bench', {}).then(function (m) {
+      var hasBench = m && m.engines && m.engines.length;
+      document.getElementById('bench-empty').hidden = !!hasBench;
+      document.getElementById('bench-grid').hidden   = !hasBench;
+      var scriptEl = document.getElementById('bench-script');
+      if (!hasBench) { scriptEl.hidden = true; return; }
+      scriptEl.hidden = false;
+      scriptEl.innerHTML = '<strong>Topic:</strong> ' + (m.topic || '—') +
+        ' &nbsp;·&nbsp; <strong>Script (' + (m.script_provider || 'offline') + '):</strong> ' + (m.script || '');
+      var byEng = {};
+      m.engines.forEach(function (e) { byEng[e.engine] = e; });
+      benchSlot('bench-a-slot', 'bench-a-meta', byEng['remotion']);
+      benchSlot('bench-b-slot', 'bench-b-meta', byEng['hyperframes']);
+    });
+  }
+  window.benchPick = function (engine) {
+    alert('Picked ' + (engine === 'remotion' ? 'A (Remotion)' : 'B (HyperFrames)') +
+      ' as the visual engine.\n\nSet it as default with:\n  MIRA_VISUAL_ENGINE=' + engine +
+      '\nor pass  --visual ' + engine + '  to  mira generate.');
+  };
+
+  /* ── Boot ─────────────────────────────────────────────── */
+  render();
+  // Refresh the bench panel if the backend comes alive while it's open.
+  document.addEventListener('mira:live', function () {
+    if (!document.getElementById('rev-panel-bench').hidden) benchRender();
+  });
+
+})();
+</script>

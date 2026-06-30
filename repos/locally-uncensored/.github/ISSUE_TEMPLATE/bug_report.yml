@@ -1,0 +1,96 @@
+name: Bug Report
+description: Something isn't working? Let us know.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug! Fill out the details below so we can reproduce and fix it.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: Describe the bug clearly.
+      placeholder: "When I click X, Y happens instead of Z..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: How can we trigger this bug?
+      placeholder: |
+        1. Open the app
+        2. Go to '...'
+        3. Click on '...'
+        4. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What should have happened?
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Which part of the app?
+      options:
+        - Chat
+        - Image Generation
+        - Video Generation
+        - Model Manager
+        - Personas
+        - Settings
+        - Setup/Installation
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: os
+    attributes:
+      label: Operating System
+      placeholder: "Windows 11, macOS 15, Ubuntu 24.04..."
+    validations:
+      required: true
+
+  - type: input
+    id: browser
+    attributes:
+      label: Browser
+      placeholder: "Chrome 133, Firefox 135, Edge..."
+    validations:
+      required: true
+
+  - type: input
+    id: gpu
+    attributes:
+      label: GPU & VRAM
+      placeholder: "RTX 3080 10GB, RTX 4090 24GB, M2 Pro 16GB..."
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Console errors (if any)
+      description: Open browser DevTools (F12) → Console tab. Paste any errors here.
+      render: shell
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots
+      description: Drag and drop screenshots if they help explain the issue.
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        _Prefer chat? Join the Discord: https://locallyuncensored.com/discord_

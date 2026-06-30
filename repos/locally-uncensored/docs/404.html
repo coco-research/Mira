@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Page not found — Locally Uncensored</title>
+<meta name="robots" content="noindex, follow">
+<link rel="canonical" href="https://locallyuncensored.com/">
+<meta name="theme-color" content="#0a0a0a">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0a;--fg:#ededed;--fg-50:rgba(237,237,237,0.48);--accent:#8b5cf6;--green:#22c55e;--rule:rgba(237,237,237,0.10)}
+html,body{height:100%}
+body{
+  font-family:'Inter',system-ui,-apple-system,sans-serif;
+  background:var(--bg);color:var(--fg);
+  -webkit-font-smoothing:antialiased;line-height:1.55;
+  display:flex;align-items:center;justify-content:center;
+  min-height:100vh;padding:32px;text-align:center;
+}
+.wrap{max-width:560px}
+.code{
+  font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:0.18em;
+  text-transform:uppercase;color:var(--green);margin-bottom:18px;
+}
+h1{font-size:clamp(32px,6vw,52px);font-weight:800;letter-spacing:-0.02em;line-height:1.05;margin-bottom:16px}
+h1 .a{color:var(--accent)}
+p{font-size:16px;color:var(--fg-50);margin-bottom:32px}
+.actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+a.btn{
+  font-size:14px;font-weight:600;padding:12px 22px;border-radius:100px;
+  background:var(--accent);color:#fff;text-decoration:none;
+  transition:transform 0.2s ease,opacity 0.2s ease;
+}
+a.btn:hover{transform:translateY(-2px)}
+a.ghost{
+  font-size:14px;font-weight:500;padding:12px 22px;border-radius:100px;
+  border:1px solid var(--rule);color:var(--fg);text-decoration:none;
+  transition:border-color 0.2s ease;
+}
+a.ghost:hover{border-color:var(--accent)}
+.links{margin-top:28px;font-size:13px;color:var(--fg-50)}
+.links a{color:var(--fg-50);text-decoration:underline;text-underline-offset:3px;margin:0 8px}
+.links a:hover{color:var(--fg)}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div class="code">Error 404</div>
+  <h1>This page ran <span class="a">locally</span>.<br>Too local, in fact.</h1>
+  <p>The page you were looking for doesn't exist or has moved. Everything else still runs on your own hardware.</p>
+  <div class="actions">
+    <a class="btn" href="/">Back to home</a>
+    <a class="ghost" href="/blog/">Read the blog</a>
+  </div>
+  <div class="links">
+    <a href="/guide/">Getting-started guide</a>
+    <a href="https://github.com/PurpleDoubleD/locally-uncensored">GitHub</a>
+    <a href="https://locallyuncensored.com/discord">Discord</a>
+  </div>
+</main>
+</body>
+</html>

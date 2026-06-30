@@ -1,0 +1,34 @@
+# OS / editor
+.DS_Store
+.claude/
+
+# Secrets & local state (never commit)
+.env
+config.toml
+**/state/cost_log.json
+**/state/cost_model.json
+**/media/
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+
+# Node / JS engines
+node_modules/
+.remotion/
+dist/
+build/
+.cache/
+
+# Large generated artifacts
+*.mp4
+*.mov
+*.wav
+*.mp3
+
+# IDE
+.idea/
+.vscode/

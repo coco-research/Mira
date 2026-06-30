@@ -1,0 +1,1110 @@
+<style data-screen="ideate">
+  /* ── Page header ──────────────────────────────────────── */
+  .ide-header {
+    padding: 2.25rem 0 1.5rem;
+  }
+  .ide-header h1 {
+    font-size: 2rem;
+    line-height: 1.15;
+    margin-bottom: 0.3rem;
+  }
+  .ide-header .lede {
+    font-family: var(--sans);
+    font-size: 0.875rem;
+    color: var(--ink-2);
+  }
+
+  /* ── Section wrapper ─────────────────────────────────── */
+  .ide-section {
+    margin-bottom: 1.75rem;
+  }
+  .ide-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.875rem;
+  }
+  .ide-section-header h2 {
+    margin: 0;
+  }
+
+  /* ── Quick capture ───────────────────────────────────── */
+  .ide-capture-card {
+    background: var(--paper);
+    border: 1.5px solid var(--border-strong);
+    border-radius: var(--radius);
+    padding: 1.25rem 1.5rem 1rem;
+    box-shadow: var(--shadow);
+    margin-bottom: 0.875rem;
+  }
+  .ide-capture-label {
+    font-family: var(--sans);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+    margin-bottom: 0.6rem;
+    display: block;
+  }
+  .ide-capture-row {
+    display: flex;
+    gap: 0.625rem;
+    align-items: stretch;
+  }
+  .ide-capture-row .field {
+    flex: 1;
+    margin: 0;
+  }
+  .ide-capture-row .field input {
+    font-size: 0.9375rem;
+    padding: 0.6rem 0.875rem;
+  }
+  .ide-capture-hint {
+    font-family: var(--sans);
+    font-size: 0.76rem;
+    color: var(--ink-2);
+    margin-top: 0.55rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .ide-capture-hint a {
+    color: var(--clay);
+    text-decoration: none;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .ide-capture-hint a:hover {
+    text-decoration: underline;
+  }
+
+  /* ── Status bar ──────────────────────────────────────── */
+  .ide-status-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    padding: 0.65rem 1rem;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: calc(var(--radius) - 2px);
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+  }
+  .ide-status-dot-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    flex: 1;
+    min-width: 0;
+  }
+  .ide-status-text {
+    font-family: var(--sans);
+    font-size: 0.8125rem;
+    color: var(--ink-2);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .ide-status-text strong {
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  /* ── Reference paste ─────────────────────────────────── */
+  .ide-ref-card {
+    border-radius: var(--radius);
+    border: 1px dashed var(--border-strong);
+    background: var(--panel-2);
+    padding: 1rem 1.25rem 0.9rem;
+    margin-bottom: 1.75rem;
+  }
+  .ide-ref-label {
+    font-family: var(--sans);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+    margin-bottom: 0.55rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .ide-ref-row {
+    display: flex;
+    gap: 0.625rem;
+    align-items: stretch;
+  }
+  .ide-ref-row .field {
+    flex: 1;
+    margin: 0;
+  }
+  .ide-ref-row .field input {
+    font-size: 0.875rem;
+    padding: 0.55rem 0.875rem;
+  }
+  .ide-ref-note {
+    font-family: var(--sans);
+    font-size: 0.74rem;
+    color: var(--ink-2);
+    margin-top: 0.5rem;
+  }
+  .ide-ref-note .ide-model-tag {
+    display: inline-block;
+    font-size: 0.68rem;
+    font-weight: 600;
+    background: #eef3fb;
+    color: #4a6fa8;
+    border: 1px solid #c4d4ee;
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    letter-spacing: 0.02em;
+    margin-right: 0.2rem;
+  }
+
+  /* ── Filter chips area ───────────────────────────────── */
+  .ide-filters {
+    margin-bottom: 1.5rem;
+  }
+  .ide-filter-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.5rem;
+  }
+  .ide-filter-label {
+    font-family: var(--sans);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+    width: 52px;
+    flex-shrink: 0;
+  }
+  .ide-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-family: var(--sans);
+    font-size: 0.775rem;
+    font-weight: 500;
+    color: var(--ink-2);
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 0.28rem 0.75rem;
+    cursor: pointer;
+    transition: background 0.12s, color 0.12s, border-color 0.12s;
+    user-select: none;
+  }
+  .ide-chip:hover {
+    background: var(--panel);
+    border-color: var(--border-strong);
+    color: var(--ink);
+  }
+  .ide-chip.sel {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: #fff;
+  }
+  .ide-chip.sel:hover {
+    background: #2c2c2a;
+    border-color: #2c2c2a;
+  }
+
+  /* ── Ideas inbox header ──────────────────────────────── */
+  .ide-inbox-count {
+    font-family: var(--sans);
+    font-size: 0.8rem;
+    color: var(--ink-2);
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 0.2rem 0.625rem;
+    font-weight: 500;
+  }
+
+  /* ── Idea card ───────────────────────────────────────── */
+  .ide-ideas-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .ide-idea-card {
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.1rem 1.375rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    transition: box-shadow 0.15s;
+  }
+  .ide-idea-card:hover {
+    box-shadow: var(--shadow);
+  }
+  .ide-idea-card.ide-dismissed {
+    opacity: 0.42;
+    pointer-events: none;
+  }
+
+  /* Card top row: title + source + channel */
+  .ide-idea-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.875rem;
+  }
+  .ide-idea-body {
+    flex: 1;
+    min-width: 0;
+  }
+  .ide-idea-title {
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: var(--ink);
+    line-height: 1.45;
+    margin-bottom: 0.5rem;
+  }
+  .ide-idea-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  /* Source badge variants */
+  .ide-src {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-family: var(--sans);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    padding: 0.2rem 0.55rem;
+    border-radius: 5px;
+    white-space: nowrap;
+  }
+  .ide-src.niche {
+    background: #eef5ec;
+    color: #4a7a42;
+    border: 1px solid #c4dac0;
+  }
+  .ide-src.yt {
+    background: #fdf0ee;
+    color: #a83828;
+    border: 1px solid #f2c8c0;
+  }
+  .ide-src.trends {
+    background: #eef2fb;
+    color: #3a5fa0;
+    border: 1px solid #c4d4ee;
+  }
+  .ide-src.reddit {
+    background: #fdf4ec;
+    color: #9a5c20;
+    border: 1px solid #f0d4b0;
+  }
+
+  /* Channel tag inside idea card */
+  .ide-ch-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-family: var(--sans);
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--ink-2);
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    padding: 0.2rem 0.55rem;
+    border-radius: 5px;
+    white-space: nowrap;
+  }
+
+  /* Score meters */
+  .ide-scores {
+    display: flex;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+  }
+  .ide-score {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .ide-score-label {
+    font-family: var(--sans);
+    font-size: 0.7rem;
+    color: var(--ink-2);
+    white-space: nowrap;
+    min-width: 42px;
+  }
+  .ide-score-track {
+    width: 72px;
+    height: 5px;
+    background: var(--panel);
+    border-radius: 3px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .ide-score-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.4s ease;
+  }
+  .ide-score-fill.fit {
+    background: var(--green);
+  }
+  .ide-score-fill.sat-low {
+    background: var(--green);
+  }
+  .ide-score-fill.sat-mid {
+    background: var(--amber);
+  }
+  .ide-score-fill.sat-hi {
+    background: var(--red);
+  }
+  .ide-score-val {
+    font-family: var(--sans);
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--ink);
+    min-width: 30px;
+  }
+  .ide-score-val.muted {
+    color: var(--ink-2);
+    font-weight: 400;
+  }
+
+  /* Card actions row */
+  .ide-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .ide-actions .right {
+    margin-left: auto;
+  }
+  .ide-btn-merge {
+    font-family: var(--sans);
+    font-size: 0.76rem;
+    color: var(--ink-2);
+    background: none;
+    border: none;
+    padding: 0.3rem 0.25rem;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .ide-btn-merge:hover {
+    color: var(--ink);
+  }
+  .ide-btn-dismiss {
+    font-family: var(--sans);
+    font-size: 0.76rem;
+    color: var(--ink-2);
+    background: none;
+    border: 1px solid var(--border);
+    padding: 0.3rem 0.7rem;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: border-color 0.12s, color 0.12s;
+  }
+  .ide-btn-dismiss:hover {
+    border-color: var(--red);
+    color: var(--red);
+  }
+  .ide-btn-keep {
+    font-family: var(--sans);
+    font-size: 0.76rem;
+    color: var(--ink-2);
+    background: none;
+    border: 1px solid var(--border);
+    padding: 0.3rem 0.7rem;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: border-color 0.12s, color 0.12s;
+  }
+  .ide-btn-keep:hover {
+    border-color: var(--green);
+    color: var(--green);
+  }
+
+  /* ── QR modal / phone share ──────────────────────────── */
+  .ide-qr-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(20,20,19,0.38);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+  }
+  .ide-qr-overlay.open {
+    display: flex;
+  }
+  .ide-qr-modal {
+    background: var(--paper);
+    border-radius: var(--radius);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.16);
+    padding: 2rem 2.25rem;
+    max-width: 320px;
+    width: 100%;
+    text-align: center;
+  }
+  .ide-qr-modal h2 {
+    font-size: 1.25rem;
+    margin-bottom: 0.75rem;
+  }
+  .ide-qr-modal p {
+    font-family: var(--sans);
+    font-size: 0.82rem;
+    color: var(--ink-2);
+    margin-bottom: 1.25rem;
+    line-height: 1.5;
+  }
+  .ide-qr-placeholder {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 1.25rem;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+  }
+
+  /* ── Merge modal ─────────────────────────────────────── */
+  .ide-merge-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(20,20,19,0.38);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+  }
+  .ide-merge-overlay.open {
+    display: flex;
+  }
+  .ide-merge-modal {
+    background: var(--paper);
+    border-radius: var(--radius);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.16);
+    padding: 1.75rem 2rem;
+    max-width: 380px;
+    width: 100%;
+  }
+  .ide-merge-modal h2 {
+    font-size: 1.1rem;
+    margin-bottom: 0.625rem;
+  }
+  .ide-merge-modal p {
+    font-family: var(--sans);
+    font-size: 0.8125rem;
+    color: var(--ink-2);
+    margin-bottom: 1rem;
+    line-height: 1.5;
+  }
+  .ide-merge-select {
+    width: 100%;
+    font-family: var(--sans);
+    font-size: 0.875rem;
+    color: var(--ink);
+    background: var(--panel-2);
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+    padding: 0.55rem 0.875rem;
+    margin-bottom: 1rem;
+    appearance: none;
+  }
+
+  @media (max-width: 680px) {
+    .ide-idea-top { flex-direction: column; gap: 0.5rem; }
+    .ide-scores { gap: 0.875rem; }
+  }
+</style>
+
+<section class="page" id="ideate">
+  <div class="content">
+
+    <!-- ── Page header ───────────────────────────────────── -->
+    <div class="ide-header">
+      <h1>Ideate</h1>
+      <p class="lede">Where topics come from — capture, discover, and promote ideas to the queue.</p>
+    </div>
+
+    <!-- ── Quick capture ─────────────────────────────────── -->
+    <div class="ide-capture-card">
+      <label class="ide-capture-label" for="ide-capture-input">Capture an idea</label>
+      <div class="ide-capture-row">
+        <div class="field">
+          <input
+            id="ide-capture-input"
+            type="text"
+            placeholder="What's the idea? e.g. "Best free image upscalers in 2026""
+            autocomplete="off"
+          />
+        </div>
+        <button class="btn" id="ide-capture-btn" aria-label="Capture idea">Capture</button>
+      </div>
+      <p class="ide-capture-hint">
+        <span>Or</span>
+        <a role="button" tabindex="0" id="ide-phone-link" aria-label="Open phone share QR code">share from your phone →</a>
+        <span class="muted">open a quick-add page on any device</span>
+      </p>
+    </div>
+
+    <!-- ── Trend research status ──────────────────────────── -->
+    <div class="ide-status-bar">
+      <div class="ide-status-dot-wrap">
+        <span class="status-dot ok"></span>
+        <span class="ide-status-text">
+          <strong>Trend research</strong> last ran 2h ago &nbsp;·&nbsp; n8n background job
+        </span>
+      </div>
+      <button class="btn ghost sm" id="ide-run-trends-btn" aria-label="Run trend research now">Run trend research now</button>
+    </div>
+
+    <!-- ── Paste reference video / screenshot ─────────────── -->
+    <div class="ide-ref-card">
+      <div class="ide-ref-label">
+        <span>📎</span> Paste a reference video or screenshot
+      </div>
+      <div class="ide-ref-row">
+        <div class="field">
+          <input
+            id="ide-ref-input"
+            type="text"
+            placeholder="YouTube URL, image URL, or local file path…"
+            autocomplete="off"
+          />
+        </div>
+        <button class="btn ghost" id="ide-ref-btn" aria-label="Analyse reference and seed ideas">Analyse &amp; seed</button>
+      </div>
+      <p class="ide-ref-note">
+        <span class="ide-model-tag">MiniMax-M3 on NIM</span>
+        Free · watches the video or reads the screenshot and seeds 2–3 idea cards into your inbox automatically.
+      </p>
+    </div>
+
+    <!-- ── Filter chips ───────────────────────────────────── -->
+    <div class="ide-filters">
+      <div class="ide-filter-row">
+        <span class="ide-filter-label">Source</span>
+        <button class="ide-chip sel" data-filter="src" data-val="all">All</button>
+        <button class="ide-chip" data-filter="src" data-val="niche">From niche</button>
+        <button class="ide-chip" data-filter="src" data-val="yt">YouTube trending</button>
+        <button class="ide-chip" data-filter="src" data-val="trends">Google Trends</button>
+        <button class="ide-chip" data-filter="src" data-val="reddit">Reddit</button>
+      </div>
+      <div class="ide-filter-row">
+        <span class="ide-filter-label">Channel</span>
+        <button class="ide-chip sel" data-filter="ch" data-val="all">All</button>
+        <button class="ide-chip" data-filter="ch" data-val="chn_aitools">🛠️ AI Tools</button>
+        <button class="ide-chip" data-filter="ch" data-val="chn_deepdives">🔬 Deep Dives</button>
+        <button class="ide-chip" data-filter="ch" data-val="chn_quickwins">⚡ Quick Wins</button>
+      </div>
+    </div>
+
+    <!-- ── Ideas inbox ─────────────────────────────────────── -->
+    <div class="ide-section">
+      <div class="ide-section-header">
+        <h2>Ideas inbox</h2>
+        <span class="ide-inbox-count" id="ide-inbox-count">7 ideas</span>
+      </div>
+
+      <div class="ide-ideas-list" id="ide-ideas-list">
+
+        <!-- ── Idea 1: Nano-Banana image API ─────────────── -->
+        <div class="ide-idea-card" data-src="niche" data-ch="chn_aitools">
+          <div class="ide-idea-top">
+            <div class="ide-idea-body">
+              <div class="ide-idea-title">Nano-Banana image API — first look</div>
+              <div class="ide-idea-meta">
+                <span class="ide-src niche">From niche</span>
+                <span class="ide-ch-tag">🛠️ Mira AI Tools</span>
+              </div>
+            </div>
+          </div>
+          <div class="ide-scores">
+            <div class="ide-score">
+              <span class="ide-score-label">AI fit</span>
+              <div class="ide-score-track" aria-hidden="true">
+                <div class="ide-score-fill fit" style="width:94%"></div>
+              </div>
+              <span class="ide-score-val">94%</span>
+            </div>
+            <div class="ide-score">
+              <span class="ide-score-label">Saturation</span>
+              <div class="ide-score-track" aria-hidden="true">
+                <div class="ide-score-fill sat-low" style="width:12%"></div>
+              </div>
+              <span class="ide-score-val muted">12%</span>
+            </div>
+          </div>
+          <div class="ide-actions">
+            <button class="btn sm" onclick="go('queue')" aria-label="Promote to queue">Promote →</button>
+            <button class="ide-btn-keep" aria-label="Keep for later">Keep</button>
+            <button class="ide-btn-dismiss ide-dismiss-btn" aria-label="Dismiss idea">Dismiss</button>
+            <button class="ide-btn-merge ide-merge-btn right" aria-label="Merge with another idea">Merge</button>
+          </div>
+        </div>
+
+        <!-- ── Idea 2: Veo 3.1 vs local LTX ─────────────── -->
+        <div class="ide-idea-card" data-src="yt" data-ch="chn_deepdives">
+          <div class="ide-idea-top">
+            <div class="ide-idea-body">
+              <div class="ide-idea-title">Veo 3.1 vs local LTX — honest test</div>
+              <div class="ide-idea-meta">
+                <span class="ide-src yt">YouTube trending</span>
+                <span class="ide-ch-tag">🔬 Mira Deep Dives</span>
+              </div>
+            </div>
+          </div>
+          <div class="ide-scores">
+            <div class="ide-score">
+              <span class="ide-score-label">AI fit</span>
+              <div class="ide-score-track" aria-hidden="true">
+                <div class="ide-score-fill fit" style="width:87%"></div>
+              </div>
+              <span class="ide-score-val">87%</span>
+            </div>
+            <div class="ide-score">
+              <span class="ide-score-label">Saturation</span>
+              <div class="ide-score-track" aria-hidden="true">
+                <div class="ide-score-fill sat-mid" style="width:31%"></div>
+              </div>
+              <span class="ide-score-val muted">31%</span>
+            </div>
+          </div>
+          <div class="ide-actions">
+            <button class="btn sm" onclick="go('queue')" aria-label="Promote to queue">Promote →</button>
+            <button class="ide-btn-keep" aria-label="Keep for later">Keep</button>
+            <button class="ide-btn-dismiss ide-dismiss-btn" aria-label="Dismiss idea">Dismiss</button>
+            <button class="ide-btn-merge ide-merge-btn right" aria-label="Merge with another idea">Merge</button>
+          </div>
+        </div>
+
+        <!-- ── Idea 3: The $0 faceless stack ─────────────── -->
+        <div class="ide-idea-card" data-src="reddit" data-ch="chn_deepdives">
+          <div class="ide-idea-top">
+            <div class="ide-idea-body">
+              <div class="ide-idea-title">The $0 faceless stack, end to end</div>
+              <div class="ide-idea-meta">
+                <span class="ide-src reddit">Reddit</span>
+                <span class="ide-ch-tag">🔬 Mira Deep Dives</span>
+              </div>
+            </div>
+          </div>
+          <div class="ide-scores">
+            <div class="ide-score">
+              <span class="ide-score-label">AI fit</span>
+              <div class="ide-score-track" aria-hidden="true">
+                <div class="ide-score-fill fit" style="width:91%"></div>
+              </div>
+              <span class="ide-score-val">91%</span>
+            </div>
+            <div class="ide-score">
+              <span class="ide-score-label">Saturation</span>
+              <div class="ide-score-track" aria-hidden="true">
+                <div class="ide-score-fill sat-mid" style="width:24%"></div>
+              </div>
+              <span class="ide-score-val muted">24%</span>
+            </div>
+          </div>
+          <div class="ide-actions">
+            <button class="btn sm" onclick="go('queue')" aria-label="Promote to queue">Promote →</button>
+            <button class="ide-btn-keep" aria-label="Keep for later">Keep</button>
+            <button class="ide-btn-dismiss ide-dismiss-btn" aria-label="Dismiss idea">Dismiss</button>
+            <button class="ide-btn-merge ide-merge-btn right" aria-label="Merge with another idea">Merge</button>
+          </div>
+        </div>
+
+        <!-- ── Idea 4: 5 prompts that 10x your output ─────── -->
+        <div class="ide-idea-card" data-src="trends" data-ch="chn_quickwins">
+          <div class="ide-idea-top">
+            <div class="ide-idea-body">
+              <div class="ide-idea-title">5 prompts that 10x your output</div>
+              <div class="ide-idea-meta">
+                <span class="ide-src trends">Google Trends</span>
+                <span class="ide-ch-tag">⚡ Mira Quick Wins</span>
+              </div>
+            </div>
+          </div>
+          <div class="ide-scores">
+            <div class="ide-score">
+              <span class="ide-score-label">AI fit</span>
+              <div class="ide-score-track" aria-hidden="true">
+                <div class="ide-score-fill fit" style="width:78%"></div>
+              </div>
+              <span class="ide-score-val">78%</span>
+            </div>
+            <div class="ide-score">
+              <span class="ide-score-label">Saturation</span>
+              <div class="ide-score-track" aria-hidden="true">
+                <div class="ide-score-fill sat-hi" style="width:58%"></div>
+              </div>
+              <span class="ide-score-val muted">58%</span>
+            </div>
+          </div>
+          <div class="ide-actions">
+            <button class="btn sm" onclick="go('queue')" aria-label="Promote to queue">Promote →</button>
+            <button class="ide-btn-keep" aria-label="Keep for later">Keep</button>
+            <button class="ide-btn-dismiss ide-dismiss-btn" aria-label="Dismiss idea">Dismiss</button>
+            <button class="ide-btn-merge ide-merge-btn right" aria-label="Merge with another idea">Merge</button>
+          </div>
+        </div>
+
+        <!-- ── Idea 5: Local AI on a 16GB laptop ─────────── -->
+        <div class="ide-idea-card" data-src="reddit" data-ch="chn_aitools">
+          <div class="ide-idea-top">
+            <div class="ide-idea-body">
+              <div class="ide-idea-title">Local AI on a 16GB laptop?</div>
+              <div class="ide-idea-meta">
+                <span class="ide-src reddit">Reddit</span>
+                <span class="ide-ch-tag">🛠️ Mira AI Tools</span>
+              </div>
+            </div>
+          </div>
+          <div class="ide-scores">
+            <div class="ide-score">
+              <span class="ide-score-label">AI fit</span>
+              <div class="ide-score-track" aria-hidden="true">
+                <div class="ide-score-fill fit" style="width:85%"></div>
+              </div>
+              <span class="ide-score-val">85%</span>
+            </div>
+            <div class="ide-score">
+              <span class="ide-score-label">Saturation</span>
+              <div class="ide-score-track" aria-hidden="true">
+                <div class="ide-score-fill sat-low" style="width:19%"></div>
+              </div>
+              <span class="ide-score-val muted">19%</span>
+            </div>
+          </div>
+          <div class="ide-actions">
+            <button class="btn sm" onclick="go('queue')" aria-label="Promote to queue">Promote →</button>
+            <button class="ide-btn-keep" aria-label="Keep for later">Keep</button>
+            <button class="ide-btn-dismiss ide-dismiss-btn" aria-label="Dismiss idea">Dismiss</button>
+            <button class="ide-btn-merge ide-merge-btn right" aria-label="Merge with another idea">Merge</button>
+          </div>
+        </div>
+
+        <!-- ── Idea 6: Best free TTS in 2026 ─────────────── -->
+        <div class="ide-idea-card" data-src="yt" data-ch="chn_aitools">
+          <div class="ide-idea-top">
+            <div class="ide-idea-body">
+              <div class="ide-idea-title">Best free TTS in 2026</div>
+              <div class="ide-idea-meta">
+                <span class="ide-src yt">YouTube trending</span>
+                <span class="ide-ch-tag">🛠️ Mira AI Tools</span>
+              </div>
+            </div>
+          </div>
+          <div class="ide-scores">
+            <div class="ide-score">
+              <span class="ide-score-label">AI fit</span>
+              <div class="ide-score-track" aria-hidden="true">
+                <div class="ide-score-fill fit" style="width:89%"></div>
+              </div>
+              <span class="ide-score-val">89%</span>
+            </div>
+            <div class="ide-score">
+              <span class="ide-score-label">Saturation</span>
+              <div class="ide-score-track" aria-hidden="true">
+                <div class="ide-score-fill sat-mid" style="width:42%"></div>
+              </div>
+              <span class="ide-score-val muted">42%</span>
+            </div>
+          </div>
+          <div class="ide-actions">
+            <button class="btn sm" onclick="go('queue')" aria-label="Promote to queue">Promote →</button>
+            <button class="ide-btn-keep" aria-label="Keep for later">Keep</button>
+            <button class="ide-btn-dismiss ide-dismiss-btn" aria-label="Dismiss idea">Dismiss</button>
+            <button class="ide-btn-merge ide-merge-btn right" aria-label="Merge with another idea">Merge</button>
+          </div>
+        </div>
+
+        <!-- ── Idea 7: Motion-transfer explained simply ───── -->
+        <div class="ide-idea-card" data-src="niche" data-ch="chn_deepdives">
+          <div class="ide-idea-top">
+            <div class="ide-idea-body">
+              <div class="ide-idea-title">Motion-transfer explained simply</div>
+              <div class="ide-idea-meta">
+                <span class="ide-src niche">From niche</span>
+                <span class="ide-ch-tag">🔬 Mira Deep Dives</span>
+              </div>
+            </div>
+          </div>
+          <div class="ide-scores">
+            <div class="ide-score">
+              <span class="ide-score-label">AI fit</span>
+              <div class="ide-score-track" aria-hidden="true">
+                <div class="ide-score-fill fit" style="width:76%"></div>
+              </div>
+              <span class="ide-score-val">76%</span>
+            </div>
+            <div class="ide-score">
+              <span class="ide-score-label">Saturation</span>
+              <div class="ide-score-track" aria-hidden="true">
+                <div class="ide-score-fill sat-low" style="width:27%"></div>
+              </div>
+              <span class="ide-score-val muted">27%</span>
+            </div>
+          </div>
+          <div class="ide-actions">
+            <button class="btn sm" onclick="go('queue')" aria-label="Promote to queue">Promote →</button>
+            <button class="ide-btn-keep" aria-label="Keep for later">Keep</button>
+            <button class="ide-btn-dismiss ide-dismiss-btn" aria-label="Dismiss idea">Dismiss</button>
+            <button class="ide-btn-merge ide-merge-btn right" aria-label="Merge with another idea">Merge</button>
+          </div>
+        </div>
+
+      </div><!-- /ide-ideas-list -->
+    </div><!-- /ide-section -->
+
+  </div><!-- /content -->
+</section>
+
+<!-- ── Phone share QR modal ────────────────────────────── -->
+<div class="ide-qr-overlay" id="ide-qr-overlay" role="dialog" aria-modal="true" aria-labelledby="ide-qr-title">
+  <div class="ide-qr-modal">
+    <h2 id="ide-qr-title">Share from phone</h2>
+    <p>Scan this code on any device to open a quick-capture page. Ideas land here instantly.</p>
+    <div class="ide-qr-placeholder" aria-label="QR code placeholder">&#x2588;&#x2588;</div>
+    <div class="row" style="justify-content:center;gap:0.75rem">
+      <button class="btn ghost sm" id="ide-qr-close">Close</button>
+      <button class="btn sm">Copy link</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Merge modal ───────────────────────────────────────── -->
+<div class="ide-merge-overlay" id="ide-merge-overlay" role="dialog" aria-modal="true" aria-labelledby="ide-merge-title">
+  <div class="ide-merge-modal">
+    <h2 id="ide-merge-title">Merge with another idea</h2>
+    <p>Select the idea to merge into — the two titles will be combined into one card.</p>
+    <select class="ide-merge-select" aria-label="Select idea to merge with">
+      <option value="">Choose an idea…</option>
+      <option>Nano-Banana image API — first look</option>
+      <option>Veo 3.1 vs local LTX — honest test</option>
+      <option>The $0 faceless stack, end to end</option>
+      <option>5 prompts that 10x your output</option>
+      <option>Local AI on a 16GB laptop?</option>
+      <option>Best free TTS in 2026</option>
+      <option>Motion-transfer explained simply</option>
+    </select>
+    <div class="row" style="gap:0.75rem">
+      <button class="btn" id="ide-merge-confirm">Merge</button>
+      <button class="btn ghost" id="ide-merge-close">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script data-screen="ideate">
+(function () {
+  /* ── Filter chips ───────────────────────────────────── */
+  var activeFilters = { src: 'all', ch: 'all' };
+
+  document.querySelectorAll('#ideate .ide-chip').forEach(function (chip) {
+    chip.addEventListener('click', function () {
+      var group = chip.dataset.filter;
+      var val   = chip.dataset.val;
+      activeFilters[group] = val;
+      document.querySelectorAll('#ideate .ide-chip[data-filter="' + group + '"]').forEach(function (c) {
+        c.classList.toggle('sel', c.dataset.val === val);
+      });
+      filterCards();
+    });
+  });
+
+  function filterCards() {
+    var cards   = document.querySelectorAll('#ide-ideas-list .ide-idea-card');
+    var visible = 0;
+    cards.forEach(function (card) {
+      var srcMatch = activeFilters.src === 'all' || card.dataset.src === activeFilters.src;
+      var chMatch  = activeFilters.ch  === 'all' || card.dataset.ch  === activeFilters.ch;
+      var show = srcMatch && chMatch && !card.classList.contains('ide-dismissed');
+      card.style.display = show ? '' : 'none';
+      if (show) visible++;
+    });
+    var countEl = document.getElementById('ide-inbox-count');
+    if (countEl) countEl.textContent = visible + (visible === 1 ? ' idea' : ' ideas');
+  }
+
+  /* ── Quick capture ──────────────────────────────────── */
+  var captureBtn   = document.getElementById('ide-capture-btn');
+  var captureInput = document.getElementById('ide-capture-input');
+  if (captureBtn && captureInput) {
+    function doCapture() {
+      var val = captureInput.value.trim();
+      if (!val) return;
+      var list = document.getElementById('ide-ideas-list');
+      var card = document.createElement('div');
+      card.className = 'ide-idea-card';
+      card.dataset.src = 'niche';
+      card.dataset.ch  = 'chn_aitools';
+      card.innerHTML = [
+        '<div class="ide-idea-top"><div class="ide-idea-body">',
+        '<div class="ide-idea-title">' + escHtml(val) + '</div>',
+        '<div class="ide-idea-meta">',
+        '<span class="ide-src niche">From niche</span>',
+        '<span class="ide-ch-tag">🛠️ Mira AI Tools</span>',
+        '</div></div></div>',
+        '<div class="ide-scores">',
+        '<div class="ide-score"><span class="ide-score-label">AI fit</span><div class="ide-score-track"><div class="ide-score-fill fit" style="width:0%"></div></div><span class="ide-score-val">—</span></div>',
+        '</div>',
+        '<div class="ide-actions">',
+        '<button class="btn sm" onclick="go(\'queue\')" aria-label="Promote to queue">Promote →</button>',
+        '<button class="ide-btn-keep" aria-label="Keep for later">Keep</button>',
+        '<button class="ide-btn-dismiss ide-dismiss-btn" aria-label="Dismiss idea">Dismiss</button>',
+        '<button class="ide-btn-merge ide-merge-btn right" aria-label="Merge with another idea">Merge</button>',
+        '</div>'
+      ].join('');
+      list.insertBefore(card, list.firstChild);
+      captureInput.value = '';
+      attachCardListeners(card);
+      filterCards();
+      card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+    captureBtn.addEventListener('click', doCapture);
+    captureInput.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') doCapture();
+    });
+  }
+
+  /* ── Reference paste ────────────────────────────────── */
+  var refBtn   = document.getElementById('ide-ref-btn');
+  var refInput = document.getElementById('ide-ref-input');
+  if (refBtn && refInput) {
+    refBtn.addEventListener('click', function () {
+      var val = refInput.value.trim();
+      if (!val) return;
+      refBtn.textContent = 'Analysing…';
+      refBtn.disabled = true;
+      setTimeout(function () {
+        refBtn.textContent = 'Analyse & seed';
+        refBtn.disabled = false;
+        refInput.value = '';
+        var seeds = [
+          { title: 'AI-generated video breakdown — what I learned', src: 'niche', ch: 'chn_deepdives', chLabel: '🔬 Mira Deep Dives' },
+          { title: 'Replicate this effect for free (no paid tools)', src: 'niche', ch: 'chn_aitools', chLabel: '🛠️ Mira AI Tools' },
+        ];
+        var list = document.getElementById('ide-ideas-list');
+        seeds.forEach(function (s) {
+          var card = document.createElement('div');
+          card.className = 'ide-idea-card';
+          card.dataset.src = s.src;
+          card.dataset.ch  = s.ch;
+          card.style.borderColor = 'var(--clay)';
+          card.innerHTML = [
+            '<div class="ide-idea-top"><div class="ide-idea-body">',
+            '<div class="ide-idea-title">' + escHtml(s.title) + '</div>',
+            '<div class="ide-idea-meta">',
+            '<span class="ide-src niche">From reference</span>',
+            '<span class="ide-ch-tag">' + s.chLabel + '</span>',
+            '</div></div></div>',
+            '<div class="ide-scores">',
+            '<div class="ide-score"><span class="ide-score-label">AI fit</span><div class="ide-score-track"><div class="ide-score-fill fit" style="width:82%"></div></div><span class="ide-score-val">82%</span></div>',
+            '<div class="ide-score"><span class="ide-score-label">Saturation</span><div class="ide-score-track"><div class="ide-score-fill sat-low" style="width:15%"></div></div><span class="ide-score-val muted">15%</span></div>',
+            '</div>',
+            '<div class="ide-actions">',
+            '<button class="btn sm" onclick="go(\'queue\')" aria-label="Promote to queue">Promote →</button>',
+            '<button class="ide-btn-keep" aria-label="Keep for later">Keep</button>',
+            '<button class="ide-btn-dismiss ide-dismiss-btn" aria-label="Dismiss idea">Dismiss</button>',
+            '<button class="ide-btn-merge ide-merge-btn right" aria-label="Merge with another idea">Merge</button>',
+            '</div>'
+          ].join('');
+          list.insertBefore(card, list.firstChild);
+          attachCardListeners(card);
+        });
+        filterCards();
+      }, 1800);
+    });
+  }
+
+  /* ── Run trends button ──────────────────────────────── */
+  var trendsBtn = document.getElementById('ide-run-trends-btn');
+  if (trendsBtn) {
+    trendsBtn.addEventListener('click', function () {
+      trendsBtn.textContent = 'Running…';
+      trendsBtn.disabled = true;
+      setTimeout(function () {
+        trendsBtn.textContent = 'Run trend research now';
+        trendsBtn.disabled = false;
+        var statusText = document.querySelector('#ideate .ide-status-text');
+        if (statusText) {
+          statusText.innerHTML = '<strong>Trend research</strong> just ran &nbsp;·&nbsp; n8n background job';
+        }
+      }, 2200);
+    });
+  }
+
+  /* ── Phone share QR modal ───────────────────────────── */
+  var qrOverlay = document.getElementById('ide-qr-overlay');
+  var phoneLink = document.getElementById('ide-phone-link');
+  var qrClose   = document.getElementById('ide-qr-close');
+  if (phoneLink && qrOverlay) {
+    phoneLink.addEventListener('click', function () { qrOverlay.classList.add('open'); });
+    phoneLink.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') qrOverlay.classList.add('open'); });
+  }
+  if (qrClose) qrClose.addEventListener('click', function () { qrOverlay.classList.remove('open'); });
+  if (qrOverlay) {
+    qrOverlay.addEventListener('click', function (e) { if (e.target === qrOverlay) qrOverlay.classList.remove('open'); });
+  }
+
+  /* ── Merge modal ────────────────────────────────────── */
+  var mergeOverlay = document.getElementById('ide-merge-overlay');
+  var mergeClose   = document.getElementById('ide-merge-close');
+  var mergeConfirm = document.getElementById('ide-merge-confirm');
+  if (mergeClose) mergeClose.addEventListener('click', function () { mergeOverlay.classList.remove('open'); });
+  if (mergeConfirm) mergeConfirm.addEventListener('click', function () { mergeOverlay.classList.remove('open'); });
+  if (mergeOverlay) {
+    mergeOverlay.addEventListener('click', function (e) { if (e.target === mergeOverlay) mergeOverlay.classList.remove('open'); });
+  }
+
+  /* ── Card-level dismiss / merge listeners ───────────── */
+  function attachCardListeners(card) {
+    var dismissBtn = card.querySelector('.ide-dismiss-btn');
+    if (dismissBtn) {
+      dismissBtn.addEventListener('click', function () {
+        card.style.transition = 'opacity 0.25s';
+        card.style.opacity = '0';
+        setTimeout(function () {
+          card.classList.add('ide-dismissed');
+          card.style.display = 'none';
+          filterCards();
+        }, 260);
+      });
+    }
+    var mergeBtn = card.querySelector('.ide-merge-btn');
+    if (mergeBtn && mergeOverlay) {
+      mergeBtn.addEventListener('click', function () { mergeOverlay.classList.add('open'); });
+    }
+  }
+
+  document.querySelectorAll('#ideate .ide-idea-card').forEach(attachCardListeners);
+
+  /* ── Escape key closes modals ───────────────────────── */
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+      if (qrOverlay)    qrOverlay.classList.remove('open');
+      if (mergeOverlay) mergeOverlay.classList.remove('open');
+    }
+  });
+
+  /* ── Utility ────────────────────────────────────────── */
+  function escHtml(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+})();
+</script>

@@ -1,0 +1,66 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Package manager: npm (package-lock.json) is the source of truth for CI +
+# release builds. A stray committed pnpm-lock.yaml makes tauri-action pick
+# pnpm (not installed on the runners) and breaks the release build.
+pnpm-lock.yaml
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Rust build artifacts
+src-tauri/target/
+
+# Environment
+.env
+
+# Internal
+.claude/
+.internal/
+CLAUDE.md
+*.private.*
+
+# Temp
+*.tmp
+scripts/*.py
+
+# Test artifacts
+codex-api/
+test-codex.txt
+
+# OS
+Thumbs.db
+analytics/
+producthunt-launch.md
+
+# Dev preview artifacts
+.preview-mobile/
+.claude/plans/
+BLOCKED.md
+
+# Discord secrets (added 2026-04-21)
+.env.webhooks
+discord_invite.txt
+carl-bot-setup.md
+app-discord-integration.md
+SETUP_REPORT.md

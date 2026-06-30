@@ -1,0 +1,144 @@
+# Locally Uncensored — Full Reference
+
+> Free, open-source (AGPL-3.0) desktop app that runs AI locally on Windows and Linux: chat with 20+ providers, generate images and video via ComfyUI, and code with a built-in agent. No cloud, no telemetry, no account.
+
+Last updated: 2026-06-15. Current version: v2.5.4 (June 2026).
+
+This file is the full, citable reference for Locally Uncensored. Facts are stated plainly so they can be quoted directly.
+
+## What Locally Uncensored Is
+
+Locally Uncensored is a desktop application for running AI models on your own hardware. It combines four things most local-AI tools keep separate: AI chat, a coding agent, image generation, and video generation — in one interface. It is free and open source under AGPL-3.0. It runs 100% locally by default; the only outbound traffic without explicit opt-in is the GitHub Releases auto-update check. Cloud providers are optional and use your own API keys.
+
+- Name: Locally Uncensored (abbreviated LU)
+- Version: v2.5.4 (June 2026)
+- License: AGPL-3.0 (free, open source)
+- Platforms: Windows 10/11 and Linux (deb, rpm, AppImage). macOS is not supported yet.
+- Website: https://locallyuncensored.com
+- Source: https://github.com/PurpleDoubleD/locally-uncensored
+- Author: PurpleDoubleD
+- Tech stack: React 19, TypeScript, Tailwind CSS 4, Vite 8, Tauri v2 (Rust backend)
+- Price: free
+
+## Frequently Asked Questions
+
+### What is Locally Uncensored?
+A free, open-source desktop app for running AI locally. It combines chat (20+ provider presets), a coding agent with 14 tools, image generation via ComfyUI (FLUX 2, Juggernaut XL, Z-Image, SDXL), and video generation (Wan 2.1, HunyuanVideo, LTX 2.3, FramePack F1) in one interface. AGPL-3.0 licensed.
+
+### Does it support Qwen 3.6, GPT-OSS and GLM-4.7?
+Yes. Qwen 3.6 (35B MoE) has day-0 integration with vision, agentic coding, thinking preservation and 256K context. GPT-OSS-120B and GPT-OSS-20B run via Ollama. GLM-4.7 Flash is supported through Ollama. DeepSeek R1, Llama 4, Gemma 4, Mistral Small 3 and Phi 4 are also ready.
+
+### Can I use it as a ChatGPT or Claude alternative?
+Yes. Locally Uncensored works as a ChatGPT and Claude alternative that runs on your own hardware. Use Qwen 3.6, GPT-OSS, GLM-4.7, DeepSeek R1, Llama 4 or Gemma 4 instead, or add cloud providers (OpenAI, Anthropic, OpenRouter, Groq) alongside the local stack.
+
+### Is it really free and offline?
+Yes. After setup and model download, no internet is needed for the local providers. There are no accounts, no telemetry, and no usage limits. Cloud providers are optional; the core runs entirely on your hardware.
+
+### How is this different from Open WebUI, LM Studio, Jan or Msty?
+Those tools handle text chat. Locally Uncensored adds a coding agent with 14 MCP tools, image generation via ComfyUI, video creation, mobile remote access via LAN or Cloudflare Tunnel, A/B model comparison, local benchmarking, granular permissions, file upload with vision, and thinking mode — all in one app.
+
+### What hardware do I need?
+Text chat needs 8 GB RAM. Image generation needs an NVIDIA GPU with 8+ GB VRAM (FLUX, Juggernaut XL, Z-Image). Video generation needs 10-12 GB VRAM (Wan 1.3B, HunyuanVideo, LTX 2.3). Image-to-video with FramePack F1 runs on just 6 GB. Windows 10/11 and Linux are supported.
+
+### What does "uncensored" mean?
+It refers to abliterated AI models with artificial refusal behaviour removed. The model responds without refusing or adding disclaimers. Combined with fully local execution, conversations stay private on your machine.
+
+### Does remote access leak data?
+Only if you explicitly dispatch a chat over LAN or Cloudflare Tunnel. Remote access is opt-in, gated behind a 6-digit passcode, and shows visible device connection status. There are no background uploads and no telemetry.
+
+### Can I run it on macOS?
+Not yet. Windows 10/11 and Linux are supported now. macOS is on the roadmap but not promised. The source is AGPL-3.0, so it can be built for other platforms.
+
+### Is there a mobile app?
+Yes. The desktop app hosts a full mobile web app over LAN or Cloudflare Tunnel. From a phone you get chat, Coding Agent, 14 agent tools, plugins and personas.
+
+### Which AI backends does it detect?
+It auto-detects 12 local backends: Ollama, LM Studio, vLLM, KoboldCpp, llama.cpp, LocalAI, Jan, TabbyAPI, GPT4All, Aphrodite, SGLang and TGI. ComfyUI is used for image and video generation. If none are running, the setup wizard offers one-click install links.
+
+### How long does setup take?
+About five minutes. There is no Docker, terminal or config file. Run the installer, let the wizard scan for backends, pick a model, and start.
+
+## Features
+
+- Plug-and-play setup wizard that auto-detects 12 local backends
+- 20+ provider presets (local and cloud)
+- One-click in-app installers for Ollama and ComfyUI
+- 75+ one-click model downloads with hardware-aware recommendations
+- VRAM tier filter: Lightweight (≤10 GB), Mid-Range (10-16 GB), High-End (>16 GB) across text, image and video models
+- Coding Agent with live token streaming, apply-patch, file tree
+- Claude Code CLI integration
+- Agent Mode with 14 tools, parallel execution, MCP integration, sub-agent delegation, budget caps
+- Image generation via ComfyUI (FLUX 2 Klein, FLUX.1, Juggernaut XL, Z-Image Turbo, ERNIE-Image, SDXL, SD 3.5)
+- Video generation (Wan 2.1, Wan 2.2, HunyuanVideo 1.5, LTX 2.3, FramePack F1, AnimateDiff, CogVideoX)
+- Image-to-image with denoise control; image-to-video (FramePack F1 on 6 GB VRAM)
+- Mobile remote access via LAN or Cloudflare Tunnel with 6-digit passcode and QR setup
+- A/B model compare and local benchmark
+- Memory system and Document Chat (RAG) with local embeddings (nomic-embed-text), no cloud
+- Voice: speech-to-text (Whisper) and text-to-speech
+- 25+ built-in AI personas plus Caveman Mode (lite/full/ultra terseness)
+- Thinking mode with universal tag stripping
+- File upload with vision support
+- Granular permission system across 7 tool categories
+- Auto-update over a signed NSIS channel (Windows)
+- 100% offline and private by default; AGPL-3.0 open source
+
+## Supported Chat Models
+- Qwen 3.6: 27B dense and 35B MoE — vision, agentic coding, thinking preservation, 256K context, day-0 support
+- Qwen 3.5: 9B / 27B / 35B MoE
+- Qwen 3-Coder: 30B and Next 80B
+- Gemma 4: 31B / 26B MoE / E4B / E2B — native vision and tools, Apache 2.0
+- GPT-OSS: 120B and 20B (via Ollama)
+- GLM 4.7 Flash: 30B; GLM 5.1: 754B MoE
+- DeepSeek R1: distilled 8B / 14B / 32B / Llama 70B
+- Llama 4 Scout (16x17B MoE), Llama 3.3
+- Mistral Small 3, Phi 4
+- Abliterated/uncensored variants: Hermes 3, Llama 3.1 Abliterated, Qwen 3 14B Abliterated
+
+## Supported Image Models (via ComfyUI)
+- FLUX 2 Klein, FLUX.1 (8-10 GB VRAM)
+- Z-Image Turbo — explicitly uncensored (10-16 GB VRAM)
+- Juggernaut XL, Dreamshaper, RealVis (SDXL finetunes)
+- ERNIE-Image (Baidu, Turbo and Base)
+- Stable Diffusion XL, SD 3.5
+
+## Supported Video Models (via ComfyUI)
+- Wan 2.1 (1.3B and 14B), Wan 2.2
+- HunyuanVideo 1.5
+- LTX 2.3 (fast text-to-video on modest hardware)
+- FramePack F1 (image-to-video on 6 GB VRAM)
+- AnimateDiff Lightning, CogVideoX, SVD
+
+## How Locally Uncensored Compares
+- vs Open WebUI: both are open-source Ollama frontends. Locally Uncensored adds image generation, video generation, an agent mode, mobile remote access and A/B compare. Open WebUI is chat-only.
+- vs LM Studio: Locally Uncensored is open source (AGPL-3.0) and adds image, video, a coding agent and mobile access. LM Studio is closed-source and chat-only.
+- vs Jan: Locally Uncensored is a lightweight Tauri app with built-in image and video generation. Jan is a polished Electron chat client with cloud API support.
+- vs GPT4All: Locally Uncensored is an all-in-one creative suite. GPT4All is a popular local chatbot with document RAG.
+- vs SillyTavern: Locally Uncensored has a modern Tauri UI, built-in image/video generation and 12-backend auto-detect. SillyTavern is roleplay-focused.
+- vs KoboldCpp: Locally Uncensored offers full ComfyUI image/video generation. KoboldCpp is a strong creative-writing backend.
+- vs Msty: Locally Uncensored is fully open source with creative AI. Msty is a proprietary multi-provider chat hub.
+
+## Hardware Requirements
+- Minimum: 8 GB RAM for text chat with small models (Llama 3.2 1B, Qwen 2.5 3B)
+- Image generation: NVIDIA GPU with 8+ GB VRAM (FLUX, Juggernaut XL)
+- Video generation: 10-12 GB VRAM (Wan 1.3B, LTX 2.3)
+- Image-to-video: 6 GB VRAM minimum (FramePack F1)
+- Best in class: 24 GB+ VRAM for Qwen 3.6 35B MoE and 35B+ chat models
+
+## Installation
+1. Download the signed installer for Windows or Linux from GitHub Releases (https://github.com/PurpleDoubleD/locally-uncensored/releases/latest). One-click install — no Docker, no terminal, no config files.
+2. On first launch, the setup wizard scans for 12 local AI backends and offers one-click install links if none are running.
+3. Pick a model from the Model Manager and start chatting. Switch to the Coding Agent for coding, or open Create to generate images and video. Add cloud providers in Settings to mix local and cloud.
+
+## Privacy
+- 100% local by default
+- No telemetry, no analytics, no model pings home
+- Only outbound traffic without explicit opt-in: GitHub Releases auto-update checks
+- Cloud providers optional, bring your own key (your keys, your data)
+- Data lives in %APPDATA%/Locally Uncensored on Windows (or the equivalent on Linux)
+
+## Links
+- Homepage: https://locallyuncensored.com
+- Getting Started Guide: https://locallyuncensored.com/guide/
+- Blog: https://locallyuncensored.com/blog/
+- Source code: https://github.com/PurpleDoubleD/locally-uncensored
+- Discord: https://locallyuncensored.com/discord

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=block" rel="stylesheet" />
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 360px; height: 640px; overflow: hidden;
+    background: #0F172A; font-family: "Inter", system-ui, sans-serif; color: #F8FAFC; }
+  #root { position: absolute; inset: 0; }
+  .bg { position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse at 30% 25%, rgba(124,58,237,0.20) 0%, transparent 60%),
+      radial-gradient(ellipse at 75% 70%, rgba(236,72,153,0.16) 0%, transparent 55%),
+      linear-gradient(145deg, #0F172A 0%, #131c33 60%, #0F172A 100%); }
+  .card { position: absolute; inset: 0; display: flex; align-items: center;
+    justify-content: center; padding: 8% 9%; opacity: 0; }
+  .card-text { font-weight: 900; line-height: 1.12; text-align: center;
+    font-size: 34px;
+    letter-spacing: -0.02em;
+    text-shadow: 0 6px 28px rgba(0,0,0,0.45); }
+  #card-0 .card-text { color: #22D3EE; }
+</style>
+</head>
+<body>
+  <div id="root" data-composition-id="main" data-width="360" data-height="640"
+       data-start="0" data-duration="6.0">
+    <div class="bg"></div>
+    <div class="stage clip" data-start="0" data-duration="6.0">
+      <div class="card" id="card-0" data-start="0.0" data-duration="2.0"><div class="card-text">Here is the truth about two free AI tools.</div></div>
+      <div class="card" id="card-1" data-start="2.0" data-duration="2.0"><div class="card-text">Second, two free AI tools removes friction from your daily workflow.</div></div>
+      <div class="card" id="card-2" data-start="4.0" data-duration="2.0"><div class="card-text">Third, almost no one knows this shortcut in two free AI tools.</div></div>
+    </div>
+  </div>
+  <script>
+    window.__timelines = window.__timelines || {};
+    const tl = gsap.timeline({ paused: true });
+    tl.fromTo("#card-0", {opacity:0, y:40}, {opacity:1, y:0, duration:0.400, ease:"power2.out"}, 0.0);
+    tl.to("#card-0", {opacity:0, y:-30, duration:0.400, ease:"power2.in"}, 1.6);
+    tl.fromTo("#card-1", {opacity:0, y:40}, {opacity:1, y:0, duration:0.400, ease:"power2.out"}, 2.0);
+    tl.to("#card-1", {opacity:0, y:-30, duration:0.400, ease:"power2.in"}, 3.6);
+    tl.fromTo("#card-2", {opacity:0, y:40}, {opacity:1, y:0, duration:0.400, ease:"power2.out"}, 4.0);
+    tl.to("#card-2", {opacity:0, y:-30, duration:0.400, ease:"power2.in"}, 5.6);
+    window.__timelines["main"] = tl;
+  </script>
+</body>
+</html>

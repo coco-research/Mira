@@ -1,0 +1,473 @@
+<style data-screen="channels">
+
+/* ── Layout helpers ───────────────────────────────────────────── */
+.chn-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 28px;
+}
+
+/* Section micro-label inside a card */
+.chn-section-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  margin: 12px 0 5px;
+}
+
+/* Format/type badge row */
+.chn-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 6px;
+}
+
+/* Thin horizontal rule inside card */
+.chn-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 12px 0 0;
+}
+
+/* ── Engine overrides box ─────────────────────────────────────── */
+.chn-engines-box {
+  background: var(--panel);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 12px;
+  color: var(--ink-2);
+  line-height: 1.7;
+}
+.chn-engines-box b { color: var(--ink); font-weight: 500; }
+
+/* ── Mini stats strip ─────────────────────────────────────────── */
+.chn-stats-row {
+  display: flex;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.chn-stat {
+  flex: 1;
+  padding: 7px 8px;
+  text-align: center;
+  border-right: 1px solid var(--border);
+}
+.chn-stat:last-child { border-right: none; }
+.chn-stat .k {
+  font-family: var(--serif);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+  display: block;
+  line-height: 1.2;
+}
+.chn-stat .l {
+  font-size: 10px;
+  color: var(--ink-2);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+/* ── Collaborator row ─────────────────────────────────────────── */
+.chn-collab-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+.chn-avatar {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: var(--clay);
+  color: #fff;
+  font-size: 11px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex: none;
+}
+.chn-avatar.empty {
+  background: var(--panel);
+  color: var(--ink-2);
+  border: 1px dashed var(--border-strong);
+}
+
+/* ── Brand kit chips ──────────────────────────────────────────── */
+.chn-brand-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.chn-chip {
+  font-size: 11px;
+  padding: 3px 9px;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+
+/* Palette swatches */
+.chn-palette {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 5px;
+}
+.chn-swatch {
+  width: 14px; height: 14px;
+  border-radius: 3px;
+  border: 1px solid rgba(0,0,0,.1);
+  display: inline-block;
+  flex: none;
+}
+
+/* ── Card action buttons ──────────────────────────────────────── */
+.chn-actions {
+  display: flex;
+  gap: 7px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+/* ── Hindi-dub affordance row ─────────────────────────────────── */
+.chn-hi-row {
+  margin-top: 16px;
+  padding: 10px 14px;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--ink-2);
+}
+.chn-hi-row strong { color: var(--ink); }
+
+</style>
+
+<section class="page" id="channels">
+  <div class="content">
+
+    <!-- ── Page header ─────────────────────────────────────────── -->
+    <div class="chn-header">
+      <div>
+        <h1>Channels</h1>
+        <p class="lede">Define each channel once — format, brand kit, trust level, and length band constrain Studio lanes and the Review gate.</p>
+      </div>
+      <button class="btn">+ New channel</button>
+    </div>
+
+    <!-- ── Channel cards ───────────────────────────────────────── -->
+    <div class="grid cols-2">
+
+      <!-- ════════════════════════════ AI Tools ════════════════ -->
+      <div class="card ch-card">
+
+        <div class="ch-top">
+          <span class="ch-emoji">🛠️</span>
+          <div style="flex:1">
+            <div class="ch-title">Mira AI Tools</div>
+            <div class="chn-badges">
+              <span class="tag en">EN</span>
+              <span class="badge">Faceless</span>
+              <span class="badge">Short · 9:16</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="chn-section-label">Channel identity</div>
+        <div class="ch-meta">
+          <div><b>Niche</b> Free AI tools &amp; tips — tools that feel "too good to be free"</div>
+          <div><b>Voice</b> edge-tts EN-US-GuyNeural · direct, punchy delivery</div>
+          <div><b>Visual style</b> Dark UI mockups, screen-capture moments, AI-gen tech visuals</div>
+          <div><b>Cadence</b> 1 video / day</div>
+          <div><b>Length</b> 30–60 s · hard cap 75 s (ffprobe gate)</div>
+        </div>
+
+        <div class="chn-divider"></div>
+
+        <div class="chn-section-label">Engine overrides</div>
+        <div class="chn-engines-box">
+          <b>Script:</b> LM Studio (local) &nbsp;·&nbsp;
+          <b>Video:</b> Veo quota (hero clips) &nbsp;·&nbsp;
+          <b>Music:</b> Pixabay upbeat tech &nbsp;·&nbsp;
+          <b>Brand kit:</b> default
+        </div>
+
+        <div class="chn-section-label">Stats</div>
+        <div class="chn-stats-row">
+          <div class="chn-stat"><span class="k">2.8k</span><span class="l">Subs</span></div>
+          <div class="chn-stat"><span class="k">143</span><span class="l">Posts</span></div>
+          <div class="chn-stat"><span class="k">8.2k</span><span class="l">Avg views</span></div>
+        </div>
+
+        <div class="chn-section-label">Collaborator</div>
+        <div class="chn-collab-row">
+          <div class="chn-avatar" aria-label="Rijul">R</div>
+          <span>You (Rijul)</span>
+        </div>
+
+        <div class="chn-section-label">Brand kit</div>
+        <div class="chn-brand-row">
+          <span class="chn-chip">⏱ Intro 3s sting</span>
+          <span class="chn-chip">🏁 Outro 5s CTA card</span>
+          <span class="chn-chip">🔖 Watermark bottom-right</span>
+          <span class="chn-chip">Aa Inter Bold · white + shadow</span>
+          <span class="chn-chip">🎵 Upbeat tech (Pixabay)</span>
+        </div>
+        <div class="chn-palette" title="Brand palette">
+          <span class="chn-swatch" style="background:#141413" title="#141413 ink"></span>
+          <span class="chn-swatch" style="background:#CC785C" title="#CC785C clay accent"></span>
+          <span class="chn-swatch" style="background:#F0EEE6" title="#F0EEE6 panel"></span>
+          <span class="chn-swatch" style="background:#4a6a8a" title="#4a6a8a steel-blue"></span>
+          <span class="muted" style="font-size:11px;margin-left:3px">palette</span>
+        </div>
+
+        <div class="toggle-row">
+          <label class="switch" aria-label="Auto-publish toggle for AI Tools">
+            <input type="checkbox" id="trust-aitools">
+            <span class="slider"></span>
+          </label>
+          <div class="toggle-label">
+            <strong>Auto-publish</strong>
+            <small>Every video goes through Review</small>
+          </div>
+        </div>
+
+        <div class="chn-actions">
+          <button class="btn ghost sm">Edit</button>
+          <button class="btn ghost sm">Brand kit</button>
+        </div>
+
+      </div><!-- /AI Tools -->
+
+      <!-- ════════════════════════════ Deep Dives ═══════════════ -->
+      <div class="card ch-card">
+
+        <div class="ch-top">
+          <span class="ch-emoji">🔬</span>
+          <div style="flex:1">
+            <div class="ch-title">Mira Deep Dives</div>
+            <div class="chn-badges">
+              <span class="tag en">EN</span>
+              <span class="badge">Faceless</span>
+              <span class="badge">Long · 16:9</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="chn-section-label">Channel identity</div>
+        <div class="ch-meta">
+          <div><b>Niche</b> AI explainers &amp; honest tests — "I actually ran it, here's what happened"</div>
+          <div><b>Voice</b> edge-tts EN-US-AriaNeural · calm, analytical, measured pace</div>
+          <div><b>Visual style</b> Documentary-style, comparison splits, data charts, lower-thirds</div>
+          <div><b>Cadence</b> 2 videos / week</div>
+          <div><b>Length</b> 3–5 min · natural cut (no hard cap)</div>
+        </div>
+
+        <div class="chn-divider"></div>
+
+        <div class="chn-section-label">Engine overrides</div>
+        <div class="chn-engines-box">
+          <b>Script:</b> LM Studio &nbsp;·&nbsp;
+          <b>Voice:</b> AriaNeural (warm) &nbsp;·&nbsp;
+          <b>Images:</b> local SDXL-Flux &nbsp;·&nbsp;
+          <b>Production:</b> OpenMontage explainer pipeline
+        </div>
+
+        <div class="chn-section-label">Stats</div>
+        <div class="chn-stats-row">
+          <div class="chn-stat"><span class="k">1.4k</span><span class="l">Subs</span></div>
+          <div class="chn-stat"><span class="k">31</span><span class="l">Posts</span></div>
+          <div class="chn-stat"><span class="k">12.6k</span><span class="l">Avg views</span></div>
+        </div>
+
+        <div class="chn-section-label">Collaborator</div>
+        <div class="chn-collab-row">
+          <div class="chn-avatar empty" aria-label="Unassigned">—</div>
+          <span class="muted">Unassigned</span>
+        </div>
+
+        <div class="chn-section-label">Brand kit</div>
+        <div class="chn-brand-row">
+          <span class="chn-chip">⏱ Intro 5s ambient opener</span>
+          <span class="chn-chip">🏁 Outro 8s link card</span>
+          <span class="chn-chip">🔖 Lower-third logo</span>
+          <span class="chn-chip">Aa Newsreader · beige tone</span>
+          <span class="chn-chip">🎵 Contemplative ambient (Freesound)</span>
+        </div>
+        <div class="chn-palette" title="Brand palette">
+          <span class="chn-swatch" style="background:#141413" title="#141413 ink"></span>
+          <span class="chn-swatch" style="background:#F0EEE6" title="#F0EEE6 warm paper"></span>
+          <span class="chn-swatch" style="background:#6a8f5f" title="#6a8f5f sage green"></span>
+          <span class="chn-swatch" style="background:#6b6b66" title="#6b6b66 secondary ink"></span>
+          <span class="muted" style="font-size:11px;margin-left:3px">palette</span>
+        </div>
+
+        <div class="toggle-row">
+          <label class="switch" aria-label="Auto-publish toggle for Deep Dives">
+            <input type="checkbox" id="trust-deepdives">
+            <span class="slider"></span>
+          </label>
+          <div class="toggle-label">
+            <strong>Auto-publish</strong>
+            <small>Every video goes through Review</small>
+          </div>
+        </div>
+
+        <div class="chn-actions">
+          <button class="btn ghost sm">Edit</button>
+          <button class="btn ghost sm">Brand kit</button>
+        </div>
+
+      </div><!-- /Deep Dives -->
+
+      <!-- ════════════════════════════ Quick Wins ═══════════════ -->
+      <div class="card ch-card">
+
+        <div class="ch-top">
+          <span class="ch-emoji">⚡</span>
+          <div style="flex:1">
+            <div class="ch-title">Mira Quick Wins</div>
+            <div class="chn-badges">
+              <span class="tag en">EN</span>
+              <span class="badge">Faceless</span>
+              <span class="badge">Short · 9:16</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="chn-section-label">Channel identity</div>
+        <div class="ch-meta">
+          <div><b>Niche</b> 1-tip productivity shorts — one actionable hack, 30 seconds, get out</div>
+          <div><b>Voice</b> edge-tts EN-US-RyanNeural · fast-paced, high-energy</div>
+          <div><b>Visual style</b> Bold text cards, black + amber, punchy cut rhythm, no fluff</div>
+          <div><b>Cadence</b> 1 video / day</div>
+          <div><b>Length</b> 30–45 s <em style="color:var(--ink-2);font-style:normal">· auto lane, no extra cap</em></div>
+        </div>
+
+        <div class="chn-divider"></div>
+
+        <div class="chn-section-label">Engine overrides</div>
+        <div class="chn-engines-box">
+          <b>Script:</b> LM Studio &nbsp;·&nbsp;
+          <b>Video:</b> ComfyUI LTX Mac (volume) &nbsp;·&nbsp;
+          <b>Production:</b> MoneyPrinterTurbo headless &nbsp;·&nbsp;
+          <b>Music:</b> Pixabay energetic
+        </div>
+
+        <div class="chn-section-label">Stats <span class="badge free" style="vertical-align:middle;margin-left:4px">auto</span></div>
+        <div class="chn-stats-row">
+          <div class="chn-stat"><span class="k">6.2k</span><span class="l">Subs</span></div>
+          <div class="chn-stat"><span class="k">167</span><span class="l">Posts</span></div>
+          <div class="chn-stat"><span class="k">22.4k</span><span class="l">Avg views</span></div>
+        </div>
+
+        <div class="chn-section-label">Collaborator</div>
+        <div class="chn-collab-row">
+          <div class="chn-avatar" aria-label="Rijul">R</div>
+          <span>You (Rijul)</span>
+        </div>
+
+        <div class="chn-section-label">Brand kit</div>
+        <div class="chn-brand-row">
+          <span class="chn-chip">⏱ No intro (straight cut)</span>
+          <span class="chn-chip">🏁 Outro 3s end card</span>
+          <span class="chn-chip">🔖 Corner badge ⚡QW</span>
+          <span class="chn-chip">Aa Inter ExtraBold · yellow outline</span>
+          <span class="chn-chip">🎵 Energetic upbeat (Pixabay)</span>
+        </div>
+        <div class="chn-palette" title="Brand palette">
+          <span class="chn-swatch" style="background:#141413" title="#141413 ink"></span>
+          <span class="chn-swatch" style="background:#c79a3e" title="#c79a3e amber"></span>
+          <span class="chn-swatch" style="background:#faf9f5" title="#faf9f5 paper"></span>
+          <span class="chn-swatch" style="background:#CC785C" title="#CC785C clay"></span>
+          <span class="muted" style="font-size:11px;margin-left:3px">palette</span>
+        </div>
+
+        <div class="toggle-row">
+          <label class="switch" aria-label="Auto-publish toggle for Quick Wins">
+            <input type="checkbox" id="trust-quickwins" checked>
+            <span class="slider"></span>
+          </label>
+          <div class="toggle-label" id="trust-quickwins-label">
+            <strong style="color:var(--green)">Auto-publish ON</strong>
+            <small>Auto-publishes · still logged in Review (Audit tab)</small>
+          </div>
+        </div>
+
+        <div class="chn-actions">
+          <button class="btn ghost sm">Edit</button>
+          <button class="btn ghost sm">Brand kit</button>
+        </div>
+
+      </div><!-- /Quick Wins -->
+
+    </div><!-- /grid.cols-2 -->
+
+    <!-- ── Hindi dub affordance ─────────────────────────────────── -->
+    <div class="chn-hi-row">
+      <span class="tag hi">HI</span>
+      <span>
+        <strong>Hindi dub</strong> — occasional dub of a proven English top-performer only, not a separate channel.
+        Routed automatically in Studio using <span class="badge metered">Sarvam TTS</span> when selected.
+        Keeps the fleet under the per-template cap; avoids fragmenting audience attention.
+      </span>
+    </div>
+
+    <!-- ── Policy note ──────────────────────────────────────────── -->
+    <div class="note" style="margin-top:14px">
+      <strong>Per-channel differentiation is a monetization requirement, not a nicety.</strong>
+      YouTube's policy explicitly targets "content that's easily replicable at scale" and
+      "mass-produced content using a similar or unoriginal template across multiple channels" —
+      the exact pattern a fleet of AI channels can fall into.
+      Each Mira channel must maintain a <em>distinct niche, brand identity, voice, and editorial angle</em> so
+      no two channels read as the same template side-by-side.
+      AI Tools (discovery angle, punchy shorts), Deep Dives (honest long-form tests), and Quick Wins
+      (single-tip productivity, auto volume) are intentionally different formats, tones, visual languages,
+      and cadences. Enforcement is network-level: one demonetized channel can endanger the rest
+      if they appear clearly related and templated. Keep them genuinely separate.
+    </div>
+
+  </div><!-- /content -->
+</section>
+
+<script data-screen="channels">
+(function () {
+  'use strict';
+
+  function updateToggleLabel(input) {
+    var row   = input.closest('.toggle-row');
+    var label = row.querySelector('.toggle-label strong');
+    var sub   = row.querySelector('.toggle-label small');
+    if (input.checked) {
+      label.textContent  = 'Auto-publish ON';
+      label.style.color  = 'var(--green)';
+      sub.textContent    = 'Auto-publishes · still logged in Review (Audit tab)';
+    } else {
+      label.textContent  = 'Auto-publish';
+      label.style.color  = '';
+      sub.textContent    = 'Every video goes through Review';
+    }
+  }
+
+  document.querySelectorAll('#channels .switch input').forEach(function (sw) {
+    sw.addEventListener('change', function () { updateToggleLabel(this); });
+  });
+
+  // "+ New channel" stub — deep-links back to channels (future: open modal)
+  var newBtn = document.querySelector('#channels .btn:not(.ghost)');
+  if (newBtn) {
+    newBtn.addEventListener('click', function () {
+      if (typeof go === 'function') go('channels');
+    });
+  }
+}());
+</script>

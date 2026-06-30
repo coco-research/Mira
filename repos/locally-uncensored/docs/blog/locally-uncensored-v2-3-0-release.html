@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Locally Uncensored v2.3.0 — ComfyUI Plug &amp; Play Release</title>
+<meta name="description" content="v2.3.0 release notes: ComfyUI auto-detection, one-click image and video model bundles, image-to-image and image-to-video workflows, VRAM-aware recommendations.">
+<meta property="og:title" content="Locally Uncensored v2.3.0 — ComfyUI Plug & Play Release">
+<meta property="og:description" content="v2.3.0 release notes: ComfyUI auto-detection, one-click model bundles, image-to-image and image-to-video workflows, VRAM-aware recommendations.">
+<meta property="og:image" content="https://raw.githubusercontent.com/PurpleDoubleD/locally-uncensored/master/docs/social-preview.png">
+<meta property="og:url" content="https://locallyuncensored.com/blog/locally-uncensored-v2-3-0-release.html">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2026-04-10">
+<meta property="article:author" content="PurpleDoubleD">
+<meta property="article:tag" content="Release">
+<meta property="article:tag" content="ComfyUI">
+<meta property="article:tag" content="Image Generation">
+<meta property="article:tag" content="Video Generation">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Locally Uncensored v2.3.0 — ComfyUI Plug & Play Release">
+<meta name="twitter:description" content="v2.3.0 release notes: ComfyUI auto-detection, one-click model bundles, image-to-image and image-to-video workflows.">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/PurpleDoubleD/locally-uncensored/master/docs/social-preview.png">
+<link rel="canonical" href="https://locallyuncensored.com/blog/locally-uncensored-v2-3-0-release.html">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#0a0a0a">
+<link rel="icon" href="../favicon.png">
+<!-- Privacy: No external fonts loaded. Using system fonts. -->
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","headline":"v2.3.0 — ComfyUI Plug & Play, Image-to-Video, and 20 Model Bundles","description":"Locally Uncensored v2.3.0 brings ComfyUI auto-detection, one-click model bundles, Image-to-Video on 6 GB VRAM, Z-Image uncensored generation, and GLM 5.1 support.","image":"https://raw.githubusercontent.com/PurpleDoubleD/locally-uncensored/master/docs/social-preview.png","datePublished":"2026-04-10","dateModified":"2026-04-10","author":{"@type":"Person","name":"PurpleDoubleD","url":"https://github.com/PurpleDoubleD"},"publisher":{"@type":"Organization","name":"Locally Uncensored","url":"https://locallyuncensored.com/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://locallyuncensored.com/blog/locally-uncensored-v2-3-0-release.html"},"keywords":"ComfyUI plug and play, local image generation, image to video, FramePack, Z-Image, GLM 5.1, model bundles, locally uncensored"}
+</script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0a;--bg-subtle:#111;--bg-card:#161616;--border:#222;--border-hover:#333;--text:#ededed;--text-secondary:#888;--text-tertiary:#555;--accent:#8b5cf6;--accent-dim:rgba(139,92,246,0.08);--radius:12px;--font:'Inter',system-ui,-apple-system,sans-serif}
+body{font-family:var(--font);background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;line-height:1.6}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+::selection{background:var(--accent);color:#fff}
+
+nav{position:fixed;top:0;width:100%;padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;background:rgba(10,10,10,0.8);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);z-index:100}
+.nav-left{display:flex;align-items:center;gap:32px}
+.nav-logo{font-weight:700;font-size:15px;letter-spacing:-0.3px;display:flex;align-items:center;gap:8px;color:var(--text)}
+.nav-logo:hover{text-decoration:none}
+.nav-logo svg{width:18px;height:18px;opacity:0.7}
+.nav-links{display:flex;gap:24px}
+.nav-links a{font-size:14px;color:var(--text-secondary);transition:color 0.15s}
+.nav-links a:hover{color:var(--text);text-decoration:none}
+.nav-links a.active{color:var(--text)}
+.nav-right{display:flex;align-items:center;gap:12px}
+.btn-nav{font-size:13px;font-weight:500;padding:6px 14px;border-radius:8px;border:1px solid var(--border);color:var(--text-secondary);transition:all 0.15s;background:transparent;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.btn-nav:hover{border-color:var(--border-hover);color:var(--text);text-decoration:none}
+.btn-nav-primary{background:#fff;color:#000;border-color:#fff}
+.btn-nav-primary:hover{opacity:0.9}
+
+.container{max-width:720px;margin:0 auto;padding:120px 24px 80px}
+
+.breadcrumb{font-size:13px;color:var(--text-tertiary);margin-bottom:32px}
+.breadcrumb a{color:var(--text-secondary);border-bottom:1px solid var(--border)}
+.breadcrumb a:hover{color:var(--text);text-decoration:none}
+
+.post-meta{display:flex;align-items:center;gap:12px;margin-bottom:24px;font-size:13px;color:var(--text-tertiary)}
+.post-tag{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent-dim);color:var(--accent);font-size:12px;font-weight:500}
+
+article h1{font-size:clamp(28px,4vw,40px);font-weight:700;letter-spacing:-1px;line-height:1.2;margin-bottom:24px}
+article h2{font-size:24px;font-weight:600;letter-spacing:-0.5px;margin-top:48px;margin-bottom:16px;padding-top:16px;border-top:1px solid var(--border)}
+article h3{font-size:18px;font-weight:600;margin-top:32px;margin-bottom:12px}
+article p{font-size:16px;color:var(--text-secondary);line-height:1.8;margin-bottom:16px}
+article p strong{color:var(--text)}
+article ul,article ol{margin:0 0 16px 24px;color:var(--text-secondary);line-height:1.8}
+article li{margin-bottom:6px;font-size:16px}
+article li strong{color:var(--text)}
+article code{font-family:'SF Mono',SFMono-Regular,Consolas,'Liberation Mono',Menlo,monospace;background:var(--bg-card);border:1px solid var(--border);padding:2px 6px;border-radius:4px;font-size:14px;color:var(--accent)}
+article pre{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin:16px 0 24px;overflow-x:auto}
+article pre code{background:none;border:none;padding:0;font-size:14px;color:var(--text-secondary);line-height:1.7}
+
+article table{width:100%;border-collapse:collapse;margin:16px 0 24px;font-size:14px}
+article th{text-align:left;padding:10px 16px;background:var(--bg-card);border:1px solid var(--border);font-weight:600;color:var(--text);font-size:13px;text-transform:uppercase;letter-spacing:0.5px}
+article td{padding:10px 16px;border:1px solid var(--border);color:var(--text-secondary)}
+article tr:hover td{background:var(--bg-card)}
+
+article hr{border:none;border-top:1px solid var(--border);margin:48px 0 24px}
+
+.post-footer{margin-top:48px;padding:24px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);text-align:center}
+.post-footer p{font-size:14px;color:var(--text-secondary);margin-bottom:12px}
+.post-footer a.cta-btn{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:500;padding:10px 20px;border-radius:10px;background:#fff;color:#000;transition:opacity 0.15s}
+.post-footer a.cta-btn:hover{opacity:0.9;text-decoration:none}
+
+footer{max-width:720px;margin:0 auto;padding:40px 24px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--text-tertiary)}
+footer a{color:var(--text-secondary);transition:color 0.15s}
+footer a:hover{color:var(--text);text-decoration:none}
+.footer-links{display:flex;gap:16px}
+
+@media(max-width:640px){
+  .nav-links{display:none}
+  .container{padding:100px 16px 60px}
+  article table{font-size:13px}
+  article th,article td{padding:8px 10px}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-left">
+    <a href="../" class="nav-logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+      Locally Uncensored
+    </a>
+    <div class="nav-links">
+      <a href="../#features">Features</a>
+      <a href="../#models">Models</a>
+      <a href="../#compare">Compare</a>
+      <a href="../#faq">FAQ</a>
+      <a href="./" class="active">Blog</a>
+    </div>
+  </div>
+  <div class="nav-right">
+    <a href="https://github.com/PurpleDoubleD/locally-uncensored" class="btn-nav" target="_blank">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+      GitHub
+    </a>
+    <a href="https://github.com/PurpleDoubleD/locally-uncensored/releases" class="btn-nav btn-nav-primary" target="_blank">Download</a>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="breadcrumb"><a href="../">Locally Uncensored</a> / <a href="./">Blog</a> / This Post</div>
+
+  <div class="post-meta">
+    <span class="post-tag">Release</span>
+    <span>April 10, 2026</span>
+    <span>&middot;</span>
+    <span>10 min read</span>
+  </div>
+
+  <article>
+    <h1>v2.3.0 &mdash; ComfyUI Plug &amp; Play, Image-to-Video, and Model Bundles</h1>
+
+    <p>This is the biggest update to <a href="https://github.com/PurpleDoubleD/locally-uncensored">Locally Uncensored</a> since launch. ComfyUI integration that actually works without config files. Image-to-Image and Image-to-Video generation. One-click model bundles. And support for models that dropped this week &mdash; GLM 5.1, Qwen 3.5, Gemma 4.</p>
+
+    <p>Here&rsquo;s what&rsquo;s new and why it matters.</p>
+
+    <h2>ComfyUI Without the Config Hell</h2>
+
+    <p>If you&rsquo;ve tried ComfyUI before, you know the drill. Clone the repo, set up a Python environment, download models to the right folders, find workflow JSONs, install custom nodes, hope nothing breaks when you update. It&rsquo;s powerful software, but the setup cost is real.</p>
+
+    <p>v2.3.0 wraps all of that into <strong>auto-detection and one-click install</strong>. When you open the Create tab, the app checks if ComfyUI is already on your machine. If it is, it finds it automatically. If not, one click handles the installation. No terminal commands, no Python path issues, no manual model file management.</p>
+
+    <p>Under the hood, a <strong>Dynamic Workflow Builder</strong> runs 14 different pipeline strategies. It checks which custom nodes you have installed and builds the correct workflow automatically. You pick a model, write a prompt, and hit Generate. The app figures out the rest.</p>
+
+    <h2>Image-to-Image</h2>
+
+    <p>Upload a source image, set a denoise strength between 0.0 and 1.0, write what you want changed. Works with every supported image model &mdash; SDXL, FLUX, Z-Image. Low denoise keeps the original composition and adjusts details. High denoise reimagines the image from scratch using your prompt as guidance.</p>
+
+    <p>This was the most requested feature after text-to-image landed. Simple drag-and-drop interface, no workflow editing required.</p>
+
+    <h2>Image-to-Video on 6 GB VRAM</h2>
+
+    <p>Image-to-Video (I2V) support ships with three backends: <strong>FramePack F1</strong>, <strong>CogVideoX</strong>, and <strong>SVD</strong>.</p>
+
+    <p>FramePack is the standout. It uses next-frame prediction to generate video from a single image, and it runs on <strong>6 GB VRAM</strong>. That&rsquo;s a GTX 1660 or an RTX 3060 &mdash; hardware that most people already have. Upload an image, get a video. No cloud GPU rental, no queue, no per-second billing.</p>
+
+    <p>CogVideoX 5B handles higher-quality output if you have the VRAM for it. SVD-XT is there for the Stable Video Diffusion workflow.</p>
+
+    <h2>Model Bundles</h2>
+
+    <p>Instead of hunting for checkpoint files, figuring out which VAE matches which model, and hoping download links aren&rsquo;t dead &mdash; we&rsquo;re building <strong>one-click download bundles</strong>. Each bundle includes everything needed: checkpoint, VAE, text encoder, LoRAs where applicable.</p>
+
+    <p>Verified bundles are marked. Untested ones show &ldquo;Coming Soon&rdquo; until we&rsquo;ve confirmed they work end-to-end. The list keeps growing &mdash; we&rsquo;re adding more as we verify them.</p>
+
+    <p><strong>VRAM-aware filtering</strong> sorts bundles into three tabs: Lightweight, Mid-Range, and High-End. Based on your actual GPU VRAM. No more downloading a model to find out your card can&rsquo;t load it.</p>
+
+    <h2>Z-Image &mdash; Uncensored Image Generation</h2>
+
+    <p>Z-Image Turbo generates images in 8&ndash;15 seconds with <strong>zero content filters</strong>. No safety classifiers, no prompt rejection. It does what you tell it. Available as both Turbo (speed) and Base (quality) variants.</p>
+
+    <p>Works for text-to-image and the new image-to-image pipeline. If unrestricted image generation is what you need, this is it.</p>
+
+    <h2>New LLM Support</h2>
+
+    <p><strong>GLM 5.1</strong> shipped two days ago &mdash; 754 billion parameters, MoE architecture, MIT license. Built for agentic workflows with sustained tool calling across hundreds of rounds. We added it to the Discover models section on release day.</p>
+
+    <p><strong>Qwen 3.5</strong> and <strong>Gemma 4</strong> are also in. The <strong>hardware-aware onboarding</strong> now recommends models based on your GPU VRAM: Gemma 4 E4B for 4 GB cards, Qwen 3.5 9B for 8 GB, larger variants for bigger setups.</p>
+
+    <h2>Everything Else in the Box</h2>
+
+    <p>For anyone new to the project: Locally Uncensored is a desktop app that runs AI entirely on your machine. Chat, coding agent, image generation, video generation &mdash; one app, no cloud dependency, no Docker requirement.</p>
+
+    <ul>
+      <li><strong>Uncensored AI chat</strong> with 20+ provider presets &mdash; 12 local backends (Ollama, LM Studio, vLLM, KoboldCpp, and more) plus cloud fallbacks</li>
+      <li><strong>Coding Agent</strong> &mdash; reads your codebase, writes files, runs shell commands, up to 20 tool iterations</li>
+      <li><strong>13 MCP agent tools</strong> &mdash; web search, file I/O, shell execution, code execution, screenshots, system info</li>
+      <li><strong>A/B model compare</strong> &mdash; same prompt, two models, side by side with parallel streaming</li>
+      <li><strong>Local benchmarks</strong>, <strong>RAG</strong>, <strong>voice chat</strong>, <strong>memory system</strong>, <strong>thinking mode</strong>, <strong>20+ personas</strong></li>
+    </ul>
+
+    <p>Built with Tauri v2 (Rust backend). Not Electron. Standalone <code>.exe</code> on Windows, build from source on Linux and macOS.</p>
+
+    <h2>Bug Fixes and Security</h2>
+
+    <ul>
+      <li>SSRF protection added to the localhost proxy</li>
+      <li>npm vulnerabilities patched (Vite updated)</li>
+      <li>FramePack workflow: DualCLIPLoader and VAEEncode fixes, preflight custom node check</li>
+      <li>Z-Image gets its own ModelType and strategy (was misclassified as FLUX 2)</li>
+      <li>Think-Mode guard prevents crashes on models that don&rsquo;t support thinking</li>
+      <li>All 105 download URLs verified (HTTP 200/302)</li>
+    </ul>
+
+    <h2>Download</h2>
+
+    <p>v2.3.0 is available now from <a href="https://github.com/PurpleDoubleD/locally-uncensored/releases/tag/v2.3.0">GitHub Releases</a>. Windows <code>.exe</code> and <code>.msi</code> installers are the most tested. Linux and macOS build from source.</p>
+
+    <p>The <a href="https://github.com/PurpleDoubleD/locally-uncensored">GitHub repo</a> has full source code, discussions, and issue tracking. Feedback on model bundles &mdash; which ones you want to see next &mdash; is especially useful right now.</p>
+
+    <hr>
+
+    <p><em>Locally Uncensored v2.3.0. AGPL-3.0 licensed. Built by <a href="https://github.com/PurpleDoubleD">PurpleDoubleD</a>.</em></p>
+  </article>
+
+  <div class="post-footer">
+    <p>Try ComfyUI Plug &amp; Play and Image-to-Video in v2.3.0</p>
+    <a href="https://github.com/PurpleDoubleD/locally-uncensored/releases/tag/v2.3.0" class="cta-btn" target="_blank">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+      Download v2.3.0
+    </a>
+  </div>
+</div>
+
+<footer>
+  <span>AGPL-3.0 License. Built by <a href="https://github.com/PurpleDoubleD" target="_blank">PurpleDoubleD</a>.</span>
+  <div class="footer-links">
+    <a href="https://github.com/PurpleDoubleD/locally-uncensored" target="_blank">GitHub</a>
+    <a href="https://github.com/PurpleDoubleD/locally-uncensored/discussions" target="_blank">Discussions</a>
+    <a href="../">Home</a>
+  </div>
+</footer>
+
+</body>
+</html>

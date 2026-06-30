@@ -1,0 +1,795 @@
+<style data-screen="analytics">
+  /* ── an- prefix throughout ── */
+
+  .an-filter-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+  }
+  .an-filter-chip {
+    padding: 5px 14px;
+    border-radius: 20px;
+    border: 1.5px solid var(--border-strong);
+    background: var(--panel-2);
+    font-size: 13px;
+    color: var(--ink-2);
+    cursor: pointer;
+    font-family: var(--sans);
+    transition: all .15s;
+  }
+  .an-filter-chip.sel {
+    background: var(--ink);
+    color: #fff;
+    border-color: var(--ink);
+  }
+  .an-filter-chip:hover:not(.sel) {
+    border-color: var(--ink-2);
+    color: var(--ink);
+  }
+
+  /* Channel performance cards */
+  .an-ch-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 20px 22px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .an-ch-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .an-ch-emoji {
+    font-size: 22px;
+    line-height: 1;
+    margin-top: 1px;
+  }
+  .an-ch-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink);
+    font-family: var(--sans);
+    line-height: 1.2;
+  }
+  .an-ch-sub {
+    font-size: 12px;
+    color: var(--ink-2);
+    margin-top: 2px;
+    font-family: var(--sans);
+  }
+  .an-metrics {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 16px;
+  }
+  .an-metric {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .an-metric-val {
+    font-family: var(--serif);
+    font-size: 20px;
+    color: var(--ink);
+    line-height: 1.1;
+  }
+  .an-metric-val.sm {
+    font-size: 16px;
+  }
+  .an-metric-lbl {
+    font-size: 11px;
+    color: var(--ink-2);
+    font-family: var(--sans);
+    text-transform: uppercase;
+    letter-spacing: .04em;
+  }
+  .an-trend {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    font-family: var(--sans);
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 10px;
+  }
+  .an-trend.up   { background: #edf6eb; color: var(--green); }
+  .an-trend.flat { background: var(--panel); color: var(--ink-2); }
+  .an-trend.down { background: #fdecea; color: var(--red); }
+  .an-divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 0;
+  }
+  .an-ch-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--ink-2);
+    font-family: var(--sans);
+  }
+
+  /* Milestones */
+  .an-milestone-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 22px 24px;
+  }
+  .an-milestone-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px 24px;
+    margin-top: 18px;
+  }
+  @media (max-width: 820px) {
+    .an-milestone-grid { grid-template-columns: 1fr; }
+  }
+  .an-ch-milestones {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .an-ch-label {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+    font-family: var(--sans);
+  }
+  .an-progress-block {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .an-progress-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 12px;
+    font-family: var(--sans);
+    color: var(--ink-2);
+    margin-bottom: 3px;
+  }
+  .an-progress-row strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .an-bar-track {
+    height: 8px;
+    background: var(--panel);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .an-bar-fill {
+    height: 100%;
+    border-radius: 99px;
+    background: var(--clay);
+    transition: width .5s ease;
+  }
+  .an-bar-fill.green { background: var(--green); }
+  .an-bar-fill.amber { background: var(--amber); }
+  .an-bar-fill.clay  { background: var(--clay); }
+  .an-ypp-or {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: var(--ink-2);
+    font-family: var(--sans);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    margin: 4px 0;
+  }
+  .an-ypp-or::before,
+  .an-ypp-or::after {
+    content: '';
+    flex: 1;
+    border-top: 1px solid var(--border);
+  }
+  .an-milestone-note {
+    font-size: 11.5px;
+    color: var(--ink-2);
+    font-family: var(--sans);
+    margin-top: 4px;
+    line-height: 1.45;
+  }
+  .an-milestone-note.winner {
+    color: var(--green);
+    font-weight: 600;
+  }
+  .an-milestone-divider {
+    border: none;
+    border-left: 1px solid var(--border);
+  }
+  @media (max-width: 820px) {
+    .an-milestone-divider { display: none; }
+  }
+
+  /* Geography RPM */
+  .an-geo-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 22px 24px;
+  }
+  .an-geo-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 16px;
+  }
+  @media (max-width: 680px) {
+    .an-geo-grid { grid-template-columns: 1fr; }
+  }
+  .an-geo-tile {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .an-geo-flag {
+    font-size: 22px;
+    line-height: 1;
+  }
+  .an-geo-country {
+    font-size: 13px;
+    font-weight: 600;
+    font-family: var(--sans);
+    color: var(--ink);
+  }
+  .an-geo-rpm {
+    font-family: var(--serif);
+    font-size: 22px;
+    color: var(--ink);
+    line-height: 1.1;
+  }
+  .an-geo-rpm.dim { color: var(--ink-2); font-size: 18px; }
+  .an-geo-note {
+    font-size: 11.5px;
+    color: var(--ink-2);
+    font-family: var(--sans);
+    line-height: 1.4;
+  }
+  .an-geo-strat {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-family: var(--sans);
+    padding: 3px 9px;
+    border-radius: 8px;
+    margin-top: 4px;
+    font-weight: 600;
+  }
+  .an-geo-strat.revenue { background: #edf6eb; color: var(--green); }
+  .an-geo-strat.volume  { background: #fef9ee; color: #9a7020; }
+  .an-geo-rpm-row {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+  }
+  .an-geo-rpm-unit {
+    font-size: 12px;
+    color: var(--ink-2);
+    font-family: var(--sans);
+  }
+
+  /* Top performers */
+  .an-perf-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 22px 24px;
+  }
+  .an-perf-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-top: 16px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .an-perf-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 18px;
+    transition: background .12s;
+  }
+  .an-perf-item:not(:last-child) {
+    border-bottom: 1px solid var(--border);
+  }
+  .an-perf-item:hover { background: var(--panel-2); }
+  .an-perf-rank {
+    font-family: var(--serif);
+    font-size: 20px;
+    color: var(--border-strong);
+    width: 20px;
+    flex-shrink: 0;
+    text-align: center;
+    line-height: 1;
+  }
+  .an-perf-thumb {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    background: var(--panel);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+    border: 1px solid var(--border);
+  }
+  .an-perf-info {
+    flex: 1;
+    min-width: 0;
+  }
+  .an-perf-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink);
+    font-family: var(--sans);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .an-perf-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 4px;
+    flex-wrap: wrap;
+  }
+  .an-perf-views {
+    font-family: var(--serif);
+    font-size: 16px;
+    color: var(--ink);
+    font-weight: 600;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .an-perf-views-lbl {
+    font-size: 11px;
+    color: var(--ink-2);
+    font-family: var(--sans);
+  }
+  .an-fire { color: var(--clay); font-size: 13px; }
+</style>
+
+<section class="page" id="analytics">
+  <div class="content">
+
+    <!-- ── Title row ── -->
+    <div class="row" style="margin-bottom:6px;flex-wrap:wrap;gap:10px;">
+      <div>
+        <h1>Analytics</h1>
+        <p class="lede">See what's working — feed winners back into ideas.</p>
+      </div>
+      <div style="margin-left:auto;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+        <span class="muted" style="font-size:12px;">Last synced: fake data · Phase 2 wires YouTube</span>
+        <button class="btn ghost sm" disabled>↻ Refresh</button>
+      </div>
+    </div>
+
+    <!-- ── Channel filter ── -->
+    <div class="an-filter-row">
+      <span class="muted" style="font-size:12px;margin-right:2px;">Filter:</span>
+      <button class="an-filter-chip sel" onclick="anFilter(this,'all')">All channels</button>
+      <button class="an-filter-chip" onclick="anFilter(this,'chn_aitools')">🛠️ AI Tools</button>
+      <button class="an-filter-chip" onclick="anFilter(this,'chn_quickwins')">⚡ Quick Wins</button>
+      <button class="an-filter-chip" onclick="anFilter(this,'chn_deepdives')">🔬 Deep Dives</button>
+    </div>
+
+    <!-- ── Section 1: Per-channel performance ── -->
+    <h2 style="margin-bottom:14px;">Channel Performance</h2>
+    <div class="grid cols-3" style="margin-bottom:32px;" id="an-ch-grid">
+
+      <!-- ⚡ Quick Wins — highest volume -->
+      <div class="an-ch-card" data-ch="chn_quickwins">
+        <div class="an-ch-header">
+          <div class="an-ch-emoji">⚡</div>
+          <div>
+            <div class="an-ch-name">Mira Quick Wins</div>
+            <div class="an-ch-sub">Shorts · 9:16 · 1/day · Auto-publish</div>
+          </div>
+        </div>
+        <hr class="an-divider">
+        <div class="an-metrics">
+          <div class="an-metric">
+            <span class="an-metric-val">48.2K</span>
+            <span class="an-metric-lbl">Views this week</span>
+          </div>
+          <div class="an-metric">
+            <span class="an-metric-val">187K</span>
+            <span class="an-metric-lbl">Views 28d</span>
+          </div>
+          <div class="an-metric">
+            <span class="an-metric-val sm">62%</span>
+            <span class="an-metric-lbl">Avg retention</span>
+          </div>
+          <div class="an-metric">
+            <span class="an-metric-val sm">820</span>
+            <span class="an-metric-lbl">Subscribers</span>
+          </div>
+        </div>
+        <div class="an-ch-footer">
+          <span class="an-trend up">↑ +18% vs prev 7d</span>
+          <span class="muted">7 vids this wk</span>
+        </div>
+      </div>
+
+      <!-- 🛠️ AI Tools — medium volume, medium-high retention -->
+      <div class="an-ch-card" data-ch="chn_aitools">
+        <div class="an-ch-header">
+          <div class="an-ch-emoji">🛠️</div>
+          <div>
+            <div class="an-ch-name">Mira AI Tools</div>
+            <div class="an-ch-sub">Shorts · 9:16 · 1/day · Review all</div>
+          </div>
+        </div>
+        <hr class="an-divider">
+        <div class="an-metrics">
+          <div class="an-metric">
+            <span class="an-metric-val">22.1K</span>
+            <span class="an-metric-lbl">Views this week</span>
+          </div>
+          <div class="an-metric">
+            <span class="an-metric-val">94K</span>
+            <span class="an-metric-lbl">Views 28d</span>
+          </div>
+          <div class="an-metric">
+            <span class="an-metric-val sm">71%</span>
+            <span class="an-metric-lbl">Avg retention</span>
+          </div>
+          <div class="an-metric">
+            <span class="an-metric-val sm">640</span>
+            <span class="an-metric-lbl">Subscribers</span>
+          </div>
+        </div>
+        <div class="an-ch-footer">
+          <span class="an-trend up">↑ +9% vs prev 7d</span>
+          <span class="muted">5 vids this wk</span>
+        </div>
+      </div>
+
+      <!-- 🔬 Deep Dives — lower volume, highest watch-time retention -->
+      <div class="an-ch-card" data-ch="chn_deepdives">
+        <div class="an-ch-header">
+          <div class="an-ch-emoji">🔬</div>
+          <div>
+            <div class="an-ch-name">Mira Deep Dives</div>
+            <div class="an-ch-sub">Long-form · 16:9 · 2/wk · Review all</div>
+          </div>
+        </div>
+        <hr class="an-divider">
+        <div class="an-metrics">
+          <div class="an-metric">
+            <span class="an-metric-val">8.4K</span>
+            <span class="an-metric-lbl">Views this week</span>
+          </div>
+          <div class="an-metric">
+            <span class="an-metric-val">31K</span>
+            <span class="an-metric-lbl">Views 28d</span>
+          </div>
+          <div class="an-metric">
+            <span class="an-metric-val sm">48%</span>
+            <span class="an-metric-lbl">Avg retention</span>
+          </div>
+          <div class="an-metric">
+            <span class="an-metric-val sm">290</span>
+            <span class="an-metric-lbl">Subscribers</span>
+          </div>
+        </div>
+        <div class="an-ch-footer">
+          <span class="an-trend flat">→ Steady this week</span>
+          <span class="muted">2 vids this wk</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── Section 2: YPP Milestone Tracker ── -->
+    <h2 style="margin-bottom:6px;">Monetization Milestones</h2>
+    <p class="muted" style="font-size:13px;margin-bottom:14px;">
+      YouTube Partner Program (full ad revenue): <strong>1,000 subscribers</strong> + <strong>4,000 watch-hours</strong> <em>or</em> <strong>10M Shorts views</strong> in any 90-day window.
+    </p>
+
+    <div class="an-milestone-card" style="margin-bottom:32px;">
+      <div class="an-milestone-grid">
+
+        <!-- ⚡ Quick Wins -->
+        <div class="an-ch-milestones">
+          <div class="an-ch-label">⚡ Quick Wins</div>
+
+          <div class="an-progress-block">
+            <div class="an-progress-row">
+              <span>Subscribers</span>
+              <span><strong>820</strong> / 1,000</span>
+            </div>
+            <div class="an-bar-track">
+              <div class="an-bar-fill amber" style="width:82%;"></div>
+            </div>
+            <div class="an-milestone-note">~22 subs to go · on track</div>
+          </div>
+
+          <div class="an-ypp-or">or</div>
+
+          <div class="an-progress-block">
+            <div class="an-progress-row">
+              <span>Shorts views (90d)</span>
+              <span><strong>8.1M</strong> / 10M</span>
+            </div>
+            <div class="an-bar-track">
+              <div class="an-bar-fill amber" style="width:81%;"></div>
+            </div>
+            <div class="an-milestone-note">~1.9M views to go · India volume helping</div>
+          </div>
+        </div>
+
+        <div class="an-milestone-divider"></div>
+
+        <!-- 🛠️ AI Tools -->
+        <div class="an-ch-milestones">
+          <div class="an-ch-label">🛠️ AI Tools</div>
+
+          <div class="an-progress-block">
+            <div class="an-progress-row">
+              <span>Subscribers</span>
+              <span><strong>640</strong> / 1,000</span>
+            </div>
+            <div class="an-bar-track">
+              <div class="an-bar-fill clay" style="width:64%;"></div>
+            </div>
+            <div class="an-milestone-note">~360 subs to go · ~6–8 weeks at current pace</div>
+          </div>
+
+          <div class="an-ypp-or">or</div>
+
+          <div class="an-progress-block">
+            <div class="an-progress-row">
+              <span>Shorts views (90d)</span>
+              <span><strong>5.8M</strong> / 10M</span>
+            </div>
+            <div class="an-bar-track">
+              <div class="an-bar-fill clay" style="width:58%;"></div>
+            </div>
+            <div class="an-milestone-note">~4.2M views to go · pace: ~3.1M/mo</div>
+          </div>
+        </div>
+
+        <div class="an-milestone-divider"></div>
+
+        <!-- 🔬 Deep Dives (watch-hours path) -->
+        <div class="an-ch-milestones">
+          <div class="an-ch-label">🔬 Deep Dives</div>
+
+          <div class="an-progress-block">
+            <div class="an-progress-row">
+              <span>Subscribers</span>
+              <span><strong>290</strong> / 1,000</span>
+            </div>
+            <div class="an-bar-track">
+              <div class="an-bar-fill clay" style="width:29%;"></div>
+            </div>
+            <div class="an-milestone-note">Long-form grows subs slower; quality over volume</div>
+          </div>
+
+          <div class="an-ypp-or">or</div>
+
+          <div class="an-progress-block">
+            <div class="an-progress-row">
+              <span>Watch-hours (90d)</span>
+              <span><strong>2,340</strong> / 4,000</span>
+            </div>
+            <div class="an-bar-track">
+              <div class="an-bar-fill clay" style="width:59%;"></div>
+            </div>
+            <div class="an-milestone-note">~1,660 hrs to go · retention is strong 48%</div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="note" style="margin-top:18px;font-size:12.5px;">
+        <strong>Fan-funding tier</strong> (Super Thanks, memberships) unlocks earlier: 500 subs + 3,000 watch-hours or 3M Shorts views (90d). Quick Wins is close — crossing both subs and Shorts-views thresholds soon.
+      </div>
+    </div>
+
+    <!-- ── Section 3: Geography & RPM ── -->
+    <h2 style="margin-bottom:6px;">Geography &amp; Revenue Strategy</h2>
+    <p class="muted" style="font-size:13px;margin-bottom:14px;">
+      Markets: US · Canada · India. Different monetization playbook per market.
+    </p>
+
+    <div class="an-geo-card" style="margin-bottom:32px;">
+      <div class="an-geo-grid">
+
+        <div class="an-geo-tile">
+          <div class="an-geo-flag">🇺🇸</div>
+          <div class="an-geo-country">United States</div>
+          <div class="an-geo-rpm-row">
+            <div class="an-geo-rpm">$4.20</div>
+            <div class="an-geo-rpm-unit">per 1K views</div>
+          </div>
+          <div class="an-geo-note">High ad RPM — primary revenue engine. US viewers drive most ad value and brand-deal rates.</div>
+          <div class="an-geo-strat revenue">⬆ Revenue engine</div>
+        </div>
+
+        <div class="an-geo-tile">
+          <div class="an-geo-flag">🇨🇦</div>
+          <div class="an-geo-country">Canada</div>
+          <div class="an-geo-rpm-row">
+            <div class="an-geo-rpm">$3.80</div>
+            <div class="an-geo-rpm-unit">per 1K views</div>
+          </div>
+          <div class="an-geo-note">Strong RPM, closely tracks US. English content indexes naturally to CA viewers alongside US traffic.</div>
+          <div class="an-geo-strat revenue">⬆ Revenue engine</div>
+        </div>
+
+        <div class="an-geo-tile">
+          <div class="an-geo-flag">🇮🇳</div>
+          <div class="an-geo-country">India</div>
+          <div class="an-geo-rpm-row">
+            <div class="an-geo-rpm dim">$0.65</div>
+            <div class="an-geo-rpm-unit">per 1K views</div>
+          </div>
+          <div class="an-geo-note">Low ad CPM — <strong>don't rely on ad revenue.</strong> Monetize via Shorts view-count payouts, affiliate links, and sponsorships. India is the fastest path to 10M Shorts views.</div>
+          <div class="an-geo-strat volume">📈 Volume + affiliates</div>
+        </div>
+
+      </div>
+
+      <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border);display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start;">
+        <div style="flex:1;min-width:220px;">
+          <div class="muted" style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">Practical mix</div>
+          <div style="font-size:13px;color:var(--ink);font-family:var(--sans);line-height:1.6;">
+            English-primary, US/CA-tuned topics for ad RPM. Ride India's volume for Shorts thresholds and affiliate clicks. Hindi only as an occasional dub of a proven English winner (~5% of content).
+          </div>
+        </div>
+        <div style="flex:1;min-width:220px;">
+          <div class="muted" style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">Current audience split (est.)</div>
+          <div style="display:flex;flex-direction:column;gap:6px;margin-top:2px;">
+            <div style="display:flex;align-items:center;gap:8px;font-size:13px;font-family:var(--sans);">
+              <span style="width:70px;color:var(--ink-2);">🇺🇸 US</span>
+              <div class="an-bar-track" style="flex:1;"><div class="an-bar-fill green" style="width:52%;"></div></div>
+              <span style="color:var(--ink);font-weight:600;width:30px;text-align:right;">52%</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:13px;font-family:var(--sans);">
+              <span style="width:70px;color:var(--ink-2);">🇨🇦 CA</span>
+              <div class="an-bar-track" style="flex:1;"><div class="an-bar-fill green" style="width:11%;"></div></div>
+              <span style="color:var(--ink);font-weight:600;width:30px;text-align:right;">11%</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:13px;font-family:var(--sans);">
+              <span style="width:70px;color:var(--ink-2);">🇮🇳 India</span>
+              <div class="an-bar-track" style="flex:1;"><div class="an-bar-fill amber" style="width:29%;"></div></div>
+              <span style="color:var(--ink);font-weight:600;width:30px;text-align:right;">29%</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:13px;font-family:var(--sans);">
+              <span style="width:70px;color:var(--ink-2);">🌍 Other</span>
+              <div class="an-bar-track" style="flex:1;"><div class="an-bar-fill" style="width:8%;background:var(--border-strong);"></div></div>
+              <span style="color:var(--ink-2);width:30px;text-align:right;">8%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Section 4: Top Performers ── -->
+    <h2 style="margin-bottom:6px;">Top Performers</h2>
+    <p class="muted" style="font-size:13px;margin-bottom:14px;">
+      Best-performing videos across all channels. Feed a winner back into Ideate to make more like it.
+    </p>
+
+    <div class="an-perf-card" style="margin-bottom:32px;">
+      <div class="an-perf-list">
+
+        <!-- #1 vid_m3n4 — 31k -->
+        <div class="an-perf-item">
+          <div class="an-perf-rank">1</div>
+          <div class="an-perf-thumb">⚡</div>
+          <div class="an-perf-info">
+            <div class="an-perf-title">7 AI sites every creator should bookmark</div>
+            <div class="an-perf-meta">
+              <span class="tag">Mira Quick Wins</span>
+              <span class="pill posted">Posted</span>
+              <span class="muted" style="font-size:11px;">0:36 · vid_m3n4</span>
+              <span class="an-trend up" style="font-size:11px;padding:1px 7px;">↑ Still climbing</span>
+            </div>
+          </div>
+          <div style="text-align:right;flex-shrink:0;">
+            <div class="an-perf-views">31K <span class="an-fire">🔥</span></div>
+            <div class="an-perf-views-lbl">total views</div>
+            <button class="btn sm" style="margin-top:8px;white-space:nowrap;" onclick="go('ideate')">Make more like this</button>
+          </div>
+        </div>
+
+        <!-- #2 vid_k1l2 — 12.3k -->
+        <div class="an-perf-item">
+          <div class="an-perf-rank">2</div>
+          <div class="an-perf-thumb">🛠️</div>
+          <div class="an-perf-info">
+            <div class="an-perf-title">Upscale any blurry photo to 4K for free</div>
+            <div class="an-perf-meta">
+              <span class="tag">Mira AI Tools</span>
+              <span class="pill posted">Posted</span>
+              <span class="muted" style="font-size:11px;">0:44 · vid_k1l2</span>
+              <span class="an-trend up" style="font-size:11px;padding:1px 7px;">↑ High retention</span>
+            </div>
+          </div>
+          <div style="text-align:right;flex-shrink:0;">
+            <div class="an-perf-views">12.3K</div>
+            <div class="an-perf-views-lbl">total views</div>
+            <button class="btn sm" style="margin-top:8px;white-space:nowrap;" onclick="go('ideate')">Make more like this</button>
+          </div>
+        </div>
+
+        <!-- #3 upcoming -->
+        <div class="an-perf-item" style="opacity:.55;">
+          <div class="an-perf-rank">3</div>
+          <div class="an-perf-thumb" style="font-size:16px;">···</div>
+          <div class="an-perf-info">
+            <div class="an-perf-title" style="color:var(--ink-2);">More data as videos post</div>
+            <div class="an-perf-meta">
+              <span class="muted" style="font-size:11px;">Rankings update after videos collect 48h of data</span>
+            </div>
+          </div>
+          <div style="text-align:right;flex-shrink:0;">
+            <div class="an-perf-views" style="color:var(--ink-2);">—</div>
+            <div class="an-perf-views-lbl">views</div>
+          </div>
+        </div>
+
+      </div>
+
+      <div style="margin-top:16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <span class="muted" style="font-size:12px;">Tip: "Make more like this" seeds an idea card in Ideate pre-tagged with this video's niche, hook pattern, and channel.</span>
+        <button class="btn ghost sm" style="margin-left:auto;" onclick="go('ideate')">Open Ideate →</button>
+      </div>
+    </div>
+
+    <!-- ── Phase 2 note ── -->
+    <div class="note" style="margin-bottom:32px;">
+      <strong>📡 Phase 2 — live data pull:</strong> This screen currently shows representative fake data. In phase 2, <code>mira analytics pull</code> will wire the YouTube Data API + Instagram Graph API to pull real views, retention, and subscriber counts per channel. RPM estimates will be reconciled from YouTube Studio exports. The "Make more like this" action will pass the real <code>video_id</code> to <code>mira ideas add --from &lt;video_id&gt;</code>.
+    </div>
+
+  </div>
+</section>
+
+<script data-screen="analytics">
+(function () {
+  function anFilter(btn, ch) {
+    document.querySelectorAll('.an-filter-chip').forEach(function(b) { b.classList.remove('sel'); });
+    btn.classList.add('sel');
+
+    var cards = document.querySelectorAll('#an-ch-grid .an-ch-card');
+    cards.forEach(function(card) {
+      if (ch === 'all' || card.dataset.ch === ch) {
+        card.style.display = '';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  }
+
+  // expose to onclick attrs
+  window.anFilter = anFilter;
+})();
+</script>

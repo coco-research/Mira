@@ -1,0 +1,146 @@
+---
+title: Deploy
+description: "Run a Hyperframes preview + render API in the cloud from a one-click template."
+---
+
+Hyperframes ships two official deployment templates that wrap a composition in a small web app: an in-browser preview and a `/api/render` endpoint that produces an MP4 server-side. Both are open source, Apache-2.0, and deploy from a single button.
+
+| Template | Compute | Storage | Deploy |
+|----------|---------|---------|--------|
+| [Vercel](https://github.com/heygen-com/hyperframes-vercel-template) | [Vercel Sandbox](https://vercel.com/docs/vercel-sandbox) (Firecracker microVM) | [Vercel Blob](https://vercel.com/docs/vercel-blob) | [vercel.com/templates/ai/hyperframes-on-vercel](https://vercel.com/templates/ai/hyperframes-on-vercel) |
+| [Cloudflare](https://github.com/heygen-com/hyperframes-cloudflare-template) | [Cloudflare Containers](https://developers.cloudflare.com/containers/) (Workers + Durable Object) | [R2](https://developers.cloudflare.com/r2/) | One-click button in the repo README |
+
+Both templates use the same shape:
+
+- **Preview** the bundled `ui-3d-reveal` composition in the browser via the [`<hyperframes-player>`](/packages/player) web component.
+- **Render** to MP4 by POSTing to `/api/render`. The handler ships the composition to a sandboxed runtime that has Chromium, FFmpeg, and `hyperframes` pre-installed, then streams the MP4 back to object storage and returns a public URL.
+- **Author locally**, deploy the preview + render API. Compositions are still built on your machine with `npx hyperframes init`, then dropped into the template's `public/compositions/` directory.
+
+## Choosing a template
+
+<Tabs>
+  <Tab title="Vercel">
+    Pick this if you already deploy on Vercel, want zero-config Blob storage, or want to reuse Vercel's CI/preview environments.
+
+    [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fheygen-com%2Fhyperframes-vercel-template&stores=%5B%7B%22type%22%3A%22blob%22%2C%22access%22%3A%22public%22%7D%5D)
+
+    **What you get**
+
+    - A Next.js app with `<hyperframes-player>` preview and a `POST /api/render` route.
+    - A pre-baked Vercel Sandbox snapshot built during `next build` — cold renders skip the Chromium/FFmpeg install and restore from snapshot in ~100 ms.
+    - A Vercel Blob store provisioned automatically on deploy. `BLOB_READ_WRITE_TOKEN` is injected for you.
+
+    **Performance**
+
+    Renders run on `standard-4` (4 vCPU). With `--workers auto`, three parallel Chrome workers cut render time meaningfully vs. single-worker. Concrete render time depends on composition length, complexity, and asset size.
+
+    **Pricing**
+
+    Vercel Pro plans include Sandbox credit each month. See [Vercel Sandbox pricing](https://vercel.com/docs/vercel-sandbox/pricing) for current per-vCPU and per-GB rates and the up-to-date credit allowance.
+
+    <Note>
+      Vercel Functions cap at 300s and a 50 MB compressed bundle, which can't fit Chromium + FFmpeg. The template uses Vercel Sandbox specifically because it's the purpose-built primitive for this workload — up to 5 hours of runtime and up to 8 vCPUs per render.
+    </Note>
+  </Tab>
+  <Tab title="Cloudflare">
+    Pick this if you're already on Cloudflare Workers, want R2's free egress, or want full control over the renderer image.
+
+    [![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/heygen-com/hyperframes-cloudflare-template)
+
+    **What you get**
+
+    - A Worker that serves preview HTML and forwards `/api/render` requests to a `RenderContainer` Durable Object.
+    - A pre-built OCI container image with Chromium + FFmpeg + `hyperframes` baked in — no install at request time.
+    - An R2 bucket (`hyperframes-renders`) provisioned automatically on deploy.
+
+    **Performance**
+
+    Renders run on `standard-4` (4 vCPU, 12 GiB). With `--workers auto`, three parallel Chrome workers cut render time meaningfully vs. single-worker. Container instances sleep after 10 minutes of inactivity, so the next request after a quiet period pays a cold-start penalty.
+
+    **Pricing**
+
+    Cloudflare Containers bills per-10ms for memory, CPU, and disk; R2 storage has no egress within Cloudflare's network. Requires a [Workers Paid](https://developers.cloudflare.com/workers/platform/pricing/) plan. See [Cloudflare Containers pricing](https://developers.cloudflare.com/containers/pricing/) and [R2 pricing](https://developers.cloudflare.com/r2/pricing/) for current rates.
+
+    <Note>
+      Cloudflare's hosted [Browser Rendering](https://developers.cloudflare.com/browser-rendering/) API can't install FFmpeg — that's why the template uses Cloudflare Containers, which gives you a real OCI container in a Worker-bound Durable Object with up to 4 vCPUs and 12 GiB RAM.
+    </Note>
+  </Tab>
+</Tabs>
+
+## Architecture
+
+Both templates follow the same flow: the browser plays a preview locally, then POSTs to a render endpoint that delegates to a sandboxed runtime with Chromium + FFmpeg.
+
+```
+ Browser                    Edge / Function              Sandboxed renderer
+┌──────────────────┐       ┌────────────────────┐       ┌──────────────────────────┐
+│ <hyperframes-    │ ────▶ │ /api/render        │ ────▶ │ hyperframes render       │
+│  player>         │       │  ship composition  │       │  (Chromium + FFmpeg,     │
+│ preview iframe   │       │  → renderer        │       │   pre-installed)         │
+│                  │ ◀──── │  ← stream MP4      │ ◀──── │                          │
+│                  │  url  │  → upload to blob  │  mp4  │                          │
+└──────────────────┘       └────────────────────┘       └──────────────────────────┘
+                                    │
+                                    └─▶ Vercel Blob / Cloudflare R2
+```
+
+The key cost-saver in both templates is **pre-baking the renderer**. Installing Chromium system libraries plus `chrome-headless-shell` takes 30–60s, which would dominate every cold render. Vercel's template snapshots the sandbox at build time; Cloudflare's template bakes everything into the container image. Both restore in milliseconds and let you spend the entire request budget on actual rendering.
+
+## Swapping the composition
+
+Both templates ship with one bundled composition (`ui-3d-reveal`). To use your own:
+
+<Steps>
+  <Step title="Author locally">
+    Compositions are HTML — author them on your machine with the [CLI](/packages/cli):
+
+    ```bash Terminal
+    npx hyperframes init my-video
+    cd my-video
+    npx hyperframes preview
+    ```
+  </Step>
+  <Step title="Drop the bundle into the template">
+    Copy your composition into `public/compositions/<your-name>/`.
+  </Step>
+  <Step title="Point the template at it">
+    - **Vercel**: edit `PREVIEW_COMPOSITION_DIR` at the top of `lib/preview.ts` and the dimensions in `app/page.tsx` if it isn't 1920×1080.
+    - **Cloudflare**: set `PREVIEW_COMPOSITION_DIR=compositions/<your-name>` when running `npm run deploy`, or edit the default in `scripts/build.mjs`. Update player dimensions in `public/index.html` if needed.
+  </Step>
+  <Step title="Deploy">
+    ```bash Terminal
+    # Vercel
+    vercel deploy
+
+    # Cloudflare
+    npm run deploy
+    ```
+  </Step>
+</Steps>
+
+## When to use a template vs. roll your own
+
+Templates are optimized for **a single render endpoint behind a preview UI**. They're the fastest way to get a hosted Hyperframes render API running. If you need:
+
+- A **render queue** with retries, deduplication, or priorities — start from a template, then add your own queue (e.g. Vercel Queues, Cloudflare Queues, SQS).
+- **Multi-tenant rendering** with per-user composition uploads — start from a template, replace the bundled composition with a runtime-fetched one.
+- **Self-hosted** rendering — see the [Rendering guide](/guides/rendering) and run `hyperframes render --docker` on your own infrastructure.
+
+For everything else, the templates are the recommended starting point.
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Rendering" icon="film" href="/guides/rendering">
+    Render compositions locally or in Docker
+  </Card>
+  <Card title="Player package" icon="play" href="/packages/player">
+    Embed `<hyperframes-player>` in any HTML page
+  </Card>
+  <Card title="Vercel template" icon="github" href="https://github.com/heygen-com/hyperframes-vercel-template">
+    Source on GitHub
+  </Card>
+  <Card title="Cloudflare template" icon="github" href="https://github.com/heygen-com/hyperframes-cloudflare-template">
+    Source on GitHub
+  </Card>
+</CardGroup>

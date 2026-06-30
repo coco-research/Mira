@@ -1,0 +1,285 @@
+{
+  "name": "@hyperframes/core",
+  "version": "0.6.112",
+  "description": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/heygen-com/hyperframes",
+    "directory": "packages/core"
+  },
+  "files": [
+    "dist",
+    "docs",
+    "schemas",
+    "README.md"
+  ],
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "import": "./src/index.ts",
+      "types": "./src/index.ts"
+    },
+    "./package.json": "./package.json",
+    "./beats": {
+      "import": "./src/beats/index.ts",
+      "types": "./src/beats/index.ts"
+    },
+    "./lint": {
+      "import": "./src/lint/index.ts",
+      "types": "./src/lint/index.ts"
+    },
+    "./compiler": {
+      "import": "./src/compiler/index.ts",
+      "types": "./src/compiler/index.ts"
+    },
+    "./color-grading": {
+      "import": "./src/colorGrading.ts",
+      "types": "./src/colorGrading.ts"
+    },
+    "./color-luts": {
+      "import": "./src/colorLuts.ts",
+      "types": "./src/colorLuts.ts"
+    },
+    "./storyboard": {
+      "import": "./src/storyboard/index.ts",
+      "types": "./src/storyboard/index.ts"
+    },
+    "./runtime": "./dist/hyperframe.runtime.iife.js",
+    "./runtime/clipTree": {
+      "import": "./src/runtime/clipTree.ts",
+      "types": "./src/runtime/clipTree.ts"
+    },
+    "./runtime/lottie-readiness": {
+      "import": "./src/lottieReadiness.ts",
+      "types": "./src/lottieReadiness.ts"
+    },
+    "./studio-api": {
+      "import": "./src/studio-api/index.ts",
+      "types": "./src/studio-api/index.ts"
+    },
+    "./studio-api/screenshot-clip": {
+      "import": "./src/studio-api/helpers/screenshotClip.ts",
+      "types": "./src/studio-api/helpers/screenshotClip.ts"
+    },
+    "./studio-api/manual-edits-render-script": {
+      "import": "./src/studio-api/helpers/manualEditsRenderScript.ts",
+      "types": "./src/studio-api/helpers/manualEditsRenderScript.ts"
+    },
+    "./studio-api/studio-motion-render-script": {
+      "import": "./src/studio-api/helpers/studioMotionRenderScript.ts",
+      "types": "./src/studio-api/helpers/studioMotionRenderScript.ts"
+    },
+    "./studio-api/draft-markers": {
+      "import": "./src/studio-api/helpers/draftMarkers.ts",
+      "types": "./src/studio-api/helpers/draftMarkers.ts"
+    },
+    "./studio-api/finite-mutation": {
+      "import": "./src/studio-api/helpers/finiteMutation.ts",
+      "types": "./src/studio-api/helpers/finiteMutation.ts"
+    },
+    "./text": {
+      "import": "./src/text/index.ts",
+      "types": "./src/text/index.ts"
+    },
+    "./registry": {
+      "import": "./src/registry/index.ts",
+      "types": "./src/registry/index.ts"
+    },
+    "./media-volume-envelope": {
+      "import": "./src/runtime/mediaVolumeEnvelope.ts",
+      "types": "./src/runtime/mediaVolumeEnvelope.ts"
+    },
+    "./hf-ids": {
+      "import": "./src/parsers/hfIds.ts",
+      "types": "./src/parsers/hfIds.ts"
+    },
+    "./gsap-parser": {
+      "import": "./src/parsers/gsapParser.ts",
+      "types": "./src/parsers/gsapParser.ts"
+    },
+    "./gsap-parser-acorn": {
+      "import": "./src/parsers/gsapParserAcorn.ts",
+      "types": "./src/parsers/gsapParserAcorn.ts"
+    },
+    "./gsap-writer-acorn": {
+      "import": "./src/parsers/gsapWriterAcorn.ts",
+      "types": "./src/parsers/gsapWriterAcorn.ts"
+    },
+    "./gsap-constants": {
+      "import": "./src/parsers/gsapConstants.ts",
+      "types": "./src/parsers/gsapConstants.ts"
+    },
+    "./spring-ease": {
+      "import": "./src/parsers/springEase.ts",
+      "types": "./src/parsers/springEase.ts"
+    },
+    "./fonts/aliases": {
+      "import": "./src/fonts/aliases.ts",
+      "types": "./src/fonts/aliases.ts"
+    },
+    "./fonts/system-locator": {
+      "import": "./src/fonts/systemFontLocator.ts",
+      "types": "./src/fonts/systemFontLocator.ts"
+    },
+    "./schemas/registry.json": "./schemas/registry.json",
+    "./schemas/registry-item.json": "./schemas/registry-item.json"
+  },
+  "publishConfig": {
+    "access": "public",
+    "exports": {
+      ".": {
+        "import": "./dist/index.js",
+        "types": "./dist/index.d.ts"
+      },
+      "./lint": {
+        "import": "./dist/lint/index.js",
+        "types": "./dist/lint/index.d.ts"
+      },
+      "./compiler": {
+        "import": "./dist/compiler/index.js",
+        "types": "./dist/compiler/index.d.ts"
+      },
+      "./color-grading": {
+        "import": "./dist/colorGrading.js",
+        "types": "./dist/colorGrading.d.ts"
+      },
+      "./color-luts": {
+        "import": "./dist/colorLuts.js",
+        "types": "./dist/colorLuts.d.ts"
+      },
+      "./runtime": "./dist/hyperframe.runtime.iife.js",
+      "./runtime/lottie-readiness": {
+        "import": "./dist/lottieReadiness.js",
+        "types": "./dist/lottieReadiness.d.ts"
+      },
+      "./studio-api": {
+        "import": "./dist/studio-api/index.js",
+        "types": "./dist/studio-api/index.d.ts"
+      },
+      "./studio-api/screenshot-clip": {
+        "import": "./dist/studio-api/helpers/screenshotClip.js",
+        "types": "./dist/studio-api/helpers/screenshotClip.d.ts"
+      },
+      "./studio-api/manual-edits-render-script": {
+        "import": "./dist/studio-api/helpers/manualEditsRenderScript.js",
+        "types": "./dist/studio-api/helpers/manualEditsRenderScript.d.ts"
+      },
+      "./studio-api/studio-motion-render-script": {
+        "import": "./dist/studio-api/helpers/studioMotionRenderScript.js",
+        "types": "./dist/studio-api/helpers/studioMotionRenderScript.d.ts"
+      },
+      "./studio-api/draft-markers": {
+        "import": "./dist/studio-api/helpers/draftMarkers.js",
+        "types": "./dist/studio-api/helpers/draftMarkers.d.ts"
+      },
+      "./studio-api/finite-mutation": {
+        "import": "./dist/studio-api/helpers/finiteMutation.js",
+        "types": "./dist/studio-api/helpers/finiteMutation.d.ts"
+      },
+      "./text": {
+        "import": "./dist/text/index.js",
+        "types": "./dist/text/index.d.ts"
+      },
+      "./registry": {
+        "import": "./dist/registry/index.js",
+        "types": "./dist/registry/index.d.ts"
+      },
+      "./media-volume-envelope": {
+        "import": "./dist/runtime/mediaVolumeEnvelope.js",
+        "types": "./dist/runtime/mediaVolumeEnvelope.d.ts"
+      },
+      "./hf-ids": {
+        "import": "./dist/parsers/hfIds.js",
+        "types": "./dist/parsers/hfIds.d.ts"
+      },
+      "./gsap-parser": {
+        "import": "./dist/parsers/gsapParser.js",
+        "types": "./dist/parsers/gsapParser.d.ts"
+      },
+      "./gsap-parser-acorn": {
+        "import": "./dist/parsers/gsapParserAcorn.js",
+        "types": "./dist/parsers/gsapParserAcorn.d.ts"
+      },
+      "./gsap-writer-acorn": {
+        "import": "./dist/parsers/gsapWriterAcorn.js",
+        "types": "./dist/parsers/gsapWriterAcorn.d.ts"
+      },
+      "./gsap-constants": {
+        "import": "./dist/parsers/gsapConstants.js",
+        "types": "./dist/parsers/gsapConstants.d.ts"
+      },
+      "./spring-ease": {
+        "import": "./dist/parsers/springEase.js",
+        "types": "./dist/parsers/springEase.d.ts"
+      },
+      "./fonts/aliases": {
+        "import": "./dist/fonts/aliases.js",
+        "types": "./dist/fonts/aliases.d.ts"
+      },
+      "./fonts/system-locator": {
+        "import": "./dist/fonts/systemFontLocator.js",
+        "types": "./dist/fonts/systemFontLocator.d.ts"
+      },
+      "./schemas/registry.json": "./schemas/registry.json",
+      "./schemas/registry-item.json": "./schemas/registry-item.json"
+    },
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts"
+  },
+  "scripts": {
+    "build": "bun run build:hyperframes-runtime && tsc",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "typecheck": "tsc --noEmit",
+    "lint:runtime-preview-guards": "tsx scripts/lint-runtime-preview-guards.ts",
+    "build:hyperframes-runtime": "tsx scripts/build-hyperframes-runtime-artifact.ts",
+    "build:hyperframes-runtime:modular": "SANDBOX_RUNTIME_VARIANT=modular tsx scripts/build-hyperframes-runtime-artifact.ts",
+    "build:hyperframe-runtime": "tsx scripts/build-hyperframes-runtime-artifact.ts",
+    "test:hyperframe-runtime-contract": "tsx scripts/test-hyperframe-runtime-contract.ts",
+    "test:hyperframe-runtime-behavior": "tsx scripts/test-hyperframe-runtime-behavior.ts",
+    "test:hyperframe-runtime-seek": "tsx scripts/test-hyperframe-runtime-seek.ts",
+    "test:hyperframe-runtime-duration-guards": "tsx scripts/test-hyperframe-runtime-duration-guards.ts",
+    "test:hyperframe-runtime-parity": "tsx scripts/test-hyperframe-runtime-parity.ts",
+    "test:hyperframe-runtime-security": "tsx scripts/test-hyperframe-runtime-security.ts",
+    "test:hyperframe-linter": "tsx scripts/test-hyperframe-linter.ts",
+    "test:hyperframe-runtime-ci": "bun run build:hyperframes-runtime && bun run test:hyperframe-runtime-contract && bun run test:hyperframe-runtime-behavior && bun run test:hyperframe-runtime-seek && bun run test:hyperframe-runtime-duration-guards && bun run test:hyperframe-runtime-parity && bun run test:hyperframe-runtime-security",
+    "check:hyperframe-html": "tsx scripts/check-hyperframe-static.ts",
+    "debug:timeline": "tsx scripts/debug-timeline.ts",
+    "prepublishOnly": "echo skip"
+  },
+  "dependencies": {
+    "@babel/parser": "^7.27.0",
+    "@chenglou/pretext": "^0.0.5",
+    "acorn": "^8.17.0",
+    "acorn-walk": "^8.3.5",
+    "bpm-detective": "^2.0.5",
+    "magic-string": "^0.30.21",
+    "postcss": "^8.5.8",
+    "postcss-selector-parser": "^7.1.2",
+    "recast": "^0.23.11"
+  },
+  "devDependencies": {
+    "@types/jsdom": "^28.0.0",
+    "@types/node": "^25.0.10",
+    "@vitest/coverage-v8": "^3.2.4",
+    "jsdom": "^29.0.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.0.0",
+    "vitest": "^3.2.4"
+  },
+  "peerDependencies": {
+    "hono": "^4.0.0"
+  },
+  "peerDependenciesMeta": {
+    "hono": {
+      "optional": true
+    }
+  },
+  "optionalDependencies": {
+    "esbuild": "^0.25.12",
+    "linkedom": "^0.18.12"
+  }
+}

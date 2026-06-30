@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Locally Uncensored vs LM Studio — Open Source All-in-One vs Polished Chat Client</title>
+<meta name="description" content="Locally Uncensored vs LM Studio. LM Studio does chat — Locally Uncensored generates anything: text, images, video. Open source, uncensored, one app. Full comparison.">
+<meta name="keywords" content="lm studio alternative open source, lm studio vs, local AI app comparison, lm studio open source alternative">
+<meta property="og:title" content="Locally Uncensored vs LM Studio — Open Source All-in-One vs Polished Chat Client">
+<meta property="og:description" content="LM Studio does chat — Locally Uncensored generates anything: text, images, video. Open source, uncensored, one app. Full comparison.">
+<meta property="og:url" content="https://locallyuncensored.com/blog/locally-uncensored-vs-lm-studio.html">
+<meta property="og:type" content="article">
+<link rel="canonical" href="https://locallyuncensored.com/blog/locally-uncensored-vs-lm-studio.html">
+<meta name="robots" content="index, follow">
+<!-- Privacy: No external fonts loaded. Using system fonts. -->
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article","headline":"Locally Uncensored vs LM Studio — Open Source All-in-One vs Polished Chat Client","author":{"@type":"Person","name":"PurpleDoubleD"},"datePublished":"2026-03-29","dateModified":"2026-04-05","publisher":{"@type":"Organization","name":"Locally Uncensored"}}
+</script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',system-ui,sans-serif;background:#0a0a0a;color:#ededed;line-height:1.8}
+a{color:#8b5cf6;text-decoration:none}a:hover{text-decoration:underline}
+nav{position:fixed;top:0;width:100%;padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;background:rgba(10,10,10,0.9);backdrop-filter:blur(12px);border-bottom:1px solid #222;z-index:100}
+.nav-logo{font-weight:700;font-size:15px;color:#ededed}
+.nav-links a{font-size:14px;color:#888;margin-left:24px}
+article{max-width:720px;margin:0 auto;padding:100px 24px 80px}
+h1{font-size:clamp(28px,4vw,40px);font-weight:800;letter-spacing:-1px;line-height:1.2;margin-bottom:16px;background:linear-gradient(180deg,#fff,#999);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+h2{font-size:24px;font-weight:700;margin:48px 0 16px;letter-spacing:-0.5px}
+h3{font-size:18px;font-weight:600;margin:32px 0 12px}
+p{margin-bottom:16px;color:#ccc;font-size:16px}
+.meta{font-size:14px;color:#555;margin-bottom:32px}
+table{width:100%;border-collapse:collapse;margin:24px 0;font-size:14px}
+th{text-align:left;padding:12px;font-weight:600;color:#888;border-bottom:1px solid #222;text-transform:uppercase;font-size:12px;letter-spacing:0.5px}
+td{padding:12px;border-bottom:1px solid #1a1a1a}
+.check{color:#22c55e}.cross{color:#555}.hl{color:#8b5cf6;font-weight:600}
+.cta{text-align:center;padding:48px 0;margin-top:48px;border-top:1px solid #222}
+.btn{display:inline-block;padding:12px 24px;background:#fff;color:#000;border-radius:10px;font-weight:600;font-size:14px}
+.verdict{background:#161616;border:1px solid #222;border-radius:12px;padding:24px;margin:32px 0}
+.verdict h3{margin:0 0 8px;color:#8b5cf6}
+ul{margin:12px 0 16px 24px;color:#ccc}li{margin-bottom:8px;font-size:15px}
+@media(max-width:768px){article{padding:80px 16px 40px}h1{font-size:28px}}
+</style>
+</head>
+<body>
+<nav>
+<a href="https://locallyuncensored.com/" class="nav-logo">Locally Uncensored</a>
+<div><a href="../" class="nav-links">Home</a><a href="./" class="nav-links">Blog</a></div>
+</nav>
+<article>
+<h1>Locally Uncensored vs LM Studio</h1>
+<div class="meta">Published March 29, 2026 · 5 min read</div>
+
+<p><strong>LM Studio</strong> is one of the most polished local AI apps available — a native desktop client that makes running LLMs feel effortless. <strong>Locally Uncensored</strong> takes a different approach: open source, web-based, and combining chat with image and video generation.</p>
+<p>Both apps let you run AI models locally without cloud dependencies. The question is what matters more to you: polish and simplicity, or features and freedom.</p>
+
+<h2>Feature Comparison</h2>
+<table>
+<thead><tr><th>Feature</th><th class="hl">Locally Uncensored</th><th>LM Studio</th></tr></thead>
+<tbody>
+<tr><td>AI Chat</td><td class="check hl">Yes (Ollama)</td><td>Yes (built-in)</td></tr>
+<tr><td>Image Generation</td><td class="check hl"><span class="check">Yes (ComfyUI)</span></td><td><span class="cross">No</span></td></tr>
+<tr><td>Video Generation</td><td class="check hl"><span class="check">Yes (Wan 2.1)</span></td><td><span class="cross">No</span></td></tr>
+<tr><td>Open Source</td><td class="check hl"><span class="check">AGPL-3.0</span></td><td><span class="cross">Proprietary</span></td></tr>
+<tr><td>Native Desktop App</td><td class="check hl">Tauri (lightweight)</td><td>Electron</td></tr>
+<tr><td>Built-in Model Download</td><td class="check hl">Via Ollama</td><td>Yes (built-in browser)</td></tr>
+<tr><td>Uncensored by Default</td><td class="check hl"><span class="check">Yes</span></td><td><span class="cross">No</span></td></tr>
+<tr><td>API Server Mode</td><td class="check hl">Via Ollama</td><td>Yes (OpenAI compatible)</td></tr>
+<tr><td>Built-in Personas</td><td class="check hl">25+</td><td>No</td></tr>
+<tr><td>Price</td><td class="check hl">Free forever</td><td>Free (for now)</td></tr>
+<tr><td>Coding Agent</td><td class="check hl"><span class="check">Yes</span></td><td><span class="cross">No</span></td></tr>
+<tr><td>MCP Tools</td><td class="check hl"><span class="check">13 built-in</span></td><td><span class="cross">No</span></td></tr>
+<tr><td>File Upload + Vision</td><td class="check hl"><span class="check">Yes</span></td><td><span class="cross">No</span></td></tr>
+<tr><td>Thinking Mode</td><td class="check hl"><span class="check">Yes</span></td><td><span class="cross">No</span></td></tr>
+<tr><td>Granular Permissions</td><td class="check hl"><span class="check">7 categories</span></td><td><span class="cross">No</span></td></tr>
+<tr><td>Multi-Provider</td><td class="check hl"><span class="check">Ollama + OpenAI + Anthropic</span></td><td><span class="cross">Local only</span></td></tr>
+<tr><td>Model Load/Unload</td><td class="check hl"><span class="check">Yes (VRAM mgmt)</span></td><td><span class="check">Yes</span></td></tr>
+
+</tbody>
+</table>
+
+<h2>Where Locally Uncensored Wins</h2>
+<ul>
+<li><strong>Open Source (AGPL-3.0)</strong> — You can inspect, modify, and redistribute the code. LM Studio is closed source and could change licensing at any time.</li>
+<li><strong>Image + Video Generation</strong> — LM Studio is chat-only. Locally Uncensored generates images via Stable Diffusion/FLUX and video via Wan 2.1.</li>
+<li><strong>Uncensored by default</strong> — Ships with abliterated models. No safety disclaimers, no content filtering.</li>
+<li><strong>25+ Personas</strong> — Pre-built characters ready to go. LM Studio gives you a blank chat window.</li>
+<li><strong>Free forever</strong> — AGPL-3.0 licensed, will always be free. LM Studio's business model could change.</li>
+<li><strong>Coding Agent</strong> — Built-in coding agent that reads your codebase, writes files, and runs commands. LM Studio has no coding agent.</li>
+<li><strong>13 MCP Tools</strong> — Web search, file operations, shell access, screenshots, and more — all built in with no extensions needed.</li>
+<li><strong>File Upload with Vision</strong> — Drag and drop images into chat; vision models describe them automatically.</li>
+<li><strong>Thinking Mode</strong> — Collapsible reasoning blocks that work with all providers, showing the model's chain of thought.</li>
+<li><strong>Granular Permissions</strong> — 7 permission categories with 3 access levels for tool access control.</li>
+<li><strong>Multi-Provider Support</strong> — Use Ollama, OpenAI, and Anthropic simultaneously. LM Studio is local-only.</li>
+<li><strong>Model Load/Unload</strong> — Manage VRAM directly from the UI by loading and unloading models on demand.</li>
+</ul>
+
+<h2>Where LM Studio Wins</h2>
+<ul>
+<li><strong>Polish and UX</strong> — LM Studio is beautifully designed with a native feel. Model browsing and downloading is seamless.</li>
+<li><strong>Built-in inference</strong> — LM Studio runs models directly without needing Ollama as a separate backend.</li>
+<li><strong>Performance</strong> — Direct llama.cpp integration means potentially faster inference than going through Ollama.</li>
+<li><strong>Developer API</strong> — Built-in OpenAI-compatible API server for integrating with other tools.</li>
+<li><strong>Wider model format support</strong> — Directly loads GGUF files without conversion.</li>
+</ul>
+
+<div class="verdict">
+<h3>The Verdict</h3>
+<p><strong>Choose LM Studio</strong> if you want the most polished local chat experience with zero setup friction, and you only need text chat. It's the "just works" option.</p>
+<p><strong>Choose Locally Uncensored</strong> if open source matters to you, if you want image and video generation alongside chat, or if you prefer uncensored models by default. With v2.2.2, it also adds a coding agent, 13 MCP tools, vision support, multi-provider connectivity, and VRAM management. It does more, and you own it.</p>
+</div>
+
+<div class="cta">
+<h2>Try Locally Uncensored</h2>
+<p>Free, open source, AGPL-3.0 licensed. One command to get started.</p>
+<a href="https://github.com/PurpleDoubleD/locally-uncensored" class="btn">View on GitHub</a>
+</div>
+</article>
+</body>
+</html>

@@ -1,0 +1,513 @@
+<style data-screen="connections">
+
+/* ── Inline key/URL input ──────────────────────────────────── */
+.cxn-key-input {
+  flex: 1;
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 12px;
+  font-family: ui-monospace, 'Cascadia Code', monospace;
+  background: var(--paper);
+  color: var(--ink);
+  outline: none;
+  transition: border-color .15s, box-shadow .15s;
+}
+.cxn-key-input:focus {
+  border-color: var(--border-strong);
+  box-shadow: 0 0 0 2px rgba(20,20,19,.06);
+}
+.cxn-key-input::placeholder { color: var(--ink-2); font-family: var(--sans); }
+.cxn-key-input[readonly]    { background: var(--panel); color: var(--ink-2); cursor: default; }
+.cxn-key-input[disabled]    { background: var(--panel); opacity: .5; cursor: not-allowed; }
+.cxn-key-input.cxn-saved    { border-color: var(--green); }
+
+/* ── Section micro-label ──────────────────────────────────── */
+.cxn-section-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  margin: 28px 0 10px;
+}
+
+/* ── Warning note ─────────────────────────────────────────── */
+.cxn-note-warn {
+  border-color: var(--amber);
+  background: #fdf8ee;
+}
+
+/* ── Wizard link row ──────────────────────────────────────── */
+.cxn-wizard-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 0 2px;
+}
+
+/* ── Pod section ──────────────────────────────────────────── */
+.cxn-pod-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.cxn-pod-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--border);
+}
+.cxn-pod-item:last-child { border-bottom: none; }
+.cxn-pod-item-text { flex: 1; min-width: 0; }
+.cxn-pod-item-text strong { font-size: 14px; font-weight: 600; color: var(--ink); display: block; margin-bottom: 1px; }
+.cxn-pod-item-text small  { font-size: 12px; color: var(--ink-2); }
+.cxn-pod-disabled { opacity: .38; pointer-events: none; user-select: none; }
+.cxn-pod-disabled .btn,
+.cxn-pod-disabled .switch { cursor: not-allowed; }
+
+/* ── Inline code in notes ─────────────────────────────────── */
+#connections .note code {
+  font-family: ui-monospace, monospace;
+  font-size: 12px;
+  background: var(--panel);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+/* ── Status dot: empty = dashed ring ─────────────────────── */
+#connections .status-dot:not(.ok):not(.local) {
+  background: transparent;
+  border: 1.5px dashed var(--border-strong);
+}
+
+</style>
+
+<section class="page" id="connections">
+  <div class="content">
+
+    <h1>Connections</h1>
+    <p class="lede">Paste and verify each key once. Everything runs from your machine — keys never leave it.</p>
+
+    <!-- ── Security note ──────────────────────────────────── -->
+    <div class="note">
+      <strong>Local-only.</strong> Keys are written to a <code>.env</code> file on this machine and read by the Mira Agent on <code>127.0.0.1</code>. Nothing is ever sent to Supabase, Vercel, or another pod member. The swarm shares <em>available capacity</em>, not secrets — see <strong>SECURITY.md §2–3</strong>.
+    </div>
+
+    <!-- ── Connection rows ────────────────────────────────── -->
+    <div class="card" style="padding:0 20px;margin-top:20px;">
+
+      <!-- LM Studio -->
+      <div class="conn-row" data-provider="lmstudio">
+        <div class="conn-name">
+          LM Studio
+          <small>Script LLM · default</small>
+        </div>
+        <span class="badge local">Local</span>
+        <input class="cxn-key-input" type="text"
+               value="http://localhost:1234/v1"
+               aria-label="LM Studio base URL"
+               readonly
+               title="No key required — auto-detected at localhost:1234">
+        <span class="status-dot local" title="Running locally — no key needed"></span>
+        <button class="btn ghost sm" aria-label="Test LM Studio connection">Test</button>
+      </div>
+
+      <!-- NVIDIA NIM -->
+      <div class="conn-row" data-provider="nim">
+        <div class="conn-name">
+          NVIDIA NIM
+          <small>Free dev tier · ~40 req/min</small>
+        </div>
+        <span class="badge free">Free</span>
+        <input class="cxn-key-input" type="password"
+               value="nvapi-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+               aria-label="NVIDIA NIM API key"
+               placeholder="nvapi-…">
+        <span class="status-dot ok" title="Verified"></span>
+        <button class="btn ghost sm" aria-label="Test NVIDIA NIM connection">Test</button>
+      </div>
+
+      <!-- OpenRouter -->
+      <div class="conn-row" data-provider="openrouter">
+        <div class="conn-name">
+          OpenRouter
+          <small>Free / cheap LLM routing</small>
+        </div>
+        <span class="badge free">Free</span>
+        <input class="cxn-key-input" type="password"
+               placeholder="sk-or-…"
+               aria-label="OpenRouter API key">
+        <span class="status-dot" title="Not set — LM Studio is active fallback"></span>
+        <button class="btn ghost sm" aria-label="Test OpenRouter connection">Test</button>
+      </div>
+
+      <!-- Mistral La Plateforme -->
+      <div class="conn-row" data-provider="mistral">
+        <div class="conn-name">
+          Mistral La Plateforme
+          <small>Free tier · ~1B tokens/mo</small>
+        </div>
+        <span class="badge free">Free</span>
+        <input class="cxn-key-input" type="password"
+               placeholder="Mistral API key… (largest free LLM pool)"
+               aria-label="Mistral La Plateforme API key">
+        <span class="status-dot" title="Not set — free overflow + swarm capacity"></span>
+        <button class="btn ghost sm" aria-label="Test Mistral connection">Test</button>
+      </div>
+
+      <!-- Groq -->
+      <div class="conn-row" data-provider="groq">
+        <div class="conn-name">
+          Groq
+          <small>Fast inference · ~14.4k req/day</small>
+        </div>
+        <span class="badge free">Free</span>
+        <input class="cxn-key-input" type="password"
+               placeholder="gsk_…"
+               aria-label="Groq API key">
+        <span class="status-dot" title="Not set — fast free overflow (good for headless volume)"></span>
+        <button class="btn ghost sm" aria-label="Test Groq connection">Test</button>
+      </div>
+
+      <!-- Cerebras -->
+      <div class="conn-row" data-provider="cerebras">
+        <div class="conn-name">
+          Cerebras
+          <small>Fastest gpt-oss-120b · ~14.4k req/day</small>
+        </div>
+        <span class="badge free">Free</span>
+        <input class="cxn-key-input" type="password"
+               placeholder="csk-…"
+               aria-label="Cerebras API key">
+        <span class="status-dot" title="Not set — fast free overflow"></span>
+        <button class="btn ghost sm" aria-label="Test Cerebras connection">Test</button>
+      </div>
+
+      <!-- Cloudflare Workers AI -->
+      <div class="conn-row" data-provider="cloudflare">
+        <div class="conn-name">
+          Cloudflare Workers AI
+          <small>10k neurons/day · Llama/Qwen/GLM</small>
+        </div>
+        <span class="badge free">Free</span>
+        <input class="cxn-key-input" type="password"
+               placeholder="Account ID + API token…"
+               aria-label="Cloudflare Workers AI token">
+        <span class="status-dot" title="Not set — free overflow"></span>
+        <button class="btn ghost sm" aria-label="Test Cloudflare Workers AI connection">Test</button>
+      </div>
+
+      <!-- GitHub Models -->
+      <div class="conn-row" data-provider="github-models">
+        <div class="conn-name">
+          GitHub Models
+          <small>Frontier (gpt-5/o3/DeepSeek) · tight caps</small>
+        </div>
+        <span class="badge free">Free</span>
+        <input class="cxn-key-input" type="password"
+               placeholder="github_pat_… (Copilot-tier)"
+               aria-label="GitHub Models token">
+        <span class="status-dot" title="Not set — frontier models for planning/QA, low token limits"></span>
+        <button class="btn ghost sm" aria-label="Test GitHub Models connection">Test</button>
+      </div>
+
+      <!-- ComfyUI -->
+      <div class="conn-row" data-provider="comfy-ltx">
+        <div class="conn-name">
+          ComfyUI
+          <small>Local images &amp; LTX video</small>
+        </div>
+        <span class="badge local">Local</span>
+        <input class="cxn-key-input" type="text"
+               value="http://localhost:8188"
+               aria-label="ComfyUI base URL"
+               readonly
+               title="No key required — running locally">
+        <span class="status-dot local" title="Running locally — no key needed"></span>
+        <button class="btn ghost sm" aria-label="Test ComfyUI connection">Test</button>
+      </div>
+
+      <!-- Gemini -->
+      <div class="conn-row" data-provider="gemini">
+        <div class="conn-name">
+          Gemini
+          <small>Images · LLM · free tier</small>
+        </div>
+        <span class="badge free">Free</span>
+        <input class="cxn-key-input" type="password"
+               value="AIzaSyXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+               aria-label="Gemini API key"
+               placeholder="AIza-…">
+        <span class="status-dot ok" title="Verified"></span>
+        <button class="btn ghost sm" aria-label="Test Gemini connection">Test</button>
+      </div>
+
+      <!-- Vertex AI / Veo -->
+      <div class="conn-row" data-provider="veo-quota">
+        <div class="conn-name">
+          Vertex AI (Veo)
+          <small>Video heroes · on quota</small>
+        </div>
+        <span class="badge quota">Quota</span>
+        <input class="cxn-key-input" type="text"
+               value="mira-studio-prod · us-central1"
+               aria-label="Vertex AI GCP project"
+               readonly
+               title="Authenticated via ADC / service account in .env">
+        <span class="status-dot ok" title="Verified — ADC active"></span>
+        <button class="btn ghost sm" aria-label="Test Vertex AI / Veo connection">Test</button>
+      </div>
+
+      <!-- Pexels -->
+      <div class="conn-row">
+        <div class="conn-name">
+          Pexels
+          <small>Free stock photos &amp; video</small>
+        </div>
+        <span class="badge free">Free</span>
+        <input class="cxn-key-input" type="password"
+               value="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+               aria-label="Pexels API key"
+               placeholder="Pexels key">
+        <span class="status-dot ok" title="Verified"></span>
+        <button class="btn ghost sm" aria-label="Test Pexels connection">Test</button>
+      </div>
+
+      <!-- Pixabay / Freesound -->
+      <div class="conn-row" data-provider="pixabay">
+        <div class="conn-name">
+          Pixabay / Freesound
+          <small>Royalty-free music &amp; SFX</small>
+        </div>
+        <span class="badge free">Free</span>
+        <input class="cxn-key-input" type="password"
+               value="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+               aria-label="Pixabay API key"
+               placeholder="Pixabay key · Freesound uses OAuth (auto)">
+        <span class="status-dot ok" title="Verified"></span>
+        <button class="btn ghost sm" aria-label="Test Pixabay / Freesound connection">Test</button>
+      </div>
+
+      <!-- YouTube Data API -->
+      <div class="conn-row">
+        <div class="conn-name">
+          YouTube
+          <small>Data API · posting</small>
+        </div>
+        <span class="badge free">Free</span>
+        <input class="cxn-key-input" type="password"
+               placeholder="OAuth client JSON path or API key…"
+               aria-label="YouTube Data API key">
+        <span class="status-dot" title="Not set — posting to YouTube disabled"></span>
+        <button class="btn ghost sm" aria-label="Test YouTube Data API connection">Test</button>
+      </div>
+
+      <!-- Sarvam -->
+      <div class="conn-row" data-provider="sarvam">
+        <div class="conn-name">
+          Sarvam
+          <small>Hindi voice · metered</small>
+        </div>
+        <span class="badge metered">Metered</span>
+        <input class="cxn-key-input" type="password"
+               value="sarvam-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+               aria-label="Sarvam API key"
+               placeholder="sarvam-…">
+        <span class="status-dot ok" title="Verified — $1.10 used MTD"></span>
+        <button class="btn ghost sm" aria-label="Test Sarvam connection">Test</button>
+      </div>
+
+      <!-- Vultr -->
+      <div class="conn-row">
+        <div class="conn-name">
+          Vultr
+          <small>Cloud-burst GPU · free $250 credit</small>
+        </div>
+        <span class="badge free">Free</span>
+        <input class="cxn-key-input" type="password"
+               placeholder="Vultr API key…"
+               aria-label="Vultr API key">
+        <span class="status-dot" title="Not set — free credit available; enter key to unlock burst"></span>
+        <button class="btn ghost sm" aria-label="Test Vultr connection">Test</button>
+      </div>
+
+      <!-- AWS -->
+      <div class="conn-row">
+        <div class="conn-name">
+          AWS
+          <small>Cloud-burst fallback · metered</small>
+        </div>
+        <span class="badge metered">Metered</span>
+        <input class="cxn-key-input" type="password"
+               placeholder="AWS_ACCESS_KEY_ID (secret in .env)"
+               aria-label="AWS access key ID">
+        <span class="status-dot" title="Not set — auto-teardown + budget cap enforced"></span>
+        <button class="btn ghost sm" aria-label="Test AWS connection">Test</button>
+      </div>
+
+      <!-- Blotato -->
+      <div class="conn-row">
+        <div class="conn-name">
+          Blotato
+          <small>IG posting · later</small>
+        </div>
+        <span class="badge metered">Metered</span>
+        <input class="cxn-key-input" type="password"
+               placeholder="Not needed yet — set up when ready"
+               aria-label="Blotato API key"
+               disabled>
+        <span class="status-dot" title="Not configured — come back later"></span>
+        <button class="btn ghost sm" disabled style="opacity:.35;cursor:not-allowed"
+                aria-label="Test Blotato connection (not yet configured)">Test</button>
+      </div>
+
+    </div><!-- /.card -->
+
+    <!-- ── AWS spend warning ──────────────────────────────── -->
+    <div class="note cxn-note-warn" style="margin-top:16px;">
+      <strong>AWS spend warning:</strong> bursting to AWS incurs real charges. The Mira Agent auto-tears down the GPU when idle and enforces the burst budget cap configured in
+      <button class="btn ghost sm" onclick="go('engines')" style="padding:0 6px;font-size:12px;height:auto;line-height:1.6">Engines</button>.
+      Vultr free credit runs first ($247.20 of $250 remaining).
+    </div>
+
+    <!-- ── Wizard link ─────────────────────────────────────── -->
+    <div class="cxn-wizard-row">
+      <button class="btn ghost" onclick="go('onboarding')">↩ Re-run setup wizard</button>
+      <span class="muted" style="font-size:12px">re-detects LM Studio, re-probes GPU tier, steps through each key</span>
+    </div>
+
+    <!-- ── Pod mode ───────────────────────────────────────── -->
+    <div class="cxn-section-label">Pod mode</div>
+
+    <div class="card">
+
+      <div class="cxn-pod-header">
+        <h2 style="margin:0;flex:1">Pair &amp; share capacity</h2>
+        <span class="badge" style="background:var(--panel-2);color:var(--ink-2);font-weight:500;">Solo mode — pod features off</span>
+      </div>
+
+      <p class="muted" style="font-size:13px;margin-bottom:16px;line-height:1.6;">
+        Pod mode lets friends run their own Mira Agent and share available quota across the group —
+        <strong>capacity only, never keys</strong>. Enable by signing in and joining a pod.
+      </p>
+
+      <div class="cxn-pod-disabled" aria-disabled="true" aria-label="Pod features unavailable in solo mode">
+
+        <div class="cxn-pod-item">
+          <div class="cxn-pod-item-text">
+            <strong>Sign in with Supabase Auth</strong>
+            <small>Creates your pod identity — no keys are ever stored in Supabase</small>
+          </div>
+          <button class="btn sm" disabled>Sign in</button>
+        </div>
+
+        <div class="cxn-pod-item">
+          <div class="cxn-pod-item-text">
+            <strong>Join a pod by invite</strong>
+            <small>Paste the invite link or code a friend shared with you</small>
+          </div>
+          <button class="btn ghost sm" disabled>Enter code</button>
+        </div>
+
+        <div class="cxn-pod-item">
+          <div class="cxn-pod-item-text">
+            <strong>Pair this machine's Mira Agent</strong>
+            <small>Generates a one-time pairing code; shows agent online/offline and assigned channels in the pod</small>
+          </div>
+          <button class="btn ghost sm" disabled>Get code</button>
+        </div>
+
+        <div class="cxn-pod-item">
+          <div class="cxn-pod-item-text">
+            <strong>Opt your own accounts into the swarm</strong>
+            <small>NIM · OpenRouter · Mistral · Groq · Cerebras · Cloudflare · GitHub Models · Gemini · Veo · AWS — only <em>available capacity</em> is published to the pod ledger, never keys</small>
+          </div>
+          <label class="switch" title="Opt accounts into the swarm (requires pod)">
+            <input type="checkbox" disabled aria-label="Opt accounts into swarm">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+      </div><!-- /.cxn-pod-disabled -->
+
+      <div class="note" style="margin-top:16px;">
+        Pod features activate after sign-in. Keys stay in your local <code>.env</code>; Supabase holds only coordination metadata (roles, queue, job status). Your machine pulls only its assigned jobs — no inbound connections or tunnels ever open.
+      </div>
+
+    </div><!-- /.card -->
+
+  </div><!-- /.content -->
+</section>
+
+<script data-screen="connections">
+(function () {
+  'use strict';
+
+  var section = document.getElementById('connections');
+
+  // ── Test buttons: simulate connection check ──────────────
+  section.querySelectorAll('.conn-row .btn:not([disabled])').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var row   = btn.closest('.conn-row');
+      var dot   = row.querySelector('.status-dot');
+      var input = row.querySelector('.cxn-key-input');
+      var orig  = btn.textContent;
+
+      btn.textContent = 'Testing…';
+      btn.disabled    = true;
+
+      setTimeout(function () {
+        btn.textContent = orig;
+        btn.disabled    = false;
+
+        // Local rows keep their .local dot — just report OK ping
+        if (dot && dot.classList.contains('local')) return;
+
+        var hasValue = input && input.value.trim().length > 4;
+        if (dot) {
+          dot.classList.remove('ok');
+          if (hasValue) dot.classList.add('ok');
+        }
+      }, 800);
+    });
+  });
+
+  // ── Mark saved on input change ───────────────────────────
+  section.querySelectorAll('.cxn-key-input:not([readonly]):not([disabled])').forEach(function (inp) {
+    inp.addEventListener('change', function () {
+      // In the real app: POST to localhost agent → writes .env
+      inp.classList.add('cxn-saved');
+      setTimeout(function () { inp.classList.remove('cxn-saved'); }, 1400);
+    });
+  });
+
+  // ── Live API hydration — marks provider dots from /support ──
+  document.addEventListener('mira:live', function () {
+    if (!window.mira) return;
+    mira.fetchJSON('/support', null).then(function (data) {
+      if (!data || !data.providers) return;
+      // Flatten all provider arrays into a lookup set
+      var live = new Set();
+      Object.keys(data.providers).forEach(function (cat) {
+        var arr = data.providers[cat];
+        if (Array.isArray(arr)) arr.forEach(function (p) { live.add(p); });
+      });
+      section.querySelectorAll('.conn-row[data-provider]').forEach(function (row) {
+        if (!live.has(row.dataset.provider)) return;
+        var dot = row.querySelector('.status-dot');
+        if (dot && !dot.classList.contains('local')) {
+          dot.classList.add('ok');
+          if (!dot.title || dot.title.indexOf('Not set') !== -1) {
+            dot.title = 'Verified (live)';
+          }
+        }
+      });
+    });
+  });
+
+})();
+</script>

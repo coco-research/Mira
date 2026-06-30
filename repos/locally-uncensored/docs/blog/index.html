@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blog — Locally Uncensored</title>
+<meta name="description" content="Generate anything — text, images, video. Locally. Uncensored. Articles, comparisons, and guides for the only desktop app with AI chat, image gen, and video gen in one.">
+<link rel="canonical" href="https://locallyuncensored.com/blog/">
+<meta name="robots" content="index, follow">
+<!-- Privacy: No external fonts loaded. Using system fonts. -->
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',system-ui,sans-serif;background:#0a0a0a;color:#ededed;line-height:1.6}
+a{color:#8b5cf6;text-decoration:none}a:hover{text-decoration:underline}
+nav{position:fixed;top:0;width:100%;padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;background:rgba(10,10,10,0.9);backdrop-filter:blur(12px);border-bottom:1px solid #222;z-index:100}
+.nav-logo{font-weight:700;font-size:15px;color:#ededed}
+.nav-links a{font-size:14px;color:#888;margin-left:24px}
+main{max-width:720px;margin:0 auto;padding:100px 24px 80px}
+h1{font-size:36px;font-weight:800;letter-spacing:-1px;margin-bottom:32px}
+.post-card{border:1px solid #222;border-radius:12px;padding:24px;margin-bottom:16px;transition:border-color 0.2s}
+.post-card:hover{border-color:#333}
+.post-card h2{font-size:18px;font-weight:600;margin-bottom:8px}
+.post-card h2 a{color:#ededed}
+.post-card p{color:#888;font-size:14px}
+.post-card .meta{font-size:12px;color:#555;margin-top:8px}
+.post-card .tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:6px;margin-right:6px;font-weight:500}
+.tag-tutorial{background:rgba(34,197,94,0.1);color:#22c55e;border:1px solid rgba(34,197,94,0.2)}
+.tag-guide{background:rgba(139,92,246,0.1);color:#8b5cf6;border:1px solid rgba(139,92,246,0.2)}
+.tag-comparison{background:rgba(139,92,246,0.1);color:#8b5cf6;border:1px solid rgba(139,92,246,0.2)}
+.tag-opinion{background:rgba(34,197,94,0.1);color:#22c55e;border:1px solid rgba(34,197,94,0.2)}
+.filters{display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap}
+.filter-btn{font-size:13px;padding:6px 14px;border-radius:8px;border:1px solid #222;background:transparent;color:#888;cursor:pointer;transition:all 0.15s;font-family:'Inter',system-ui,sans-serif}
+.filter-btn:hover,.filter-btn.active{border-color:#8b5cf6;color:#ededed;background:rgba(139,92,246,0.08)}
+</style></head><body>
+<nav>
+<a href="https://locallyuncensored.com/" class="nav-logo">Locally Uncensored</a>
+<div><a href="../" class="nav-links">Home</a><a href="https://github.com/PurpleDoubleD/locally-uncensored" class="nav-links">GitHub</a></div>
+</nav>
+<main>
+<h1>Blog</h1>
+<div class="filters">
+<button class="filter-btn active" onclick="filterPosts('all')">All</button>
+<button class="filter-btn" onclick="filterPosts('tutorial')">Tutorials</button>
+<button class="filter-btn" onclick="filterPosts('guide')">Guides</button>
+<button class="filter-btn" onclick="filterPosts('comparison')">Comparisons</button>
+<button class="filter-btn" onclick="filterPosts('opinion')">Opinion</button>
+</div>
+<div class="post-card" data-category="guide"><h2><a href="locally-uncensored-v2-4-0-release.html">v2.4.0 — Settings Polish, Linux Drag Fix, and Configurable HuggingFace Path</a></h2><p>Single-instance lock, working Reset Tutorial button, Re-run onboarding, in-app Privacy section, configurable HuggingFace download folder, and a Linux window drag fix.</p><div class="meta"><span class="tag tag-guide">Release</span>April 23, 2026 · 6 min read</div></div>
+<div class="post-card" data-category="guide"><h2><a href="abliterated-models-guide.html">Abliterated Models Guide — Qwen 3.6, Gemma 4 Heretic, Llama 3.1 Uncensored</a></h2><p>What abliteration is, which uncensored models are available (Qwen 3.6, Gemma 4 Heretic, Llama 3.1, Hermes 3), where to download GGUF files, and how to run them with one click.</p><div class="meta"><span class="tag tag-guide">Guide</span>April 23, 2026 · 8 min read</div></div>
+<div class="post-card" data-category="tutorial"><h2><a href="how-to-run-qwen-3-6-locally.html">How to Run Qwen 3.6 Locally — 27B Dense, 35B MoE, and Coding Variants</a></h2><p>Step-by-step setup for Qwen 3.6 on your own hardware. The 27B dense model, 35B MoE, NVFP4 and BF16 variants, hardware requirements, and GGUF download links.</p><div class="meta"><span class="tag tag-tutorial">Tutorial</span>April 23, 2026 · 10 min read</div></div>
+<div class="post-card" data-category="guide"><h2><a href="locally-uncensored-v2-3-1-release.html">v2.3.1 — In-App Ollama Install and ComfyUI Port Config</a></h2><p>In-app Ollama download and install, configurable ComfyUI port and path, step-by-step install progress, and provider status fixes.</p><div class="meta"><span class="tag tag-guide">Release</span>April 12, 2026 · 4 min read</div></div>
+<div class="post-card" data-category="guide"><h2><a href="gemma-4-local-guide.html">Google Gemma 4 — Run It Locally, Uncensored Variants, Full Guide</a></h2><p>Complete guide to Gemma 4. From the tiny E4B (4 GB VRAM) to the frontier 27B dense model. Native tool calling, vision, 256K context. Heretic and abliterated uncensored variants.</p><div class="meta"><span class="tag tag-guide">Guide</span>April 10, 2026 · 6 min read</div></div>
+<div class="post-card" data-category="tutorial"><h2><a href="image-to-image-local-ai.html">Image-to-Image with Local AI — Transform Photos with FLUX, Z-Image, and SDXL</a></h2><p>Upload a photo, adjust denoise, transform with any prompt. Works with every image model. No cloud, no content filters, no limits.</p><div class="meta"><span class="tag tag-tutorial">Tutorial</span>April 10, 2026 · 5 min read</div></div>
+<div class="post-card" data-category="guide"><h2><a href="locally-uncensored-v2-3-0-release.html">v2.3.0 — ComfyUI Plug & Play, Image-to-Video, and Model Bundles</a></h2><p>ComfyUI auto-detection, one-click model bundles, Image-to-Image, Image-to-Video on 6 GB VRAM, Z-Image uncensored generation, GLM 5.1 and Gemma 4 support.</p><div class="meta"><span class="tag tag-guide">Release</span>April 10, 2026 · 10 min read</div></div>
+<div class="post-card" data-category="guide"><h2><a href="codex-cli-universal-model-support.html">Your Local AI Agent Shouldn't Care Which Model You Run</a></h2><p>Our Coding Agent now works with any model — native tool calling for supported models, Hermes XML fallback for everything else. How we made a universal coding agent.</p><div class="meta"><span class="tag tag-guide">Tool Calling</span>April 9, 2026 · 9 min read</div></div>
+<div class="post-card" data-category="guide"><h2><a href="locally-uncensored-v2-2-2-release.html">Locally Uncensored v2.2.2 — Coding Agent, MCP Tools, Vision & Thinking Mode</a></h2><p>The biggest update yet — a built-in coding agent, 13 MCP tools with smart filtering, file upload with vision, provider-agnostic thinking mode, granular permissions, and a complete UI overhaul.</p><div class="meta"><span class="tag tag-guide">Release</span>April 5, 2026 · 14 min read</div></div>
+<div class="post-card" data-category="guide"><h2><a href="locally-uncensored-v1-5-release.html">Locally Uncensored v1.5 Release: Dynamic Workflows, CivitAI Marketplace & Desktop App</a></h2><p>Dynamic workflow builder, CivitAI model marketplace, Tauri v2 desktop app, privacy hardening, 6 model bundles, and local Whisper STT.</p><div class="meta"><span class="tag tag-guide">Release</span>April 2, 2026 · 12 min read</div></div>
+<div class="post-card" data-category="tutorial"><h2><a href="how-to-run-flux-locally.html">How to Run Flux Locally — Step-by-Step Guide for AI Image Generation</a></h2><p>Learn how to run FLUX.1 locally on your own GPU for free AI image generation. Complete setup guide with ComfyUI.</p><div class="meta"><span class="tag tag-tutorial">Tutorial</span>April 2, 2026 · 8 min read</div></div>
+<div class="post-card" data-category="guide"><h2><a href="best-uncensored-ai-models-2026.html">Best Uncensored AI Models in 2026 — Complete Guide</a></h2><p>The definitive guide to uncensored and abliterated AI models. Chat, image, and video models ranked by quality and VRAM.</p><div class="meta"><span class="tag tag-guide">Guide</span>April 2, 2026 · 10 min read</div></div>
+<div class="post-card" data-category="tutorial"><h2><a href="how-to-generate-ai-videos-locally.html">How to Generate AI Videos Locally with Wan 2.1 and HunyuanVideo</a></h2><p>Generate AI videos on your own hardware. Full local setup guide — no cloud API, no subscriptions.</p><div class="meta"><span class="tag tag-tutorial">Tutorial</span>April 2, 2026 · 8 min read</div></div>
+<div class="post-card" data-category="tutorial"><h2><a href="comfyui-beginners-guide.html">ComfyUI Beginners Guide — Your First AI Image in 5 Minutes</a></h2><p>Get started with ComfyUI for AI image generation. Setup, your first image, and workflow basics.</p><div class="meta"><span class="tag tag-tutorial">Tutorial</span>April 2, 2026 · 7 min read</div></div>
+<div class="post-card" data-category="opinion"><h2><a href="why-run-ai-locally.html">Why Run AI Locally? Privacy, Freedom, and No Subscriptions</a></h2><p>Running AI locally means full privacy, no content filters, and zero recurring costs. The case for local AI.</p><div class="meta"><span class="tag tag-opinion">Opinion</span>April 2, 2026 · 6 min read</div></div>
+<div class="post-card" data-category="guide"><h2><a href="best-local-ai-apps-2026.html">Best Local AI Apps in 2026 — Run AI on Your Own Hardware</a></h2><p>Complete comparison of GPT4All, Open WebUI, LM Studio, Jan, Kobold.cpp, SillyTavern, Msty, and Locally Uncensored.</p><div class="meta"><span class="tag tag-guide">Guide</span>March 30, 2026 · 10 min read</div></div>
+<div class="post-card" data-category="comparison"><h2><a href="locally-uncensored-vs-gpt4all.html">Locally Uncensored vs GPT4All</a></h2><p>All-in-one AI creative suite vs the most popular local chatbot with document RAG.</p><div class="meta"><span class="tag tag-comparison">Comparison</span>March 30, 2026 · 6 min read</div></div>
+<div class="post-card" data-category="comparison"><h2><a href="locally-uncensored-vs-koboldcpp.html">Locally Uncensored vs Kobold.cpp</a></h2><p>Full ComfyUI image/video generation vs the best creative writing AI tool.</p><div class="meta"><span class="tag tag-comparison">Comparison</span>March 30, 2026 · 6 min read</div></div>
+<div class="post-card" data-category="comparison"><h2><a href="locally-uncensored-vs-jan.html">Locally Uncensored vs Jan.ai</a></h2><p>Lightweight Tauri app with image gen vs polished Electron chat client with cloud API support.</p><div class="meta"><span class="tag tag-comparison">Comparison</span>March 30, 2026 · 6 min read</div></div>
+<div class="post-card" data-category="comparison"><h2><a href="locally-uncensored-vs-msty.html">Locally Uncensored vs Msty</a></h2><p>Fully open source AGPL-3.0 app with creative AI vs proprietary multi-provider chat hub.</p><div class="meta"><span class="tag tag-comparison">Comparison</span>March 30, 2026 · 6 min read</div></div>
+<div class="post-card" data-category="tutorial"><h2><a href="run-uncensored-ai-locally.html">How to Run Uncensored AI Locally: Chat, Images & Video in One App</a></h2><p>A complete guide to running AI locally without restrictions. Setup, models, and why local beats cloud.</p><div class="meta"><span class="tag tag-tutorial">Tutorial</span>March 29, 2026 · 8 min read</div></div>
+<div class="post-card" data-category="comparison"><h2><a href="locally-uncensored-vs-open-webui.html">Locally Uncensored vs Open WebUI</a></h2><p>Both are open-source Ollama frontends. Only one combines chat, image gen, and video generation.</p><div class="meta"><span class="tag tag-comparison">Comparison</span>March 29, 2026 · 5 min read</div></div>
+<div class="post-card" data-category="comparison"><h2><a href="locally-uncensored-vs-lm-studio.html">Locally Uncensored vs LM Studio</a></h2><p>Open source all-in-one vs polished closed-source chat client. Which local AI app should you pick?</p><div class="meta"><span class="tag tag-comparison">Comparison</span>March 29, 2026 · 5 min read</div></div>
+<div class="post-card" data-category="comparison"><h2><a href="locally-uncensored-vs-sillytavern.html">Locally Uncensored vs SillyTavern</a></h2><p>Both run uncensored AI locally. One is built for roleplay, the other for everything else.</p><div class="meta"><span class="tag tag-comparison">Comparison</span>March 29, 2026 · 5 min read</div></div>
+</main>
+<script>
+function filterPosts(cat){document.querySelectorAll('.filter-btn').forEach(b=>b.classList.toggle('active',b.textContent.toLowerCase()===cat||cat==='all'&&b.textContent==='All'));document.querySelectorAll('.post-card').forEach(c=>{c.style.display=cat==='all'||c.dataset.category===cat?'':'none'})}
+</script>
+</body></html>

@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Abliterated Models Guide — Qwen 3.6, Gemma 4 Heretic, Llama 3.1 Uncensored Download Links</title>
+<meta name="description" content="Complete guide to abliterated AI models in 2026. What abliteration is, which models are available (Qwen 3.6, Gemma 4 Heretic, Llama 3.1, Hermes 3), where to download GGUF files, and how to run them locally with one click.">
+<meta property="og:title" content="Abliterated Models Guide — Qwen 3.6, Gemma 4 Heretic, Llama 3.1 Uncensored">
+<meta property="og:description" content="What abliteration is, which models are available, where to download, and how to run abliterated models locally.">
+<meta property="og:image" content="https://raw.githubusercontent.com/PurpleDoubleD/locally-uncensored/master/docs/social-preview.png">
+<meta property="og:url" content="https://locallyuncensored.com/blog/abliterated-models-guide.html">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2026-04-23">
+<meta property="article:author" content="PurpleDoubleD">
+<meta property="article:tag" content="Abliterated">
+<meta property="article:tag" content="Uncensored AI">
+<meta property="article:tag" content="Local LLM">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Abliterated Models Guide — 2026 Edition">
+<meta name="twitter:description" content="What abliteration is and how to run uncensored models locally with one click.">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/PurpleDoubleD/locally-uncensored/master/docs/social-preview.png">
+<link rel="canonical" href="https://locallyuncensored.com/blog/abliterated-models-guide.html">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#0a0a0a">
+<link rel="icon" href="../favicon.png">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","headline":"Abliterated Models Guide — Qwen 3.6, Gemma 4 Heretic, Llama 3.1 Uncensored Download Links","description":"What abliteration is, which abliterated models are available in 2026 (Qwen 3.6, Gemma 4 Heretic, Llama 3.1, Hermes 3), HuggingFace download URLs, and how to run them locally via Ollama or Locally Uncensored.","image":"https://raw.githubusercontent.com/PurpleDoubleD/locally-uncensored/master/docs/social-preview.png","datePublished":"2026-04-23","dateModified":"2026-04-23","author":{"@type":"Person","name":"PurpleDoubleD","url":"https://github.com/PurpleDoubleD"},"publisher":{"@type":"Organization","name":"Locally Uncensored","url":"https://locallyuncensored.com/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://locallyuncensored.com/blog/abliterated-models-guide.html"},"keywords":"abliterated models, abliterated qwen 3.6, gemma 4 heretic, llama 3.1 abliterated, hermes 3 uncensored, abliterated gguf download, uncensored local ai, run uncensored llm locally"}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is an abliterated model?","acceptedAnswer":{"@type":"Answer","text":"An abliterated model is a base AI model whose refusal direction in the residual stream has been removed via a technique called orthogonalization. The model still has the same underlying capabilities and training, but no longer refuses requests categorically. It will still apply common-sense judgement and is not lobotomised — just less likely to say 'I cannot help with that' to benign or research-adjacent questions."}},{"@type":"Question","name":"Are abliterated models legal?","acceptedAnswer":{"@type":"Answer","text":"Yes. Abliterated models are derived works of openly licensed models (Llama, Gemma, Qwen) and inherit the parent license terms (mostly Apache 2.0 and Llama Community License). The abliteration process itself is published research, not a hack. Running them locally on your own hardware is no different legally from running the original model."}},{"@type":"Question","name":"Where can I download abliterated GGUF files?","acceptedAnswer":{"@type":"Answer","text":"HuggingFace hosts hundreds. Reliable maintainers include richardyoung (Qwen 3 abliterated variants), mannix (Llama 3.1 abliterated), Stabhappy (Gemma 4 31B Heretic), huihui-ai (Huihui-GLM-5.1), and the abliteration tag on HuggingFace. Locally Uncensored bundles 34 curated abliterated GGUFs in its Discover tab with one-click download."}},{"@type":"Question","name":"What is the difference between abliterated and uncensored?","acceptedAnswer":{"@type":"Answer","text":"Uncensored is a marketing term that covers any model finetuned or trained without restrictive instruction following. Abliterated is a specific technical method (orthogonalisation of the refusal direction) applied to an existing base model. All abliterated models are uncensored, but not all uncensored models are abliterated — some are full retrains (e.g. Dolphin), some are LoRA-tuned (e.g. Hermes), some are merge-based."}},{"@type":"Question","name":"Do abliterated models perform worse than the originals?","acceptedAnswer":{"@type":"Answer","text":"Slightly, in measurable but small ways. Most benchmarks show 1-3% degradation on reasoning tasks because the orthogonalisation removes some legitimate signal alongside the refusal direction. For chat, creative writing, roleplay, and most coding the degradation is invisible. The abliterated Qwen 3.6 27B for example scores within margin of error on HumanEval and MMLU compared to the base model."}},{"@type":"Question","name":"Can I run abliterated models on a 12GB GPU?","acceptedAnswer":{"@type":"Answer","text":"Yes. The abliterated Qwen 3 14B Q4_K_M (9 GB) fits in 12 GB VRAM with room for context. The abliterated Llama 3.1 8B Q5_K_M (5.7 GB) leaves plenty of headroom. Larger abliterated models (Gemma 4 31B Heretic at 17 GB) need 24 GB VRAM or step-down quants."}}]}
+</script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0a;--bg-subtle:#111;--bg-card:#161616;--border:#222;--border-hover:#333;--text:#ededed;--text-secondary:#888;--text-tertiary:#555;--accent:#8b5cf6;--accent-dim:rgba(139,92,246,0.08);--radius:12px;--font:'Inter',system-ui,-apple-system,sans-serif}
+body{font-family:var(--font);background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;line-height:1.6}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+::selection{background:var(--accent);color:#fff}
+nav{position:fixed;top:0;width:100%;padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;background:rgba(10,10,10,0.8);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);z-index:100}
+.nav-left{display:flex;align-items:center;gap:32px}
+.nav-logo{font-weight:700;font-size:15px;letter-spacing:-0.3px;display:flex;align-items:center;gap:8px;color:var(--text)}
+.nav-logo:hover{text-decoration:none}
+.nav-logo svg{width:18px;height:18px;opacity:0.7}
+.nav-links{display:flex;gap:24px}
+.nav-links a{font-size:14px;color:var(--text-secondary);transition:color 0.15s}
+.nav-links a:hover{color:var(--text);text-decoration:none}
+.nav-links a.active{color:var(--text)}
+.nav-right{display:flex;align-items:center;gap:12px}
+.btn-nav{font-size:13px;font-weight:500;padding:6px 14px;border-radius:8px;border:1px solid var(--border);color:var(--text-secondary);transition:all 0.15s;background:transparent;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.btn-nav:hover{border-color:var(--border-hover);color:var(--text);text-decoration:none}
+.btn-nav-primary{background:#fff;color:#000;border-color:#fff}
+.btn-nav-primary:hover{opacity:0.9}
+.container{max-width:720px;margin:0 auto;padding:120px 24px 80px}
+.breadcrumb{font-size:13px;color:var(--text-tertiary);margin-bottom:32px}
+.breadcrumb a{color:var(--text-secondary);border-bottom:1px solid var(--border)}
+.breadcrumb a:hover{color:var(--text);text-decoration:none}
+.post-meta{display:flex;align-items:center;gap:12px;margin-bottom:24px;font-size:13px;color:var(--text-tertiary)}
+.post-tag{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent-dim);color:var(--accent);font-size:12px;font-weight:500}
+article h1{font-size:clamp(28px,4vw,40px);font-weight:700;letter-spacing:-1px;line-height:1.2;margin-bottom:24px}
+article h2{font-size:24px;font-weight:600;letter-spacing:-0.5px;margin-top:48px;margin-bottom:16px;padding-top:16px;border-top:1px solid var(--border)}
+article h3{font-size:18px;font-weight:600;margin-top:32px;margin-bottom:12px}
+article p{font-size:16px;color:var(--text-secondary);line-height:1.8;margin-bottom:16px}
+article p strong{color:var(--text)}
+article ul,article ol{margin:0 0 16px 24px;color:var(--text-secondary);line-height:1.8}
+article li{margin-bottom:6px;font-size:16px}
+article li strong{color:var(--text)}
+article code{font-family:'SF Mono',SFMono-Regular,Consolas,'Liberation Mono',Menlo,monospace;background:var(--bg-card);border:1px solid var(--border);padding:2px 6px;border-radius:4px;font-size:14px;color:var(--accent)}
+article pre{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin:16px 0 24px;overflow-x:auto}
+article pre code{background:none;border:none;padding:0;font-size:14px;color:var(--text-secondary);line-height:1.7}
+article table{width:100%;border-collapse:collapse;margin:16px 0 24px;font-size:14px}
+article th{text-align:left;padding:10px 16px;background:var(--bg-card);border:1px solid var(--border);font-weight:600;color:var(--text);font-size:13px;text-transform:uppercase;letter-spacing:0.5px}
+article td{padding:10px 16px;border:1px solid var(--border);color:var(--text-secondary)}
+article tr:hover td{background:var(--bg-card)}
+article hr{border:none;border-top:1px solid var(--border);margin:48px 0 24px}
+.post-footer{margin-top:48px;padding:24px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);text-align:center}
+.post-footer p{font-size:14px;color:var(--text-secondary);margin-bottom:12px}
+.post-footer a.cta-btn{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:500;padding:10px 20px;border-radius:10px;background:#fff;color:#000;transition:opacity 0.15s}
+.post-footer a.cta-btn:hover{opacity:0.9;text-decoration:none}
+footer{max-width:720px;margin:0 auto;padding:40px 24px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--text-tertiary)}
+footer a{color:var(--text-secondary);transition:color 0.15s}
+footer a:hover{color:var(--text);text-decoration:none}
+.footer-links{display:flex;gap:16px}
+@media(max-width:640px){.nav-links{display:none}.container{padding:100px 16px 60px}article table{font-size:13px}article th,article td{padding:8px 10px}}
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-left">
+    <a href="../" class="nav-logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+      Locally Uncensored
+    </a>
+    <div class="nav-links">
+      <a href="../#features">Features</a>
+      <a href="../#models">Models</a>
+      <a href="../#compare">Compare</a>
+      <a href="../#faq">FAQ</a>
+      <a href="./" class="active">Blog</a>
+    </div>
+  </div>
+  <div class="nav-right">
+    <a href="https://github.com/PurpleDoubleD/locally-uncensored" class="btn-nav" target="_blank">GitHub</a>
+    <a href="https://github.com/PurpleDoubleD/locally-uncensored/releases" class="btn-nav btn-nav-primary" target="_blank">Download</a>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="breadcrumb"><a href="../">Locally Uncensored</a> / <a href="./">Blog</a> / This Post</div>
+
+  <div class="post-meta">
+    <span class="post-tag">Guide</span>
+    <span>April 23, 2026</span>
+    <span>&middot;</span>
+    <span>8 min read</span>
+  </div>
+
+  <article>
+    <h1>Abliterated Models Guide &mdash; 2026 Edition</h1>
+
+    <p>If you&rsquo;ve looked at the Discover tab in any local-AI app and wondered why some Llama variants have <em>abliterated</em> in the name, or why people on r/LocalLLaMA argue about Heretic vs Dolphin vs straight-finetune, this is the post that explains it. Plus the curated download list of the variants that actually work in 2026.</p>
+
+    <h2>What Abliteration Actually Is</h2>
+
+    <p>Modern instruction-tuned LLMs have a learned <strong>refusal direction</strong> in their residual stream. When a prompt activates that direction strongly enough, the model outputs &ldquo;I cannot help with that&rdquo; or similar. The direction was put there during RLHF and safety training.</p>
+
+    <p>Abliteration removes that direction via <strong>orthogonalisation</strong>. You take a corpus of refused prompts, isolate the activation pattern that distinguishes them from accepted prompts, and then project that direction out of every weight matrix in the model. The result is a model with the same training and capabilities but no longer prone to categorical refusal.</p>
+
+    <p>It&rsquo;s a clean technique &mdash; not a finetune, not a jailbreak, not a system-prompt trick. Just linear algebra applied to the model weights. Original paper: <em>&ldquo;Refusal in Language Models Is Mediated by a Single Direction&rdquo;</em> (Arditi et al., 2024).</p>
+
+    <h2>Abliterated vs Other &ldquo;Uncensored&rdquo; Approaches</h2>
+
+    <table>
+      <thead>
+        <tr><th>Method</th><th>How it works</th><th>Effort</th><th>Quality impact</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Abliteration</td><td>Project out refusal direction</td><td>~hours on GPU</td><td>1-3% degradation</td></tr>
+        <tr><td>Full finetune (Dolphin, Hermes)</td><td>Re-train on uncensored corpus</td><td>~days, expensive</td><td>Variable, often improves chat</td></tr>
+        <tr><td>LoRA finetune</td><td>Adapter on uncensored data</td><td>~hours</td><td>Minor, reversible</td></tr>
+        <tr><td>Merge (Frankenmerges)</td><td>Combine multiple finetunes</td><td>~hours</td><td>Highly variable</td></tr>
+        <tr><td>System prompt jailbreak</td><td>Persona-style instructions</td><td>None</td><td>Brittle, breaks on long context</td></tr>
+      </tbody>
+    </table>
+
+    <p>Abliteration is the cleanest research-grounded option. Dolphin and Hermes are battle-tested production finetunes. Frankenmerges are wildcards. System-prompt jailbreaks are the worst long-term option &mdash; they consume context tokens and degrade as conversations grow.</p>
+
+    <h2>The Recommended Abliterated Models (2026)</h2>
+
+    <h3>Qwen 3.6 Family</h3>
+
+    <p>Qwen 3.6 (April 2026) is currently the strongest base for abliteration. Two notable releases:</p>
+
+    <ul>
+      <li><strong>richardyoung/qwen3-14b-abliterated:q4_K_M</strong> &mdash; 9 GB, fits 12 GB VRAM, vision-capable. Comes in <code>:q4_K_M</code> (chat) and <code>:agent</code> (tool-calling) tags via Ollama.</li>
+      <li><strong>Qwen 3.6 27B Samantha (huihui-ai variant)</strong> &mdash; abliterated dense 27B with the Samantha personality finetune layered on top. Released April 22 2026. Needs GGUF conversion as of writing.</li>
+    </ul>
+
+    <h3>Gemma 4 Heretic</h3>
+
+    <ul>
+      <li><strong>Stabhappy/gemma-4-31B-it-heretic-Gguf</strong> &mdash; the Gemma 4 31B base abliterated. ~17 GB at Q4_K_M. Strong general-purpose, native vision, tool calling.</li>
+      <li><strong>llmfan46/gemma-4-31B-it-uncensored-heretic-GGUF</strong> &mdash; original Heretic repo (was 404&rsquo;d in early April, re-mirrored).</li>
+      <li><strong>Gemma 4 26B MoE HERETIC</strong> &mdash; 26B brain with 4B active. Smaller VRAM peak than the 31B dense, MoE-fast inference.</li>
+    </ul>
+
+    <h3>Llama 3.1 Family</h3>
+
+    <ul>
+      <li><strong>mannix/llama3.1-8b-abliterated:q5_K_M</strong> &mdash; 5.7 GB. The most-pulled abliterated Llama on Ollama. Comes with <code>:agent</code> tag for tool calling.</li>
+      <li><strong>mlabonne/Meta-Llama-3.1-8B-Instruct-abliterated</strong> &mdash; the canonical reference variant. Multiple GGUF mirrors available.</li>
+    </ul>
+
+    <h3>Hermes 3</h3>
+
+    <p>Hermes 3 (Nous Research) is technically a full finetune, not abliteration, but functions similarly &mdash; no refusals, strong instruction-following, agent-friendly. Variants:</p>
+
+    <ul>
+      <li><strong>hermes3:8b</strong> via Ollama &mdash; 4.7 GB, fits 8 GB GPUs comfortably. Good chat default.</li>
+      <li><strong>hermes3:70b</strong> &mdash; 40 GB, needs 48 GB VRAM or aggressive quantisation.</li>
+    </ul>
+
+    <h3>GLM 5.1 Heretic</h3>
+
+    <p>The newest entrant: <strong>huihui-ai/Huihui-GLM-5.1-abliterated-GGUF</strong>. The 754B MoE GLM 5.1 abliterated. 236 GB at IQ2_M &mdash; not consumer hardware, but if you have a multi-GPU rig or a Mac Studio M4 Ultra, it&rsquo;s the strongest open abliterated model period.</p>
+
+    <h2>How to Download and Run</h2>
+
+    <h3>Path 1 &mdash; Ollama (one command)</h3>
+
+    <pre><code>ollama pull richardyoung/qwen3-14b-abliterated:q4_K_M
+ollama run richardyoung/qwen3-14b-abliterated:q4_K_M
+
+# Or for the agent-tagged variant with tool calling
+ollama pull richardyoung/qwen3-14b-abliterated:agent
+ollama run richardyoung/qwen3-14b-abliterated:agent</code></pre>
+
+    <h3>Path 2 &mdash; Locally Uncensored (one click)</h3>
+
+    <p>Open <a href="https://github.com/PurpleDoubleD/locally-uncensored/releases">Locally Uncensored</a>, navigate to <strong>Model Manager &rarr; Discover &rarr; Text</strong>, click the <strong>UNCENSORED</strong> filter tab. The 34 curated abliterated GGUFs are all there with one-click download. Sizes, hardware tags, and tool-calling support shown on each card.</p>
+
+    <p>The new <a href="locally-uncensored-v2-4-0-release.html">v2.4.0 Settings &gt; Model Storage</a> override lets you redirect the GGUF download folder if you want them on a separate drive.</p>
+
+    <h3>Path 3 &mdash; Direct HuggingFace download</h3>
+
+    <p>Go to the HuggingFace repo, click the file you want, hit Download. Place the .gguf in your LM Studio or Ollama models folder, restart the runner. More manual but works for edge-case quants not in the curated lists.</p>
+
+    <h2>Hardware Recommendations</h2>
+
+    <table>
+      <thead>
+        <tr><th>VRAM</th><th>Best Abliterated Pick</th><th>Why</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>8 GB</td><td>Llama 3.1 8B abliterated Q4_K_M</td><td>Fits with headroom, good chat quality</td></tr>
+        <tr><td>12 GB (RTX 3060)</td><td>Qwen 3 14B abliterated Q4_K_M</td><td>Sweet spot, ~15 tok/s</td></tr>
+        <tr><td>16 GB</td><td>Gemma 4 31B Heretic Q4_K_M</td><td>Best general-purpose abliterated at this VRAM</td></tr>
+        <tr><td>24 GB (RTX 3090/4090)</td><td>Gemma 4 31B Heretic Q5_K_M</td><td>Higher quality, room for long context</td></tr>
+        <tr><td>48 GB+</td><td>Hermes 3 70B or GLM 5.1 Heretic IQ2</td><td>Frontier-tier abliterated quality</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Common Questions</h2>
+
+    <h3>Will an abliterated model write me malware?</h3>
+
+    <p>Probably not the way you&rsquo;re thinking. Abliteration removes the categorical refusal but the model still has training-time priors against obviously-bad outputs. Asking &ldquo;write me ransomware&rdquo; usually gets a meaningful answer about what ransomware is rather than functional code. The models work best for legitimate-but-edge-case use cases: security research, fiction with violence, medical questions the base model deflects, legal grey areas, adult creative writing.</p>
+
+    <h3>Are abliterated models dangerous?</h3>
+
+    <p>No more than the underlying base. Abliteration removes a layer of guardrails. The model&rsquo;s underlying knowledge is unchanged from the base. If you trust the base model, the abliterated version doesn&rsquo;t introduce new capabilities &mdash; just unblocks ones that were already there.</p>
+
+    <h3>Can I abliterate a model myself?</h3>
+
+    <p>Yes. The technique is well-documented and the code is on GitHub (search <em>abliterator</em>, <em>llm-abliterator</em>, or follow the original paper). You need a GPU with the model loaded, a few thousand refused-vs-accepted prompt pairs, and a few hours. Most people don&rsquo;t bother &mdash; the popular base models are already abliterated by maintainers like richardyoung and mlabonne within days of release.</p>
+
+    <h2>Related Reading</h2>
+
+    <ul>
+      <li><a href="how-to-run-qwen-3-6-locally.html">How to run Qwen 3.6 locally</a> &mdash; covers the abliterated 14B variant with hardware recommendations</li>
+      <li><a href="best-uncensored-ai-models-2026.html">Best uncensored AI models 2026</a> &mdash; broader landscape including non-abliterated approaches</li>
+      <li><a href="run-uncensored-ai-locally.html">How to run uncensored AI locally</a> &mdash; full setup walkthrough</li>
+      <li><a href="best-local-ai-apps-2026.html">Best local AI apps 2026</a> &mdash; the GUI side</li>
+    </ul>
+
+    <hr>
+
+    <p><em>Locally Uncensored is AGPL-3.0 licensed. Built by <a href="https://github.com/PurpleDoubleD">PurpleDoubleD</a>. Bug reports and feature requests on <a href="https://github.com/PurpleDoubleD/locally-uncensored/discussions">GitHub Discussions</a> or in the <a href="https://locallyuncensored.com/discord">Discord</a>.</em></p>
+  </article>
+
+  <div class="post-footer">
+    <p>34 curated abliterated GGUFs with one-click download in Locally Uncensored</p>
+    <a href="https://github.com/PurpleDoubleD/locally-uncensored/releases" class="cta-btn" target="_blank">
+      Download Locally Uncensored
+    </a>
+  </div>
+</div>
+
+<footer>
+  <span>AGPL-3.0 License. Built by <a href="https://github.com/PurpleDoubleD" target="_blank">PurpleDoubleD</a>.</span>
+  <div class="footer-links">
+    <a href="https://github.com/PurpleDoubleD/locally-uncensored" target="_blank">GitHub</a>
+    <a href="https://github.com/PurpleDoubleD/locally-uncensored/discussions" target="_blank">Discussions</a>
+    <a href="../">Home</a>
+  </div>
+</footer>
+
+</body>
+</html>

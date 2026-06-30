@@ -1,0 +1,222 @@
+---
+title: The Pipeline
+description: "The 7-step pipeline for producing any Hyperframes video: capture, design, script, storyboard, voiceover, build, validate."
+---
+
+Every well-structured Hyperframes video flows through the same 7 steps, whether it starts from a website, a PDF, a CSV, or a blank page. Each step produces a named artifact that the next step depends on, so your AI agent (and you) always know what's done, what's next, and where the creative decisions live on disk.
+
+This pipeline is the backbone of the [website-to-video workflow](/guides/website-to-video), but it's just as useful when you're scripting a brand reel from scratch, turning research notes into a launch teaser, or learning Hyperframes for the first time. Most of the production-grade [launch videos](/launch-videos) HeyGen ships are organized this way.
+
+## The seven steps
+
+Each step produces an artifact that feeds the next:
+
+| # | Step          | Output                                  | What happens                                                            |
+|---|---------------|-----------------------------------------|-------------------------------------------------------------------------|
+| 1 | **Capture**   | `capture/`                              | Extract screenshots, design tokens, fonts, assets, animations from a source |
+| 2 | **Design**    | `DESIGN.md`                             | Brand reference: colors, typography, components, do's and don'ts        |
+| 3 | **Script**    | `SCRIPT.md`                             | Narration text with hook, story, proof, and CTA                         |
+| 4 | **Storyboard**| `STORYBOARD.md`                         | Per-beat creative direction: mood, assets, animations, transitions      |
+| 5 | **VO + Timing**| `narration.wav` + `transcript.json`    | TTS audio with word-level timestamps                                    |
+| 6 | **Build**     | `compositions/*.html`                   | Animated HTML compositions, one per beat                                |
+| 7 | **Validate**  | Snapshot PNGs + `lint`/`validate` pass  | Visual verification and runtime checks before delivery                  |
+
+<Tip>
+  Not every project uses every step. A no-narration brand reel skips Step 5; a hand-authored composition skips Steps 1-2. But the order matters: scene durations come from narration, animation choices come from the storyboard, and the storyboard depends on the design reference. Skip a step only when you don't need its artifact downstream.
+</Tip>
+
+## Project layout
+
+A typical project directory after the pipeline runs:
+
+```
+my-video/
+├── capture/                    # Step 1, only present when capturing a source
+│   ├── screenshots/            # scroll-000.png, scroll-001.png, …
+│   ├── assets/                 # downloaded images, SVGs, fonts
+│   ├── extracted/              # tokens.json, visible-text.txt, asset-descriptions.md
+│   ├── AGENTS.md               # capture summary for AI agents
+│   └── CLAUDE.md
+├── DESIGN.md                   # Step 2, brand cheat sheet
+├── SCRIPT.md                   # Step 3, narration backbone
+├── STORYBOARD.md               # Step 4, beat-by-beat creative plan
+├── narration.wav               # Step 5, TTS audio
+├── narration.txt               # Step 5, exact spoken text (with pronunciation subs)
+├── transcript.json             # Step 5, word-level timestamps
+├── compositions/               # Step 6, one HTML file per beat
+│   ├── beat-1-hook.html
+│   ├── beat-2-story.html
+│   └── …
+├── snapshots/                  # Step 7, visual verification PNGs
+├── renders/                    # optional final MP4 outputs
+└── index.html                  # root project file wiring compositions into a timeline
+```
+
+Capture artifacts stay in `capture/` so they're cleanly separated from the build outputs. Everything downstream lives at the project root.
+
+## Step 1: Capture
+
+**Output:** `capture/`
+
+When the video is grounded in an existing source (a website, a brand site, a competitor reference), start with capture. Hyperframes ships a built-in capture command for websites:
+
+```bash
+npx hyperframes capture https://example.com -o my-video/capture
+```
+
+This extracts screenshots at every scroll depth, pixel-sampled color palettes, the CSS font stack (and downloaded woff2 files), images and SVGs with semantic names, Lottie animations, and detected animations on the page. Optional [Gemini vision enrichment](/guides/website-to-video#enriching-captures-with-gemini-vision) adds AI-powered descriptions of every captured asset.
+
+For sources that aren't websites (PDFs, decks, CSVs, notes), capture isn't a literal command. It's the step where you gather assets into `capture/` so later steps can reference paths instead of inlining content.
+
+**Gate:** You can describe the source's visual identity in one or two sentences and name its top colors, fonts, and standout assets.
+
+## Step 2: Design
+
+**Output:** `DESIGN.md` in the project root
+
+`DESIGN.md` is the brand cheat sheet. It encodes the visual identity factually so every downstream decision can reference exact colors, fonts, and components instead of inventing them. It's a reference document, not a creative plan. The creative work happens in the storyboard.
+
+A typical `DESIGN.md` has six sections:
+
+| Section | What it captures |
+|---------|------------------|
+| **Overview** | 3-4 sentences describing layout patterns, color strategy, typography tone |
+| **Colors** | 5-10 HEX values with semantic roles (primary surface, accent warm, etc.) |
+| **Typography** | Font families with weights, roles, and distinctive usage |
+| **Components** | Patterns the brand uses: bento grids, logo walls, gradient meshes |
+| **Imagery** | Asset categories and how the brand uses them |
+| **Do's and Don'ts** | Hard rules: "white backgrounds, never dark", "no drop shadows" |
+
+`DESIGN.md` is also the input format for [Open Design](/guides/open-design) and [Claude Design](/guides/claude-design); both produce a `DESIGN.md` you can drop into a Hyperframes project.
+
+**Gate:** `DESIGN.md` exists with all six sections filled in from real captured data (or chosen deliberately for greenfield projects).
+
+## Step 3: Script
+
+**Output:** `SCRIPT.md` in the project root
+
+`SCRIPT.md` is the narration backbone. Scene durations come from the narration, not from guessing, so write the script before the storyboard and time beats to spoken words.
+
+A typical structure: **hook** (one sentence that earns attention), **story** (what the product or topic is), **proof** (numbers, components, customers), **CTA** (one clear action). Reference real features, real stats, and real components from `capture/extracted/visible-text.txt`. Don't invent claims the source doesn't support.
+
+For videos without narration (brand reels, music-driven teasers), `SCRIPT.md` becomes a per-beat copy plan instead: the on-screen text and headlines, with timing notes.
+
+**Gate:** `SCRIPT.md` exists in the project root.
+
+## Step 4: Storyboard
+
+**Output:** `STORYBOARD.md` in the project root
+
+`STORYBOARD.md` tells the engineer (human or agent) exactly what to build for each beat: mood, camera, animations, transitions, assets, depth layers, sound effects. It's where the creative choices get pinned down.
+
+Each beat in `STORYBOARD.md` typically covers:
+
+| Field            | What it specifies |
+|------------------|-------------------|
+| Timing           | `0.0s - 5.8s`, taken from `transcript.json` once Step 5 runs |
+| Narration line   | The exact words spoken during this beat |
+| Mood & camera    | One sentence describing the feel and the shot |
+| Assets           | Which captured images, icons, and fonts go in this beat, referenced by path |
+| Techniques       | 2-3 picks from the [techniques library](https://github.com/heygen-com/hyperframes/blob/main/skills/hyperframes/references/techniques.md): SVG path drawing, Canvas 2D, CSS 3D, per-word typography, Lottie, video compositing, typing effects, variable fonts, MotionPath, velocity transitions, audio-reactive |
+| Transitions      | How this beat enters from the previous one and exits to the next |
+| SFX              | Short, specific sound effects (e.g. _"woosh on logo entry, soft tick on counter"_) |
+
+The storyboard typically opens with a global-direction block: format, voiceover direction, style basis, and guardrails that apply to every beat.
+
+**Gate:** `STORYBOARD.md` exists with beat-by-beat direction and an asset audit that names every file used.
+
+## Step 5: VO and timing
+
+**Outputs:** `narration.wav` (or `.mp3`), `narration.txt`, `transcript.json`
+
+Generate the TTS narration, then transcribe it for word-level timestamps. Those timestamps are the source of truth for every beat duration downstream.
+
+```bash
+npx hyperframes tts SCRIPT.md --voice af_nova --output narration.wav
+npx hyperframes transcribe narration.wav
+```
+
+| File             | What it contains |
+|------------------|------------------|
+| `narration.wav`  | The TTS audio that ships with the final render |
+| `narration.txt`  | The exact spoken text with pronunciation substitutions applied (`API` → `A P I`, `$2T` → `two trillion`). Distinct from `SCRIPT.md` so you can regenerate the audio later with a different voice without redoing the substitutions. |
+| `transcript.json`| `[{ text, start, end }]` for every word. Every later step reads this for timing. |
+
+Hyperframes ships multiple TTS adapters (Kokoro, ElevenLabs, HeyGen); see [`/hyperframes-media`](/guides/prompting) for the skill that picks one. After generating audio, update `STORYBOARD.md` with the real beat boundaries from `transcript.json`.
+
+**Gate:** `narration.wav`, `narration.txt`, and `transcript.json` exist. `STORYBOARD.md` beat timings reference real timestamps, not estimates.
+
+## Step 6: Build
+
+**Output:** `compositions/<beat-name>.html`, one HTML file per beat
+
+This is where the storyboard becomes runnable HTML. Each composition is a self-contained file that imports captured assets by path, uses the exact colors and fonts from `DESIGN.md`, and animates with the techniques the storyboard picked.
+
+For multi-beat videos, spawn a focused sub-agent per beat. Each one gets fresh context, the storyboard section for its beat, the asset paths it needs, and the relevant technique references. That produces noticeably better output than building every beat in one long-running context.
+
+After each composition is built, run a self-review for layout, asset placement, and animation quality. The [`/hyperframes-core`](/guides/prompting) skill encodes the composition rules — required `class="clip"` attributes, `data-*` attribute semantics — and [`/hyperframes-animation`](/guides/prompting) covers GSAP timeline registration and adapter registries.
+
+**Gate:** Every composition is self-reviewed. No overlapping elements, no misplaced assets, no static images sitting unanimated.
+
+## Step 7: Validate
+
+**Outputs:** `snapshots/frame-*.png`, lint and validate passing with zero errors
+
+Three checks before delivery:
+
+```bash
+npx hyperframes lint                              # static HTML structure checks
+npx hyperframes validate                          # loads in headless Chrome, catches runtime errors
+npx hyperframes snapshot my-video --at 2.9,10.4   # PNGs at beat midpoints
+```
+
+`lint` catches missing attributes, timeline registration issues, tween conflicts, and CSS-transform vs. GSAP conflicts. `validate` loads each composition in headless Chrome and surfaces runtime JS errors, missing assets, and failed network requests. `snapshot` captures frames at specific timestamps so you can _see_ your output without a full render.
+
+The pipeline delivers the localhost Studio URL as the handoff. Your AI agent runs `npx hyperframes preview` and shares the project URL. Rendering to MP4 is on-demand:
+
+```bash
+npx hyperframes render --output my-video.mp4
+```
+
+For personalized or catalog outputs, render the same validated composition with `--batch rows.json --output "renders/{name}.mp4"` and use the generated `manifest.json` as the delivery checklist.
+
+**Gate:** `lint` and `validate` pass with zero errors. Snapshot frames look right. The Studio preview URL is ready to share.
+
+## Iterating
+
+The pipeline is built around named artifacts on disk so you can re-enter anywhere without re-running everything:
+
+- To rework the creative plan, edit `STORYBOARD.md`: change a beat's mood, swap an asset, retime the entrance, then ask the agent to rebuild just that beat.
+- For surgical tweaks, open a composition file directly (e.g. `compositions/beat-3-proof.html`) and adjust animations, colors, or layout. `npx hyperframes preview` shows changes live.
+- To rebuild one beat from scratch, prompt the agent: _"Rebuild beat 2 with more energy. Use the product screenshot as full-bleed background."_ It reads `STORYBOARD.md`, `DESIGN.md`, and the transcript, then regenerates just that file.
+- To swap the voice without redoing Step 3, re-run TTS against `narration.txt`, which already has the pronunciation substitutions baked in.
+
+Each artifact is a checkpoint, so you can stop, hand off to a human reviewer, or come back tomorrow and the agent still has everything it needs to keep going.
+
+## When to use the pipeline
+
+The pipeline is the recommended structure for:
+
+- Capturing a website with the [/website-to-video](/guides/website-to-video) skill, which follows it end-to-end.
+- Shipping a product launch. Most of the [HeyGen launch videos](/launch-videos) use this artifact layout.
+- Any narrative video with three or more beats, where a storyboard pays for itself.
+- Learning Hyperframes, because the artifacts leave every creative decision inspectable on disk.
+
+For a 5-second one-shot animation, a single hand-authored composition is fine; the pipeline is overhead you don't need. The rough cutoff: if a non-author needs to understand _why_ a beat looks the way it does, write it down in `STORYBOARD.md`.
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Website to Video" icon="globe" href="/guides/website-to-video">
+    The full website-to-video workflow built on this pipeline.
+  </Card>
+  <Card title="Prompting" icon="comment" href="/guides/prompting">
+    How to invoke the pipeline through your AI agent.
+  </Card>
+  <Card title="Launch Videos" icon="rocket" href="/launch-videos">
+    Real production projects organized around this pipeline.
+  </Card>
+  <Card title="CLI Reference" icon="terminal" href="/packages/cli">
+    Every command the pipeline calls.
+  </Card>
+</CardGroup>

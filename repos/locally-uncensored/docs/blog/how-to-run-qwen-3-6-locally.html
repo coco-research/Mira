@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How to Run Qwen 3.6 Locally — 27B Dense, 35B MoE, and Coding Variants Setup Guide</title>
+<meta name="description" content="Complete step-by-step guide to running Qwen 3.6 locally on your own hardware. Covers the 27B dense model, 35B MoE, NVFP4 and BF16 variants, hardware requirements, GGUF download links, and one-click install via Locally Uncensored.">
+<meta property="og:title" content="How to Run Qwen 3.6 Locally — 27B Dense, 35B MoE, and Coding Variants">
+<meta property="og:description" content="Step-by-step guide to running Qwen 3.6 locally — 27B dense, 35B MoE coding, NVFP4, BF16. Hardware requirements, GGUF links, one-click install.">
+<meta property="og:image" content="https://raw.githubusercontent.com/PurpleDoubleD/locally-uncensored/master/docs/social-preview.png">
+<meta property="og:url" content="https://locallyuncensored.com/blog/how-to-run-qwen-3-6-locally.html">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2026-04-23">
+<meta property="article:author" content="PurpleDoubleD">
+<meta property="article:tag" content="Qwen 3.6">
+<meta property="article:tag" content="Local LLM">
+<meta property="article:tag" content="Tutorial">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="How to Run Qwen 3.6 Locally — Complete Setup Guide">
+<meta name="twitter:description" content="Complete guide to running Qwen 3.6 locally. 27B dense, 35B MoE, NVFP4, BF16 covered.">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/PurpleDoubleD/locally-uncensored/master/docs/social-preview.png">
+<link rel="canonical" href="https://locallyuncensored.com/blog/how-to-run-qwen-3-6-locally.html">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#0a0a0a">
+<link rel="icon" href="../favicon.png">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","headline":"How to Run Qwen 3.6 Locally — 27B Dense, 35B MoE, and Coding Variants Setup Guide","description":"A complete walkthrough for running Qwen 3.6 (27B dense, 35B MoE, coding NVFP4, BF16) locally on consumer hardware. Hardware requirements, GGUF download URLs, quant comparison table, and one-click install via Locally Uncensored.","image":"https://raw.githubusercontent.com/PurpleDoubleD/locally-uncensored/master/docs/social-preview.png","datePublished":"2026-04-23","dateModified":"2026-04-23","author":{"@type":"Person","name":"PurpleDoubleD","url":"https://github.com/PurpleDoubleD"},"publisher":{"@type":"Organization","name":"Locally Uncensored","url":"https://locallyuncensored.com/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://locallyuncensored.com/blog/how-to-run-qwen-3-6-locally.html"},"keywords":"how to run qwen 3.6 locally, qwen 3.6 setup, qwen 3.6 27b, qwen 3.6 35b moe, qwen 3.6 coding nvfp4, qwen 3.6 gguf download, qwen 3.6 hardware requirements, qwen 3.6 vs qwen 3.5"}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"HowTo","name":"How to Run Qwen 3.6 Locally","description":"Step-by-step instructions for running Qwen 3.6 on your own hardware via Ollama or Locally Uncensored, covering the 27B dense model and 35B MoE variants.","totalTime":"PT15M","tool":[{"@type":"HowToTool","name":"Windows 10/11 or Linux"},{"@type":"HowToTool","name":"NVIDIA GPU with 8 GB+ VRAM (16 GB recommended for 27B Q4_K_M)"},{"@type":"HowToTool","name":"Ollama or Locally Uncensored desktop app"}],"step":[{"@type":"HowToStep","position":1,"name":"Pick the right Qwen 3.6 variant for your hardware","text":"For 8 GB VRAM use Qwen 3.6 27B UD-IQ2_XXS (8.7 GB on disk). For 12 GB VRAM use Qwen 3.6 27B Q3_K_M (13 GB). For 16 GB+ use Qwen 3.6 27B Q4_K_M (16 GB) which is the recommended default."},{"@type":"HowToStep","position":2,"name":"Install Ollama or Locally Uncensored","text":"Download Ollama from ollama.com or grab Locally Uncensored from the GitHub Releases page. LU bundles a one-click Ollama installer if you don't already have it."},{"@type":"HowToStep","position":3,"name":"Pull the model","text":"With Ollama: run `ollama pull qwen3.6:27b` in a terminal. With Locally Uncensored: open Model Manager, switch to Discover, search Qwen 3.6, click the download arrow on the variant you want."},{"@type":"HowToStep","position":4,"name":"Verify the model loads","text":"Send a test prompt. The first response will take longer because the model loads into VRAM. Subsequent responses run at the typical tok/s for your hardware (15-25 tok/s on RTX 3060 for the 27B Q3_K_M)."}]}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is Qwen 3.6?","acceptedAnswer":{"@type":"Answer","text":"Qwen 3.6 is the latest generation of the Qwen open-weight language model series from Alibaba, released April 2026. It ships in two main flavours — a 27B dense model (recommended default) and a 35B Mixture-of-Experts model with 3B active parameters. Both support vision, agentic coding, thinking-mode preservation, and a 256K-token context window."}},{"@type":"Question","name":"What hardware do I need to run Qwen 3.6 locally?","acceptedAnswer":{"@type":"Answer","text":"For the recommended Qwen 3.6 27B Q4_K_M quant you need 16 GB VRAM or 16 GB system RAM with CPU offload. For 12 GB VRAM (RTX 3060) the Q3_K_M quant fits completely on GPU and runs at 15-25 tok/s. For 8 GB VRAM the UD-IQ2_XXS quant works at reduced quality. The 35B MoE variants need 24 GB VRAM for Q4_K_M, 22 GB for the NVFP4 quant on RTX 40-series."}},{"@type":"Question","name":"What is the difference between Qwen 3.6 27B dense and 35B MoE?","acceptedAnswer":{"@type":"Answer","text":"The 27B dense activates all 27B parameters per token — slower per token but consistent quality. The 35B MoE has 3B active parameters per token — faster per token, lower VRAM peak during inference, but the routing introduces variance. For coding tasks the 35B MoE coding-specialised variant outperforms the 27B dense on SWE-bench. For general chat and reasoning the 27B dense is the recommended default."}},{"@type":"Question","name":"How do I download Qwen 3.6 GGUF files?","acceptedAnswer":{"@type":"Answer","text":"From HuggingFace: unsloth/Qwen3.6-27B-GGUF for the dense model, with files Qwen3.6-27B-Q4_K_M.gguf (16 GB), Qwen3.6-27B-Q3_K_M.gguf (13 GB), Qwen3.6-27B-UD-IQ2_XXS.gguf (8.7 GB), Qwen3.6-27B-Q5_K_M.gguf (18 GB), Qwen3.6-27B-Q6_K.gguf (21 GB), Qwen3.6-27B-Q8_0.gguf (27 GB). For the 35B MoE pull via Ollama: ollama pull qwen3.6 (24 GB). All variants are also one-click downloadable in Locally Uncensored's Model Manager."}},{"@type":"Question","name":"Does Qwen 3.6 work with thinking mode?","acceptedAnswer":{"@type":"Answer","text":"Yes. Qwen 3.6 preserves thinking-mode reasoning, similar to QwQ and DeepSeek R1. In Locally Uncensored toggle the Think button in the chat input — the visible response keeps the model's reasoning chain hidden but the answer benefits from it. Works with both Ollama's native think parameter and direct provider APIs."}},{"@type":"Question","name":"How does Qwen 3.6 compare to Qwen 3.5?","acceptedAnswer":{"@type":"Answer","text":"Qwen 3.6 brings vision support, 256K context (up from Qwen 3.5's 128K), better agentic coding scores on SWE-bench, and thinking-mode preservation. The 27B dense Qwen 3.6 outperforms the 35B MoE Qwen 3.5 on most reasoning and coding benchmarks while using less VRAM."}},{"@type":"Question","name":"Can I run Qwen 3.6 without an NVIDIA GPU?","acceptedAnswer":{"@type":"Answer","text":"Yes via CPU offload but performance is limited. With 32 GB system RAM and a fast CPU you can run the Q4_K_M quant at 1-3 tok/s. AMD GPUs work via ROCm with Ollama. Apple Silicon runs the MLX BF16 variant natively at competitive speeds on M3/M4."}}]}
+</script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0a;--bg-subtle:#111;--bg-card:#161616;--border:#222;--border-hover:#333;--text:#ededed;--text-secondary:#888;--text-tertiary:#555;--accent:#8b5cf6;--accent-dim:rgba(139,92,246,0.08);--radius:12px;--font:'Inter',system-ui,-apple-system,sans-serif}
+body{font-family:var(--font);background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;line-height:1.6}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+::selection{background:var(--accent);color:#fff}
+nav{position:fixed;top:0;width:100%;padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;background:rgba(10,10,10,0.8);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);z-index:100}
+.nav-left{display:flex;align-items:center;gap:32px}
+.nav-logo{font-weight:700;font-size:15px;letter-spacing:-0.3px;display:flex;align-items:center;gap:8px;color:var(--text)}
+.nav-logo:hover{text-decoration:none}
+.nav-logo svg{width:18px;height:18px;opacity:0.7}
+.nav-links{display:flex;gap:24px}
+.nav-links a{font-size:14px;color:var(--text-secondary);transition:color 0.15s}
+.nav-links a:hover{color:var(--text);text-decoration:none}
+.nav-links a.active{color:var(--text)}
+.nav-right{display:flex;align-items:center;gap:12px}
+.btn-nav{font-size:13px;font-weight:500;padding:6px 14px;border-radius:8px;border:1px solid var(--border);color:var(--text-secondary);transition:all 0.15s;background:transparent;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.btn-nav:hover{border-color:var(--border-hover);color:var(--text);text-decoration:none}
+.btn-nav-primary{background:#fff;color:#000;border-color:#fff}
+.btn-nav-primary:hover{opacity:0.9}
+.container{max-width:720px;margin:0 auto;padding:120px 24px 80px}
+.breadcrumb{font-size:13px;color:var(--text-tertiary);margin-bottom:32px}
+.breadcrumb a{color:var(--text-secondary);border-bottom:1px solid var(--border)}
+.breadcrumb a:hover{color:var(--text);text-decoration:none}
+.post-meta{display:flex;align-items:center;gap:12px;margin-bottom:24px;font-size:13px;color:var(--text-tertiary)}
+.post-tag{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent-dim);color:var(--accent);font-size:12px;font-weight:500}
+article h1{font-size:clamp(28px,4vw,40px);font-weight:700;letter-spacing:-1px;line-height:1.2;margin-bottom:24px}
+article h2{font-size:24px;font-weight:600;letter-spacing:-0.5px;margin-top:48px;margin-bottom:16px;padding-top:16px;border-top:1px solid var(--border)}
+article h3{font-size:18px;font-weight:600;margin-top:32px;margin-bottom:12px}
+article p{font-size:16px;color:var(--text-secondary);line-height:1.8;margin-bottom:16px}
+article p strong{color:var(--text)}
+article ul,article ol{margin:0 0 16px 24px;color:var(--text-secondary);line-height:1.8}
+article li{margin-bottom:6px;font-size:16px}
+article li strong{color:var(--text)}
+article code{font-family:'SF Mono',SFMono-Regular,Consolas,'Liberation Mono',Menlo,monospace;background:var(--bg-card);border:1px solid var(--border);padding:2px 6px;border-radius:4px;font-size:14px;color:var(--accent)}
+article pre{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin:16px 0 24px;overflow-x:auto}
+article pre code{background:none;border:none;padding:0;font-size:14px;color:var(--text-secondary);line-height:1.7}
+article table{width:100%;border-collapse:collapse;margin:16px 0 24px;font-size:14px}
+article th{text-align:left;padding:10px 16px;background:var(--bg-card);border:1px solid var(--border);font-weight:600;color:var(--text);font-size:13px;text-transform:uppercase;letter-spacing:0.5px}
+article td{padding:10px 16px;border:1px solid var(--border);color:var(--text-secondary)}
+article tr:hover td{background:var(--bg-card)}
+article hr{border:none;border-top:1px solid var(--border);margin:48px 0 24px}
+.post-footer{margin-top:48px;padding:24px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);text-align:center}
+.post-footer p{font-size:14px;color:var(--text-secondary);margin-bottom:12px}
+.post-footer a.cta-btn{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:500;padding:10px 20px;border-radius:10px;background:#fff;color:#000;transition:opacity 0.15s}
+.post-footer a.cta-btn:hover{opacity:0.9;text-decoration:none}
+footer{max-width:720px;margin:0 auto;padding:40px 24px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--text-tertiary)}
+footer a{color:var(--text-secondary);transition:color 0.15s}
+footer a:hover{color:var(--text);text-decoration:none}
+.footer-links{display:flex;gap:16px}
+@media(max-width:640px){.nav-links{display:none}.container{padding:100px 16px 60px}article table{font-size:13px}article th,article td{padding:8px 10px}}
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-left">
+    <a href="../" class="nav-logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+      Locally Uncensored
+    </a>
+    <div class="nav-links">
+      <a href="../#features">Features</a>
+      <a href="../#models">Models</a>
+      <a href="../#compare">Compare</a>
+      <a href="../#faq">FAQ</a>
+      <a href="./" class="active">Blog</a>
+    </div>
+  </div>
+  <div class="nav-right">
+    <a href="https://github.com/PurpleDoubleD/locally-uncensored" class="btn-nav" target="_blank">GitHub</a>
+    <a href="https://github.com/PurpleDoubleD/locally-uncensored/releases" class="btn-nav btn-nav-primary" target="_blank">Download</a>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="breadcrumb"><a href="../">Locally Uncensored</a> / <a href="./">Blog</a> / This Post</div>
+
+  <div class="post-meta">
+    <span class="post-tag">Tutorial</span>
+    <span>April 23, 2026</span>
+    <span>&middot;</span>
+    <span>10 min read</span>
+  </div>
+
+  <article>
+    <h1>How to Run Qwen 3.6 Locally &mdash; 27B Dense, 35B MoE, and Coding Variants</h1>
+
+    <p>Qwen 3.6 dropped on April 21 2026. Two main families: a <strong>27B dense</strong> model that activates every parameter per token and a <strong>35B MoE</strong> with 3B active per token. Both ship with vision, agentic coding, thinking-mode preservation, and a 256K context window. This guide covers everything you need to run them locally on consumer hardware.</p>
+
+    <p>If you only have time for the short version: install <a href="https://github.com/PurpleDoubleD/locally-uncensored/releases">Locally Uncensored</a>, open Model Manager, click Discover, search <em>Qwen 3.6</em>, hit the download arrow on the variant that fits your VRAM. The rest of this post is the long version.</p>
+
+    <h2>Which Qwen 3.6 Variant Should You Pick?</h2>
+
+    <p>The biggest decision is dense vs MoE. The second biggest is which quant. The third is whether you want the coding-specialised variant of the 35B MoE.</p>
+
+    <h3>Dense vs MoE</h3>
+
+    <p>The <strong>27B dense</strong> activates all 27B parameters for every token. Slower per token, but every token gets the full model. Quality is consistent. This is the recommended default for general chat, reasoning, and most coding work.</p>
+
+    <p>The <strong>35B MoE</strong> only activates 3B parameters per token via routing. Much faster per token (often 2-3x the throughput of the dense at similar quants). VRAM peak during inference is lower than the model size suggests. But routing introduces variance &mdash; some tokens get the wrong expert and quality dips. The MoE wins on coding benchmarks (SWE-bench specifically) when you pick the coding-specialised variant.</p>
+
+    <h3>Quant Comparison Table</h3>
+
+    <p>All sizes below are the disk footprint of the GGUF file. VRAM usage during inference is roughly file size + 1-2 GB of overhead.</p>
+
+    <table>
+      <thead>
+        <tr><th>Variant</th><th>Quant</th><th>Disk</th><th>VRAM Target</th><th>Quality</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>27B dense</td><td>UD-IQ2_XXS</td><td>8.7 GB</td><td>8 GB GPU</td><td>Good (low-VRAM lifesaver)</td></tr>
+        <tr><td>27B dense</td><td>Q3_K_M</td><td>13 GB</td><td>12 GB GPU</td><td>Very good (RTX 3060 sweet spot)</td></tr>
+        <tr><td>27B dense</td><td>Q4_K_M</td><td>16 GB</td><td>16 GB GPU</td><td>Recommended default</td></tr>
+        <tr><td>27B dense</td><td>UD-Q4_K_XL</td><td>16 GB</td><td>16 GB GPU</td><td>Better quality per GB than Q4_K_M</td></tr>
+        <tr><td>27B dense</td><td>Q5_K_M</td><td>18 GB</td><td>20 GB GPU</td><td>High</td></tr>
+        <tr><td>27B dense</td><td>Q6_K</td><td>21 GB</td><td>24 GB GPU</td><td>Near-lossless</td></tr>
+        <tr><td>27B dense</td><td>Q8_0</td><td>27 GB</td><td>32 GB GPU</td><td>Effectively lossless</td></tr>
+        <tr><td>35B MoE</td><td>Q4_K_M</td><td>24 GB</td><td>24 GB GPU</td><td>Recommended for MoE</td></tr>
+        <tr><td>35B MoE</td><td>NVFP4</td><td>22 GB</td><td>22 GB GPU (RTX 40+)</td><td>Smallest with full quality on Blackwell</td></tr>
+        <tr><td>35B MoE coding NVFP4</td><td>NVFP4</td><td>22 GB</td><td>22 GB GPU (RTX 40+)</td><td>Best coding-bench-per-GB</td></tr>
+        <tr><td>35B MoE</td><td>BF16</td><td>71 GB</td><td>96 GB GPU</td><td>Reference quality</td></tr>
+        <tr><td>35B MoE</td><td>MLX BF16</td><td>70 GB</td><td>Apple Silicon M3/M4</td><td>MLX-optimised</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Recommendation by Hardware</h3>
+
+    <ul>
+      <li><strong>8 GB VRAM (RTX 3060 8GB, RTX 4060 8GB):</strong> 27B UD-IQ2_XXS &mdash; the only quant that fits</li>
+      <li><strong>12 GB VRAM (RTX 3060 12GB, RTX 3080 Ti, RTX 4070):</strong> 27B Q3_K_M &mdash; sweet spot, ~15-25 tok/s</li>
+      <li><strong>16 GB VRAM (RTX 4070 Ti Super, RTX 4080):</strong> 27B Q4_K_M or UD-Q4_K_XL &mdash; the recommended default</li>
+      <li><strong>24 GB VRAM (RTX 3090, RTX 4090, RTX 5090):</strong> 27B Q6_K for max dense quality, OR 35B MoE Q4_K_M for coding</li>
+      <li><strong>RTX 40-series Blackwell (5090, 6000 Ada):</strong> 35B MoE NVFP4 wins &mdash; smallest size with native quality</li>
+      <li><strong>Apple Silicon M3/M4:</strong> Qwen 3.6 35B MoE MLX BF16 via MLX runtime</li>
+      <li><strong>CPU only with 32 GB RAM:</strong> 27B Q4_K_M at 1-3 tok/s &mdash; usable for short tasks</li>
+    </ul>
+
+    <h2>Installation Path 1 &mdash; Ollama (CLI)</h2>
+
+    <p>Ollama is the no-frills route if you don&rsquo;t want a GUI.</p>
+
+    <ol>
+      <li>Install Ollama from <a href="https://ollama.com" target="_blank" rel="noopener">ollama.com</a></li>
+      <li>Pull the model: <code>ollama pull qwen3.6:27b</code> (dense Q4_K_M, 16 GB) or <code>ollama pull qwen3.6</code> (35B MoE Q4_K_M, 24 GB)</li>
+      <li>For variants: <code>ollama pull qwen3.6:35b-a3b-coding-nvfp4</code> for the NVFP4 coding model</li>
+      <li>Chat: <code>ollama run qwen3.6:27b</code></li>
+    </ol>
+
+    <p>Ollama&rsquo;s default 4096-token context window is conservative for Qwen 3.6&rsquo;s 256K capability. To enable the long context create a Modelfile:</p>
+
+    <pre><code>FROM qwen3.6:27b
+PARAMETER num_ctx 32768</code></pre>
+
+    <p>Then <code>ollama create qwen3.6-long -f Modelfile</code> and use that. 32K is a sane starting point &mdash; full 256K eats VRAM aggressively.</p>
+
+    <h2>Installation Path 2 &mdash; Locally Uncensored (GUI)</h2>
+
+    <p>If you want a one-click experience plus chat, agent mode, image generation, and a/b model compare in the same window, use <a href="https://github.com/PurpleDoubleD/locally-uncensored/releases">Locally Uncensored</a>.</p>
+
+    <ol>
+      <li>Download the v2.4.0 installer for your OS from GitHub Releases</li>
+      <li>Run the installer (Windows: signed NSIS .exe; Linux: deb / rpm / AppImage)</li>
+      <li>The first-launch wizard auto-detects Ollama if you have it. If not, the wizard offers a one-click Ollama install.</li>
+      <li>Open the Model Manager, switch to the Discover tab, sub-tab Text</li>
+      <li>Search <em>Qwen 3.6</em> &mdash; you&rsquo;ll see all variants with size + hardware tags</li>
+      <li>Click the download arrow on the variant matching your VRAM. The download badge in the header shows progress</li>
+      <li>Once done, switch to Chat, the model picker shows <em>qwen3.6:27b</em> (or your variant). Type a prompt</li>
+    </ol>
+
+    <p>The new <a href="locally-uncensored-v2-4-0-release.html">v2.4.0 Settings &gt; Model Storage</a> section lets you redirect the GGUF folder to a custom path &mdash; useful for dual-boot setups or NAS-mounted model libraries.</p>
+
+    <h2>Performance Numbers</h2>
+
+    <p>Tested on RTX 3060 12 GB (Windows 11, CUDA 12.1) with Qwen 3.6 27B Q3_K_M, 4096-token context, fp16 KV cache:</p>
+
+    <table>
+      <thead>
+        <tr><th>Workload</th><th>tok/s</th><th>Notes</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Cold first response (model load)</td><td>~3</td><td>Includes load_duration</td></tr>
+        <tr><td>Warm chat (50-token answers)</td><td>22-26</td><td>Steady state</td></tr>
+        <tr><td>Long-form generation (1000 tokens)</td><td>18-20</td><td>Sustained</td></tr>
+        <tr><td>Thinking-mode enabled</td><td>15-18</td><td>Includes hidden chain-of-thought tokens</td></tr>
+      </tbody>
+    </table>
+
+    <p>For comparison, <a href="best-uncensored-ai-models-2026.html">our broader benchmark of 2026 local models</a> covers the same hardware against Llama 4, GPT-OSS, GLM 4.7, and DeepSeek R1.</p>
+
+    <h2>Thinking Mode</h2>
+
+    <p>Qwen 3.6 preserves the thinking-mode lineage from QwQ and DeepSeek R1. The model produces a hidden chain-of-thought before the visible answer. In Locally Uncensored toggle the <strong>Think</strong> button in the chat input. With Ollama set <code>think: true</code> in the request body. Without thinking the model still answers but skips the deliberation step &mdash; faster but lower quality on hard reasoning prompts.</p>
+
+    <p>Note: thinking mode adds 1.5-3x to response latency depending on prompt complexity. Worth it for code review, math, multi-step planning. Skip it for casual chat.</p>
+
+    <h2>Vision Support</h2>
+
+    <p>Both 27B dense and 35B MoE accept image input. Drag-and-drop a screenshot, photo, or chart into the LU chat input. The model returns a description, transcribes text, identifies objects, or answers questions about the image.</p>
+
+    <p>VRAM cost for vision inference is +1-2 GB on top of the base model. So 27B Q3_K_M with vision needs ~14 GB &mdash; doesn&rsquo;t fit on 12 GB GPUs. Use Q3_K_M for text only or step down to UD-IQ2_XXS for vision on 12 GB GPUs.</p>
+
+    <h2>Coding Performance</h2>
+
+    <p>The 35B MoE coding-specialised variants (<code>qwen3.6:35b-a3b-coding-nvfp4</code>, <code>qwen3.6:35b-a3b-coding-mxfp8</code>) are tuned on the SWE-bench training data. On the SWE-bench-verified benchmark the coding NVFP4 variant scores in the same ballpark as Claude 3.5 Sonnet at a fraction of the inference cost.</p>
+
+    <p>For day-to-day coding inside <a href="codex-cli-universal-model-support.html">LU&rsquo;s Coding Agent</a>, the 27B dense Q4_K_M is the better default &mdash; consistent quality, no MoE-routing variance. Switch to the 35B MoE coding variant for hard refactors or when SWE-bench-style multi-file changes are involved.</p>
+
+    <h2>Comparison &mdash; Qwen 3.6 vs Qwen 3.5</h2>
+
+    <table>
+      <thead>
+        <tr><th>Feature</th><th>Qwen 3.5</th><th>Qwen 3.6</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Vision</td><td>No</td><td>Yes (both 27B and 35B)</td></tr>
+        <tr><td>Context window</td><td>128K</td><td>256K</td></tr>
+        <tr><td>Thinking mode</td><td>QwQ-only</td><td>Preserved across variants</td></tr>
+        <tr><td>Coding-specific MoE</td><td>No</td><td>Yes (35B-a3b-coding)</td></tr>
+        <tr><td>NVFP4 quant</td><td>No</td><td>Yes (35B MoE)</td></tr>
+        <tr><td>MLX variant for Apple Silicon</td><td>No</td><td>Yes (35B MoE BF16 MLX)</td></tr>
+        <tr><td>Best dense size</td><td>27B</td><td>27B (denser per benchmark)</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Troubleshooting</h2>
+
+    <h3>Out of memory on Q4_K_M</h3>
+
+    <p>Step down one quant level. Q4_K_M &rarr; Q3_K_M (12 GB), Q3_K_M &rarr; UD-IQ2_XXS (8 GB). Or reduce context window size in the Modelfile.</p>
+
+    <h3>"does not support thinking" HTTP 400 error</h3>
+
+    <p>You&rsquo;re on an Ollama version older than 0.3.10 with thinking enabled in LU. Update Ollama. v2.4.0 of LU also retries automatically without the thinking flag and warns in-app.</p>
+
+    <h3>Slow first response, fast subsequent</h3>
+
+    <p>Normal. The first prompt loads the model into VRAM (load_duration in the Ollama response). Keep the model warm by setting <code>OLLAMA_KEEP_ALIVE=24h</code> as an env var, or in LM Studio set "Keep model loaded for" to infinite.</p>
+
+    <h3>HuggingFace download 404</h3>
+
+    <p>If you&rsquo;re downloading via LU&rsquo;s search box (not the curated list) and hit a 404, you may have hit the pre-v2.4.0 filename heuristic bug. Update LU to v2.4.0 &mdash; <a href="locally-uncensored-v2-4-0-release.html">that release fixes the doubled-quant-tag issue</a>.</p>
+
+    <h2>Related Reading</h2>
+
+    <ul>
+      <li><a href="best-uncensored-ai-models-2026.html">Best uncensored AI models 2026</a> &mdash; Qwen 3.6 in the broader landscape</li>
+      <li><a href="best-local-ai-apps-2026.html">Best local AI apps 2026</a> &mdash; how the Ollama / LM Studio / LU stack compares</li>
+      <li><a href="run-uncensored-ai-locally.html">How to run uncensored AI locally</a> &mdash; full setup walkthrough including abliterated variants</li>
+      <li><a href="locally-uncensored-v2-4-0-release.html">v2.4.0 release notes</a> &mdash; configurable HF download path, single-instance lock, more</li>
+    </ul>
+
+    <hr>
+
+    <p><em>Locally Uncensored is AGPL-3.0 licensed. Built by <a href="https://github.com/PurpleDoubleD">PurpleDoubleD</a>. Bug reports and feature requests on <a href="https://github.com/PurpleDoubleD/locally-uncensored/discussions">GitHub Discussions</a> or in the <a href="https://locallyuncensored.com/discord">Discord</a>.</em></p>
+  </article>
+
+  <div class="post-footer">
+    <p>One-click Qwen 3.6 install plus 75+ other models in Locally Uncensored</p>
+    <a href="https://github.com/PurpleDoubleD/locally-uncensored/releases" class="cta-btn" target="_blank">
+      Download Locally Uncensored
+    </a>
+  </div>
+</div>
+
+<footer>
+  <span>AGPL-3.0 License. Built by <a href="https://github.com/PurpleDoubleD" target="_blank">PurpleDoubleD</a>.</span>
+  <div class="footer-links">
+    <a href="https://github.com/PurpleDoubleD/locally-uncensored" target="_blank">GitHub</a>
+    <a href="https://github.com/PurpleDoubleD/locally-uncensored/discussions" target="_blank">Discussions</a>
+    <a href="../">Home</a>
+  </div>
+</footer>
+
+</body>
+</html>

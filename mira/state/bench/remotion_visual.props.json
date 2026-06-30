@@ -1,0 +1,55 @@
+{
+  "theme": "flat-motion-graphics",
+  "width": 1080,
+  "height": 1920,
+  "cuts": [
+    {
+      "id": "scene-00",
+      "source": "",
+      "in_seconds": 0.0,
+      "out_seconds": 3.6,
+      "type": "hero_title",
+      "text": "You need to hear this about three free AI tools every student should know."
+    },
+    {
+      "id": "scene-01",
+      "source": "",
+      "in_seconds": 3.6,
+      "out_seconds": 6.4,
+      "type": "text_card",
+      "text": "Third, almost no one knows this shortcut in three free AI tools every student should know."
+    },
+    {
+      "id": "scene-02",
+      "source": "",
+      "in_seconds": 6.4,
+      "out_seconds": 9.2,
+      "type": "text_card",
+      "text": "Fourth, you can start using three free AI tools every student should know completely for free."
+    },
+    {
+      "id": "scene-03",
+      "source": "",
+      "in_seconds": 9.2,
+      "out_seconds": 12.0,
+      "type": "text_card",
+      "text": "The key insight about three free AI tools every student should know is that simplicity wins."
+    },
+    {
+      "id": "scene-04",
+      "source": "",
+      "in_seconds": 12.0,
+      "out_seconds": 14.8,
+      "type": "text_card",
+      "text": "Here is a real example of three free AI tools every student should know in action."
+    },
+    {
+      "id": "scene-05",
+      "source": "",
+      "in_seconds": 14.8,
+      "out_seconds": 18.0,
+      "type": "text_card",
+      "text": "Let that sink in \u2014 three free AI tools every student should know is already changing the game."
+    }
+  ]
+}

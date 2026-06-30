@@ -1,0 +1,584 @@
+/**
+ * Feature EE (v2.5.0) — VRAM hand-off orchestrator unit tests.
+ *
+ * What these CAN prove (pure logic + control flow, all services mocked):
+ *   1. decideUnload() math — fits / doesn't-fit / unknown sizes / mode matrix.
+ *   2. The cloud/remote SKIP path — a non-local text model must NOT be evicted.
+ *   3. The finally-ALWAYS-reloads invariant — loadModel runs even when the
+ *      generation throws (success/failure/timeout all hit the finally).
+ *   4. pollGone() timeout behaviour — gives up after the deadline.
+ *
+ * What they CANNOT prove (per the Bug-G lesson, only live E2E can): whether a
+ * real ComfyUI OOMs on low-VRAM hardware, or whether the chosen footprint
+ * estimates actually keep the two models from colliding on a given GPU. Those
+ * numbers are conservative guesses; this file only checks that the DECISION and
+ * the ORCHESTRATION are correct given known inputs.
+ *
+ * Run: npx vitest run src/api/__tests__/vram-handoff.test.ts
+ */
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+
+// ── Mocks (hoisted) ───────────────────────────────────────────────
+// Mirror the bg-tasks.test.ts pattern: top-level vi.fn()s referenced via the
+// mock factory so each test can program return values per case.
+
+const localFetch = vi.fn()
+const listRunningModels = vi.fn()
+const loadModel = vi.fn()
+const unloadModel = vi.fn()
+const getImageModels = vi.fn()
+const getVideoModels = vi.fn()
+const detectVideoBackend = vi.fn()
+const getSystemVRAM = vi.fn()
+const submitWorkflow = vi.fn()
+const getHistory = vi.fn()
+const freeMemory = vi.fn()
+const buildDynamicWorkflow = vi.fn()
+const buildTxt2VidWorkflow = vi.fn()
+const backendCall = vi.fn()
+const getActiveAgentModel = vi.fn()
+let isOllamaLocalReturn = true
+
+vi.mock('../backend', () => ({
+  backendCall: (...a: unknown[]) => backendCall(...a),
+  localFetch: (...a: unknown[]) => localFetch(...a),
+  ollamaUrl: (p: string) => `http://localhost:11434/api${p.startsWith('/') ? p : '/' + p}`,
+  comfyuiUrl: (p: string) => `http://localhost:8188${p}`,
+  isOllamaLocal: () => isOllamaLocalReturn,
+}))
+
+vi.mock('../ollama', () => ({
+  listRunningModels: (...a: unknown[]) => listRunningModels(...a),
+  loadModel: (...a: unknown[]) => loadModel(...a),
+  unloadModel: (...a: unknown[]) => unloadModel(...a),
+}))
+
+vi.mock('../comfyui', async () => {
+  const actual = await vi.importActual<typeof import('../comfyui')>('../comfyui')
+  return {
+    ...actual,
+    getImageModels: (...a: unknown[]) => getImageModels(...a),
+    getVideoModels: (...a: unknown[]) => getVideoModels(...a),
+    detectVideoBackend: (...a: unknown[]) => detectVideoBackend(...a),
+    getSystemVRAM: (...a: unknown[]) => getSystemVRAM(...a),
+    submitWorkflow: (...a: unknown[]) => submitWorkflow(...a),
+    getHistory: (...a: unknown[]) => getHistory(...a),
+    freeMemory: (...a: unknown[]) => freeMemory(...a),
+    buildTxt2VidWorkflow: (...a: unknown[]) => buildTxt2VidWorkflow(...a),
+    // classifyModel, snapToVideoGrid, extractComfyOutputFiles, getImageUrl,
+    // MODEL_TYPE_DEFAULTS keep their real implementations (pure helpers).
+  }
+})
+
+vi.mock('../dynamic-workflow', () => ({
+  buildDynamicWorkflow: (...a: unknown[]) => buildDynamicWorkflow(...a),
+}))
+
+vi.mock('../agent-context', () => ({
+  getActiveAgentModel: () => getActiveAgentModel(),
+}))
+
+// settingsStore is the real module — pure, no services. The orchestrator reads
+// settings.exclusiveVramMode through it; default DEFAULT_SETTINGS = 'auto'.
+
+import { decideUnload, vramHandoffGenerate, pollGone, resolveClip, resolveModelName, resolveI2VResolution, comfyErrorHint } from '../vram-handoff'
+import { useSettingsStore } from '../../stores/settingsStore'
+
+const GB = 1024 * 1024 * 1024
+
+beforeEach(() => {
+  localFetch.mockReset()
+  listRunningModels.mockReset()
+  loadModel.mockReset()
+  unloadModel.mockReset()
+  getImageModels.mockReset()
+  getVideoModels.mockReset()
+  detectVideoBackend.mockReset()
+  getSystemVRAM.mockReset()
+  submitWorkflow.mockReset()
+  getHistory.mockReset()
+  freeMemory.mockReset()
+  buildDynamicWorkflow.mockReset()
+  buildTxt2VidWorkflow.mockReset()
+  backendCall.mockReset()
+  getActiveAgentModel.mockReset()
+  isOllamaLocalReturn = true
+  // Default: no model resident, ComfyUI already running.
+  listRunningModels.mockResolvedValue([])
+  freeMemory.mockResolvedValue(undefined)
+  loadModel.mockResolvedValue(undefined)
+  unloadModel.mockResolvedValue(undefined)
+  backendCall.mockImplementation(async (cmd: string) => {
+    if (cmd === 'comfyui_status') return { running: true }
+    return {}
+  })
+  // Reset exclusiveVramMode to default each test.
+  useSettingsStore.getState().updateSettings({ exclusiveVramMode: 'auto' })
+})
+
+// ── 1. decideUnload() math ────────────────────────────────────────
+
+describe('decideUnload', () => {
+  it("auto: doesn't-fit → unload (text + footprint > VRAM)", () => {
+    const r = decideUnload({ textVramBytes: 9 * GB, modelFootprintGB: 16, systemVramGB: 12, mode: 'auto' })
+    expect(r.unload).toBe(true)
+  })
+
+  it('auto: fits → do NOT unload (text + footprint <= VRAM)', () => {
+    const r = decideUnload({ textVramBytes: 4 * GB, modelFootprintGB: 8, systemVramGB: 24, mode: 'auto' })
+    expect(r.unload).toBe(false)
+  })
+
+  it('auto: unknown footprint → do NOT unload (no eviction on a guess)', () => {
+    const r = decideUnload({ textVramBytes: 9 * GB, modelFootprintGB: null, systemVramGB: 12, mode: 'auto' })
+    expect(r.unload).toBe(false)
+  })
+
+  it('auto: unknown system VRAM → do NOT unload', () => {
+    const r = decideUnload({ textVramBytes: 9 * GB, modelFootprintGB: 16, systemVramGB: null, mode: 'auto' })
+    expect(r.unload).toBe(false)
+  })
+
+  it('auto: no text model resident (0 bytes) → nothing to free', () => {
+    const r = decideUnload({ textVramBytes: 0, modelFootprintGB: 16, systemVramGB: 12, mode: 'auto' })
+    expect(r.unload).toBe(false)
+  })
+
+  it("always: resident text model → unload regardless of fit", () => {
+    const r = decideUnload({ textVramBytes: 2 * GB, modelFootprintGB: 4, systemVramGB: 80, mode: 'always' })
+    expect(r.unload).toBe(true)
+  })
+
+  it('always: but no resident text model → nothing to unload', () => {
+    const r = decideUnload({ textVramBytes: 0, modelFootprintGB: 4, systemVramGB: 8, mode: 'always' })
+    expect(r.unload).toBe(false)
+  })
+
+  it('never: always false even when it clearly would not fit', () => {
+    const r = decideUnload({ textVramBytes: 20 * GB, modelFootprintGB: 24, systemVramGB: 12, mode: 'never' })
+    expect(r.unload).toBe(false)
+  })
+
+  it('auto: exact boundary (== VRAM) does NOT unload (fits)', () => {
+    // 4GB text + 8GB model = 12GB, system 12GB → not strictly greater → fits.
+    const r = decideUnload({ textVramBytes: 4 * GB, modelFootprintGB: 8, systemVramGB: 12, mode: 'auto' })
+    expect(r.unload).toBe(false)
+  })
+})
+
+// ── resolveClip: video length from seconds/frames/fps (David: "video nur 1s") ──
+
+describe('resolveClip', () => {
+  const SVD = { defFps: 8, defFrames: 25, maxFrames: 25 }
+  const WAN = { defFps: 16, defFrames: 81, maxFrames: 161 }
+
+  it('SVD default (no args) → full 25-frame clip, not a stubby 14 (~3s @ 8fps)', () => {
+    expect(resolveClip({ prompt: 'x' }, SVD)).toEqual({ frames: 25, fps: 8 })
+  })
+
+  it('SVD seconds=2 → 16 frames @ 8fps (fits under the cap)', () => {
+    expect(resolveClip({ prompt: 'x', seconds: 2 }, SVD)).toEqual({ frames: 16, fps: 8 })
+  })
+
+  it('SVD seconds=4 → caps at 25 frames but LOWERS fps so it still lasts ~4s', () => {
+    const r = resolveClip({ prompt: 'x', seconds: 4 }, SVD)
+    expect(r.frames).toBe(25)
+    expect(r.fps).toBe(6) // 25/4 ≈ 6 → 25 frames @ 6fps ≈ 4.2s (duration honored)
+  })
+
+  it('explicit frames is respected (advanced) and clamped to the model cap', () => {
+    expect(resolveClip({ prompt: 'x', frames: 14 }, SVD)).toEqual({ frames: 14, fps: 8 })
+    expect(resolveClip({ prompt: 'x', frames: 999 }, SVD).frames).toBe(25)
+  })
+
+  it('Wan seconds=4 → 64 frames @ 16fps (text-to-video can run longer)', () => {
+    expect(resolveClip({ prompt: 'x', seconds: 4 }, WAN)).toEqual({ frames: 64, fps: 16 })
+  })
+
+  it('Wan default → the model default length', () => {
+    expect(resolveClip({ prompt: 'x' }, WAN)).toEqual({ frames: 81, fps: 16 })
+  })
+
+  // FramePack packs long video, so its I2V branch uses a high ceiling instead of
+  // SVD's 25 (David 2026-06-04: "FramePacks frame cap anheben durch input von uns").
+  const FRAMEPACK = { defFps: 16, defFrames: 49, maxFrames: 600 }
+
+  it('FramePack default → 49 frames @ 16fps (model default)', () => {
+    expect(resolveClip({ prompt: 'x' }, FRAMEPACK)).toEqual({ frames: 49, fps: 16 })
+  })
+
+  it('FramePack honors the request beyond SVD: seconds=7 fps=40 → 280 frames @ 40fps (true 40fps, NOT capped to 25)', () => {
+    expect(resolveClip({ prompt: 'x', seconds: 7, fps: 40 }, FRAMEPACK)).toEqual({ frames: 280, fps: 40 })
+  })
+
+  it('FramePack clamps a runaway request to the 600-frame safety ceiling', () => {
+    expect(resolveClip({ prompt: 'x', seconds: 60, fps: 40 }, FRAMEPACK).frames).toBe(600)
+  })
+})
+
+// ── resolveI2VResolution: pick native res from source aspect (David 2026-06-11:
+//    "I2V results are never what the source image showed" — portrait stills came
+//    back as squished 768×448 landscape) ──
+describe('resolveI2VResolution', () => {
+  it('SVD square source → landscape 1024×576 (square is closer to landscape; center-crop fills it)', () => {
+    expect(resolveI2VResolution('svd', 1024, 1024)).toEqual({ width: 1024, height: 576 })
+  })
+
+  it('SVD portrait source → portrait native 576×1024 (no more squish to landscape)', () => {
+    expect(resolveI2VResolution('svd', 1024, 1536)).toEqual({ width: 576, height: 1024 })
+  })
+
+  it('SVD landscape source → landscape native 1024×576', () => {
+    expect(resolveI2VResolution('svd', 1920, 1080)).toEqual({ width: 1024, height: 576 })
+  })
+
+  it('SVD unknown dimensions → safe landscape default', () => {
+    expect(resolveI2VResolution('svd', 0, 0)).toEqual({ width: 1024, height: 576 })
+  })
+
+  it('FramePack keeps the source aspect, snapped to a 16-multiple under the 768 cap', () => {
+    // 1024×1024 → scaled to 768×768 (cap), already 16-aligned.
+    expect(resolveI2VResolution('framepack', 1024, 1024)).toEqual({ width: 768, height: 768 })
+    // 1920×1080 → long edge 1920>768 → ×0.4 → 768×432 (both 16-aligned).
+    expect(resolveI2VResolution('framepack', 1920, 1080)).toEqual({ width: 768, height: 432 })
+  })
+
+  it('FramePack small source is not upscaled past its size, just 16-snapped', () => {
+    const r = resolveI2VResolution('framepack', 500, 500)
+    expect(r.width % 16).toBe(0)
+    expect(r.height % 16).toBe(0)
+    expect(r.width).toBeLessThanOrEqual(512)
+  })
+})
+
+// ── comfyErrorHint: actionable hints for cryptic ComfyUI node errors ──
+describe('comfyErrorHint', () => {
+  it('FramePack HyVideoModel error → points at the custom-node, not LU', () => {
+    const h = comfyErrorHint('FramePackSampler', 'AttributeError', "'HyVideoModel' object has no attribute 'diffusion_model'")
+    expect(h).toMatch(/FramePackWrapper/)
+    expect(h).toMatch(/not in Locally Uncensored/i)
+    expect(h).toMatch(/SVD|Wan 2\.2/)
+  })
+
+  it('OOM error → actionable VRAM advice', () => {
+    expect(comfyErrorHint('KSampler', 'torch.OutOfMemoryError', 'Allocation on device')).toMatch(/GPU memory/i)
+    expect(comfyErrorHint(undefined, undefined, 'CUDA out of memory')).toMatch(/GPU memory/i)
+  })
+
+  it('Windows pagefile too small (os error 1455) → virtual-memory advice, not an LU bug (#61)', () => {
+    const h = comfyErrorHint('CLIPLoader', undefined, 'The paging file is too small for this operation to complete. (os error 1455)')
+    expect(h).toMatch(/virtual memory|page file/i)
+    expect(h).toMatch(/not a Locally Uncensored bug/i)
+    // matches on the bare os-error code too, regardless of node
+    expect(comfyErrorHint(undefined, undefined, 'os error 1455')).toMatch(/virtual memory/i)
+  })
+
+  it('unknown error → no hint (verbatim error stands alone)', () => {
+    expect(comfyErrorHint('KSampler', 'ValueError', 'something weird')).toBe('')
+  })
+
+  it('does not false-positive the FramePack hint on an unrelated node', () => {
+    expect(comfyErrorHint('KSampler', 'AttributeError', 'diffusion_model missing')).toBe('')
+  })
+})
+
+// ── helpers for the orchestrator tests ────────────────────────────
+
+/** Program a completed history with one image output for a given promptId. */
+function completedHistory() {
+  return {
+    status: { completed: true },
+    outputs: { '9': { images: [{ filename: 'out.png', subfolder: '', type: 'output' }] } },
+  }
+}
+
+// ── 2. cloud/remote SKIP path ─────────────────────────────────────
+
+describe('vramHandoffGenerate — cloud/remote SKIP path', () => {
+  it('cloud text model → never evicts, still generates', async () => {
+    getActiveAgentModel.mockReturnValue({ name: 'gpt-4o', providerId: 'openai', remote: false })
+    getImageModels.mockResolvedValue([{ name: 'sdxl.safetensors', type: 'sdxl', source: 'checkpoint' }])
+    buildDynamicWorkflow.mockResolvedValue({ '9': { class_type: 'SaveImage' } })
+    submitWorkflow.mockResolvedValue('pid-1')
+    getHistory.mockResolvedValue(completedHistory())
+
+    const out = await vramHandoffGenerate('image', { prompt: 'a cat' })
+
+    expect(unloadModel).not.toHaveBeenCalled()
+    expect(out).toContain('Image generated: out.png')
+    expect(out).toContain('/view?filename=out.png')
+  })
+
+  it('remote Ollama base → never evicts (no LOCAL VRAM to free)', async () => {
+    getActiveAgentModel.mockReturnValue({ name: 'llama3:8b', providerId: 'ollama', remote: true })
+    getImageModels.mockResolvedValue([{ name: 'sdxl.safetensors', type: 'sdxl', source: 'checkpoint' }])
+    buildDynamicWorkflow.mockResolvedValue({})
+    submitWorkflow.mockResolvedValue('pid-1')
+    getHistory.mockResolvedValue(completedHistory())
+
+    await vramHandoffGenerate('image', { prompt: 'a dog' })
+    expect(unloadModel).not.toHaveBeenCalled()
+  })
+
+  it('no image model installed → clear error, nothing unloaded', async () => {
+    getActiveAgentModel.mockReturnValue({ name: 'llama3:8b', providerId: 'ollama', remote: false })
+    getImageModels.mockResolvedValue([])
+
+    const out = await vramHandoffGenerate('image', { prompt: 'x' })
+    expect(out).toMatch(/no image model installed/i)
+    expect(unloadModel).not.toHaveBeenCalled()
+    expect(submitWorkflow).not.toHaveBeenCalled()
+  })
+
+  it('empty prompt → guard fires, nothing touched', async () => {
+    const out = await vramHandoffGenerate('image', { prompt: '   ' })
+    expect(out).toMatch(/No prompt provided/i)
+    expect(getImageModels).not.toHaveBeenCalled()
+    expect(unloadModel).not.toHaveBeenCalled()
+  })
+})
+
+// ── 3. finally-ALWAYS-reloads invariant ───────────────────────────
+
+describe('vramHandoffGenerate — finally always restores the text model', () => {
+  it('reloads the evicted model even when submitWorkflow throws', async () => {
+    // Local Ollama model that is resident with a big footprint on a small GPU →
+    // decideUnload says unload. listRunningModels reports it resident, then gone.
+    getActiveAgentModel.mockReturnValue({ name: 'qwen:14b', providerId: 'ollama', remote: false })
+    getImageModels.mockResolvedValue([{ name: 'flux1-dev.safetensors', type: 'flux', source: 'diffusion_model' }])
+    getSystemVRAM.mockResolvedValue(12)
+    // /api/ps: first call (decision probe) shows the model resident w/ 9GB VRAM.
+    // listRunningModels (capture-before-unload) shows it resident, then pollGone
+    // sees it gone.
+    localFetch.mockImplementation(async (url: string) => {
+      if (url.endsWith('/api/ps')) {
+        return new Response(JSON.stringify({ models: [{ name: 'qwen:14b', size_vram: 9 * GB }] }), { status: 200 })
+      }
+      return new Response('{}', { status: 200 })
+    })
+    listRunningModels
+      .mockResolvedValueOnce(['qwen:14b']) // capture-before-unload
+      .mockResolvedValueOnce([])           // pollGone: already gone
+    submitWorkflow.mockRejectedValue(new Error('CUDA out of memory'))
+    buildDynamicWorkflow.mockResolvedValue({})
+
+    const out = await vramHandoffGenerate('image', { prompt: 'render this' })
+
+    // It DID evict…
+    expect(unloadModel).toHaveBeenCalledWith('qwen:14b')
+    // …and the finally block DID restore it despite the throw…
+    expect(loadModel).toHaveBeenCalledWith('qwen:14b')
+    expect(freeMemory).toHaveBeenCalled()
+    // …and the OOM is surfaced VERBATIM, not masked.
+    expect(out).toContain('CUDA out of memory')
+  })
+
+  it('reloads is best-effort: a loadModel throw does not reject the call', async () => {
+    getActiveAgentModel.mockReturnValue({ name: 'qwen:14b', providerId: 'ollama', remote: false })
+    getImageModels.mockResolvedValue([{ name: 'flux1-dev.safetensors', type: 'flux', source: 'diffusion_model' }])
+    getSystemVRAM.mockResolvedValue(12)
+    localFetch.mockImplementation(async (url: string) => {
+      if (url.endsWith('/api/ps')) {
+        return new Response(JSON.stringify({ models: [{ name: 'qwen:14b', size_vram: 9 * GB }] }), { status: 200 })
+      }
+      return new Response('{}', { status: 200 })
+    })
+    listRunningModels.mockResolvedValueOnce(['qwen:14b']).mockResolvedValueOnce([])
+    buildDynamicWorkflow.mockResolvedValue({})
+    submitWorkflow.mockResolvedValue('pid-1')
+    getHistory.mockResolvedValue(completedHistory())
+    loadModel.mockRejectedValue(new Error('ollama busy'))
+
+    // Must still resolve with the successful generation result.
+    const out = await vramHandoffGenerate('image', { prompt: 'render this' })
+    expect(out).toContain('Image generated: out.png')
+    expect(loadModel).toHaveBeenCalledWith('qwen:14b')
+  })
+
+  it('auto-fits: local model that co-exists is NOT evicted', async () => {
+    getActiveAgentModel.mockReturnValue({ name: 'llama3:8b', providerId: 'ollama', remote: false })
+    getImageModels.mockResolvedValue([{ name: 'sd15.safetensors', type: 'sd15', source: 'checkpoint' }])
+    getSystemVRAM.mockResolvedValue(24) // plenty
+    localFetch.mockImplementation(async (url: string) => {
+      if (url.endsWith('/api/ps')) {
+        return new Response(JSON.stringify({ models: [{ name: 'llama3:8b', size_vram: 5 * GB }] }), { status: 200 })
+      }
+      return new Response('{}', { status: 200 })
+    })
+    buildDynamicWorkflow.mockResolvedValue({})
+    submitWorkflow.mockResolvedValue('pid-1')
+    getHistory.mockResolvedValue(completedHistory())
+
+    await vramHandoffGenerate('image', { prompt: 'a fox' })
+    // 5GB + ~4GB sd15 = 9GB < 24GB → fits → no eviction.
+    expect(unloadModel).not.toHaveBeenCalled()
+    // …but ComfyUI VRAM is still freed afterwards (cleanup), and no reload was
+    // needed because nothing was evicted.
+    expect(freeMemory).toHaveBeenCalled()
+    expect(loadModel).not.toHaveBeenCalled()
+  })
+
+  it("'never' mode: never evicts even when it would not fit", async () => {
+    useSettingsStore.getState().updateSettings({ exclusiveVramMode: 'never' })
+    getActiveAgentModel.mockReturnValue({ name: 'qwen:14b', providerId: 'ollama', remote: false })
+    getImageModels.mockResolvedValue([{ name: 'flux1-dev.safetensors', type: 'flux', source: 'diffusion_model' }])
+    getSystemVRAM.mockResolvedValue(8)
+    localFetch.mockImplementation(async (url: string) => {
+      if (url.endsWith('/api/ps')) {
+        return new Response(JSON.stringify({ models: [{ name: 'qwen:14b', size_vram: 9 * GB }] }), { status: 200 })
+      }
+      return new Response('{}', { status: 200 })
+    })
+    buildDynamicWorkflow.mockResolvedValue({})
+    submitWorkflow.mockResolvedValue('pid-1')
+    getHistory.mockResolvedValue(completedHistory())
+
+    await vramHandoffGenerate('image', { prompt: 'big render' })
+    expect(unloadModel).not.toHaveBeenCalled()
+  })
+})
+
+// ── 4. video path + start-ComfyUI ─────────────────────────────────
+
+describe('vramHandoffGenerate — video path', () => {
+  it('no video backend → clear error, nothing unloaded', async () => {
+    getActiveAgentModel.mockReturnValue({ name: 'llama3:8b', providerId: 'ollama', remote: false })
+    getVideoModels.mockResolvedValue([{ name: 'wan2.1.safetensors', type: 'wan', source: 'diffusion_model' }])
+    detectVideoBackend.mockResolvedValue('none')
+
+    const out = await vramHandoffGenerate('video', { prompt: 'a wave' })
+    expect(out).toMatch(/no text-to-video model installed/i)
+    expect(unloadModel).not.toHaveBeenCalled()
+  })
+
+  it('text-to-video does NOT pick an I2V-only model (SVD) → would mis-load as UNet', async () => {
+    // Scenario 3c live: gemma omitted inputImage; T2V must skip the SVD
+    // checkpoint and use the real T2V model, else ComfyUI rejects the workflow.
+    getActiveAgentModel.mockReturnValue({ name: 'gpt-4o', providerId: 'openai', remote: false })
+    getVideoModels.mockResolvedValue([
+      { name: 'svd_xt_1_1.safetensors', type: 'svd', source: 'checkpoint' },
+      { name: 'wan2.1_t2v.safetensors', type: 'wan', source: 'diffusion_model' },
+    ])
+    detectVideoBackend.mockResolvedValue('wan')
+    buildTxt2VidWorkflow.mockResolvedValue({ '9': { class_type: 'VHS_VideoCombine' } })
+    submitWorkflow.mockResolvedValue('vpid-2')
+    getHistory.mockResolvedValue({ status: { completed: true }, outputs: { '9': { gifs: [{ filename: 'c.mp4', subfolder: '', type: 'output' }] } } })
+
+    await vramHandoffGenerate('video', { prompt: 'a wave' })
+    // The model handed to buildTxt2VidWorkflow must be the Wan one, never SVD.
+    expect(buildTxt2VidWorkflow.mock.calls[0][0].model).toBe('wan2.1_t2v.safetensors')
+  })
+
+  it('builds a video workflow via buildTxt2VidWorkflow and returns the URL', async () => {
+    getActiveAgentModel.mockReturnValue({ name: 'gpt-4o', providerId: 'openai', remote: false })
+    getVideoModels.mockResolvedValue([{ name: 'wan2.1.safetensors', type: 'wan', source: 'diffusion_model' }])
+    detectVideoBackend.mockResolvedValue('wan')
+    buildTxt2VidWorkflow.mockResolvedValue({ '9': { class_type: 'VHS_VideoCombine' } })
+    submitWorkflow.mockResolvedValue('vpid-1')
+    getHistory.mockResolvedValue({
+      status: { completed: true },
+      outputs: { '9': { gifs: [{ filename: 'clip.mp4', subfolder: '', type: 'output' }] } },
+    })
+
+    const out = await vramHandoffGenerate('video', { prompt: 'a wave', frames: 81, fps: 16 })
+    expect(buildTxt2VidWorkflow).toHaveBeenCalled()
+    // Spec: video uses Wan backend; the backend arg is the 2nd param.
+    expect(buildTxt2VidWorkflow.mock.calls[0][1]).toBe('wan')
+    expect(out).toContain('Video generated: clip.mp4')
+  })
+})
+
+// ── pollGone() timeout ────────────────────────────────────────────
+
+describe('pollGone', () => {
+  it('returns true immediately when the model is already gone', async () => {
+    listRunningModels.mockResolvedValue(['other:model'])
+    await expect(pollGone('qwen:14b', 15_000)).resolves.toBe(true)
+  })
+
+  it('times out (returns false) when the model never leaves VRAM', async () => {
+    vi.useFakeTimers()
+    try {
+      // The model is ALWAYS still resident — eviction never lands.
+      listRunningModels.mockResolvedValue(['qwen:14b'])
+      const p = pollGone('qwen:14b', 3_000)
+      // Drive the internal 750ms sleep loop past the 3s deadline.
+      await vi.advanceTimersByTimeAsync(4_000)
+      await expect(p).resolves.toBe(false)
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('returns true once the model disappears mid-poll', async () => {
+    vi.useFakeTimers()
+    try {
+      listRunningModels
+        .mockResolvedValueOnce(['qwen:14b']) // still there at t=0
+        .mockResolvedValueOnce(['qwen:14b']) // still there after 1st sleep
+        .mockResolvedValue([])               // gone thereafter
+      const p = pollGone('qwen:14b', 15_000)
+      await vi.advanceTimersByTimeAsync(2_000)
+      await expect(p).resolves.toBe(true)
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+})
+
+// ── 5. starts ComfyUI when not running ────────────────────────────
+
+describe('vramHandoffGenerate — ComfyUI lifecycle', () => {
+  it('calls start_comfyui when status reports not running, then proceeds', async () => {
+    getActiveAgentModel.mockReturnValue({ name: 'gpt-4o', providerId: 'openai', remote: false })
+    getImageModels.mockResolvedValue([{ name: 'sdxl.safetensors', type: 'sdxl', source: 'checkpoint' }])
+    buildDynamicWorkflow.mockResolvedValue({})
+    submitWorkflow.mockResolvedValue('pid-1')
+    getHistory.mockResolvedValue(completedHistory())
+
+    // First comfyui_status → not running, then running after start.
+    let started = false
+    backendCall.mockImplementation(async (cmd: string) => {
+      if (cmd === 'start_comfyui') { started = true; return {} }
+      if (cmd === 'comfyui_status') return { running: started }
+      return {}
+    })
+
+    const out = await vramHandoffGenerate('image', { prompt: 'a tree' })
+    expect(backendCall).toHaveBeenCalledWith('start_comfyui')
+    expect(out).toContain('Image generated: out.png')
+  })
+})
+
+describe('resolveModelName — fuzzy model match (David 2026-06-04: "FramePack" must be enough)', () => {
+  const installed = [
+    { name: 'FramePackI2V_HY_fp8_e4m3fn.safetensors' },
+    { name: 'svd_xt_1_1.safetensors' },
+    { name: 'wan2.1_t2v_1.3B_bf16.safetensors' },
+    { name: 'sd_xl_base_1.0.safetensors' },
+  ]
+  it('resolves a casual "FramePack" to the exact installed filename', () => {
+    expect(resolveModelName('FramePack', installed)).toBe('FramePackI2V_HY_fp8_e4m3fn.safetensors')
+  })
+  it('resolves case-insensitively ("framepack")', () => {
+    expect(resolveModelName('framepack', installed)).toBe('FramePackI2V_HY_fp8_e4m3fn.safetensors')
+  })
+  it('resolves "SVD" → svd_xt_1_1', () => {
+    expect(resolveModelName('SVD', installed)).toBe('svd_xt_1_1.safetensors')
+  })
+  it('resolves "wan" → the wan t2v model', () => {
+    expect(resolveModelName('wan', installed)).toBe('wan2.1_t2v_1.3B_bf16.safetensors')
+  })
+  it('resolves an exact filename unchanged', () => {
+    expect(resolveModelName('svd_xt_1_1.safetensors', installed)).toBe('svd_xt_1_1.safetensors')
+  })
+  it('resolves "sdxl" via substring to the SDXL base', () => {
+    expect(resolveModelName('sdxl', installed)).toBe('sd_xl_base_1.0.safetensors')
+  })
+  it('returns null when nothing matches (caller reports it, no silent wrong model)', () => {
+    expect(resolveModelName('totally-unknown-xyz', installed)).toBeNull()
+  })
+  it('returns null for an empty installed list', () => {
+    expect(resolveModelName('FramePack', [])).toBeNull()
+  })
+})

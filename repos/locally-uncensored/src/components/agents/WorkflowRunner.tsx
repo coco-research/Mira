@@ -1,0 +1,152 @@
+import { useState } from 'react'
+import { Loader2, Check, X, Circle, Send, Square } from 'lucide-react'
+import { useAgentWorkflowStore } from '../../stores/agentWorkflowStore'
+import type { StepStatus } from '../../types/agent-workflows'
+
+const STATUS_ICONS: Record<StepStatus | 'waiting', typeof Check> = {
+  pending: Circle,
+  running: Loader2,
+  completed: Check,
+  failed: X,
+  skipped: Circle,
+  waiting: Loader2,
+}
+
+const STATUS_COLORS: Record<StepStatus | 'waiting', string> = {
+  pending: 'text-gray-600',
+  running: 'text-blue-400 animate-spin',
+  completed: 'text-green-400',
+  failed: 'text-red-400',
+  skipped: 'text-gray-600',
+  waiting: 'text-amber-400 animate-pulse',
+}
+
+interface WorkflowRunnerProps {
+  executionId: string
+  workflowSteps: Array<{ id: string; label: string; type: string }>
+  waitingForInput: string | null
+  currentStepLabel: string
+  onProvideInput: (input: string) => void
+  onCancel: () => void
+}
+
+export function WorkflowRunner({
+  executionId,
+  workflowSteps,
+  waitingForInput,
+  currentStepLabel,
+  onProvideInput,
+  onCancel,
+}: WorkflowRunnerProps) {
+  const execution = useAgentWorkflowStore((s) => s.executions.find(e => e.id === executionId))
+  const [inputValue, setInputValue] = useState('')
+
+  if (!execution) return null
+
+  const handleSubmitInput = () => {
+    if (!inputValue.trim()) return
+    onProvideInput(inputValue.trim())
+    setInputValue('')
+  }
+
+  const elapsed = execution.completedAt
+    ? Math.round((execution.completedAt - execution.startedAt) / 1000)
+    : Math.round((Date.now() - execution.startedAt) / 1000)
+
+  return (
+    <div className="space-y-3 p-3 rounded-lg border border-white/10 bg-white/[0.02]">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-[0.7rem] font-medium text-gray-200">{execution.workflowName}</p>
+          <p className="text-[0.6rem] text-gray-500">
+            {execution.status === 'running' || execution.status === 'waiting_input'
+              ? `Running... ${elapsed}s`
+              : execution.status === 'completed'
+                ? `Completed in ${elapsed}s`
+                : execution.status === 'failed'
+                  ? `Failed after ${elapsed}s`
+                  : execution.status === 'cancelled'
+                    ? 'Cancelled'
+                    : execution.status}
+          </p>
+        </div>
+        {(execution.status === 'running' || execution.status === 'waiting_input') && (
+          <button
+            onClick={onCancel}
+            className="p-1 rounded hover:bg-red-500/20 text-gray-500 hover:text-red-400"
+            title="Cancel"
+          >
+            <Square size={12} />
+          </button>
+        )}
+      </div>
+
+      {/* Step progress */}
+      <div className="space-y-1">
+        {workflowSteps.map((step, index) => {
+          const result = execution.stepResults.find(r => r.stepId === step.id)
+          let status: StepStatus | 'waiting' = 'pending'
+          if (result) {
+            status = result.status
+          } else if (index === execution.currentStepIndex && execution.status === 'waiting_input') {
+            status = 'waiting'
+          } else if (index === execution.currentStepIndex && execution.status === 'running') {
+            status = 'running'
+          }
+
+          const Icon = STATUS_ICONS[status]
+
+          return (
+            <div key={step.id} className="flex items-start gap-2">
+              <Icon size={11} className={`mt-0.5 shrink-0 ${STATUS_COLORS[status]}`} />
+              <div className="flex-1 min-w-0">
+                <p className={`text-[0.65rem] ${status === 'completed' || status === 'running' || status === 'waiting' ? 'text-gray-300' : 'text-gray-500'}`}>
+                  {step.label}
+                </p>
+                {result?.output && status === 'completed' && (
+                  <p className="text-[0.6rem] text-gray-500 truncate mt-0.5">
+                    {result.output.substring(0, 100)}
+                  </p>
+                )}
+                {result?.error && (
+                  <p className="text-[0.6rem] text-red-400/70 mt-0.5">{result.error}</p>
+                )}
+              </div>
+            </div>
+          )
+        })}
+      </div>
+
+      {/* User input prompt */}
+      {waitingForInput && (
+        <div className="space-y-1.5 pt-1 border-t border-white/5">
+          <p className="text-[0.65rem] text-amber-400">{waitingForInput}</p>
+          <div className="flex gap-1.5">
+            <input
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleSubmitInput()}
+              placeholder="Type your input..."
+              className="flex-1 px-2 py-1 rounded bg-white/5 border border-white/10 text-[0.7rem] text-gray-300 placeholder-gray-600 focus:outline-none focus:border-white/20"
+              autoFocus
+            />
+            <button
+              onClick={handleSubmitInput}
+              className="px-2 py-1 rounded bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 transition-colors"
+            >
+              <Send size={11} />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Error */}
+      {execution.error && (
+        <p className="text-[0.65rem] text-red-400 bg-red-500/5 rounded px-2 py-1 border border-red-500/20">
+          {execution.error}
+        </p>
+      )}
+    </div>
+  )
+}

@@ -1,0 +1,760 @@
+<style data-screen="assets">
+/* ── Layout ───────────────────────────────────────────── */
+.ast-layout {
+  display: grid;
+  grid-template-columns: 1fr 308px;
+  gap: 24px;
+  align-items: start;
+  margin-top: 20px;
+}
+
+/* ── Action bar ───────────────────────────────────────── */
+.ast-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.ast-chips {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.ast-chip {
+  padding: 5px 14px;
+  border: 1.5px solid var(--border-strong);
+  background: transparent;
+  border-radius: 999px;
+  font-family: var(--sans);
+  font-size: 13px;
+  color: var(--ink-2);
+  cursor: pointer;
+  transition: background 0.14s, color 0.14s, border-color 0.14s;
+}
+
+.ast-chip:hover {
+  border-color: var(--clay);
+  color: var(--clay);
+}
+
+.ast-chip.active {
+  background: var(--clay);
+  border-color: var(--clay);
+  color: #fff;
+}
+
+/* ── Media grid ───────────────────────────────────────── */
+.ast-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+  gap: 14px;
+}
+
+.ast-card {
+  background: #fff;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color 0.14s, box-shadow 0.14s;
+}
+
+.ast-card:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow);
+}
+
+.ast-card.sel {
+  border-color: var(--clay);
+  box-shadow: 0 0 0 3px rgba(204, 120, 92, 0.14);
+}
+
+.ast-thumb {
+  aspect-ratio: 16 / 9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  position: relative;
+}
+
+.ast-thumb-gen-badge {
+  position: absolute;
+  top: 6px;
+  right: 7px;
+  font-size: 9px;
+  font-family: var(--sans);
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: rgba(250, 249, 245, 0.85);
+  border: 1px solid var(--border);
+  color: var(--ink-2);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.ast-enhanced-star {
+  position: absolute;
+  top: 7px;
+  left: 8px;
+  font-size: 11px;
+  color: var(--amber);
+  line-height: 1;
+}
+
+.ast-card-body {
+  padding: 10px 11px 11px;
+}
+
+.ast-filename {
+  font-size: 12px;
+  font-family: var(--sans);
+  color: var(--ink);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 6px;
+}
+
+.ast-card-tags {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-bottom: 5px;
+}
+
+.ast-card-tags .tag,
+.ast-card-tags .tag.en,
+.ast-card-tags .tag.hi {
+  font-size: 10px;
+  padding: 2px 7px;
+}
+
+.ast-uses {
+  font-size: 11px;
+  color: var(--ink-2);
+  font-family: var(--sans);
+}
+
+/* ── Side panel ───────────────────────────────────────── */
+.ast-panel {
+  position: sticky;
+  top: 24px;
+  padding: 20px;
+}
+
+.ast-panel-empty {
+  text-align: center;
+  padding: 36px 16px;
+  color: var(--ink-2);
+}
+
+.ast-panel-empty-icon {
+  font-size: 32px;
+  display: block;
+  margin-bottom: 10px;
+  opacity: 0.38;
+}
+
+.ast-panel-hd {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  margin-bottom: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.ast-pthumb {
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 19px;
+  flex-shrink: 0;
+}
+
+.ast-pname {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  word-break: break-all;
+  line-height: 1.35;
+}
+
+.ast-pname-meta {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+.ast-pname-meta .tag,
+.ast-pname-meta .tag.en,
+.ast-pname-meta .tag.hi {
+  font-size: 10px;
+  padding: 1px 6px;
+}
+
+.ast-section-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--ink-2);
+  margin: 0 0 9px;
+}
+
+.ast-enhance-opts {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.ast-enhance-opts .opt {
+  font-size: 12px;
+  padding: 5px 11px;
+}
+
+.ast-panel-hint {
+  font-size: 11px;
+  color: var(--ink-2);
+  line-height: 1.55;
+  margin-bottom: 12px;
+  font-family: var(--sans);
+}
+
+.ast-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 16px 0;
+}
+
+.ast-engine-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.ast-engine-opt {
+  flex: 1;
+  padding: 9px 10px;
+  border: 1.5px solid var(--border);
+  border-radius: 9px;
+  cursor: pointer;
+  background: var(--panel-2);
+  text-align: left;
+  transition: border-color 0.14s, background 0.14s;
+}
+
+.ast-engine-opt:hover {
+  border-color: var(--border-strong);
+}
+
+.ast-engine-opt.sel {
+  border-color: var(--clay);
+  background: #fff;
+}
+
+.ast-eng-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink);
+  display: block;
+  margin-bottom: 4px;
+  font-family: var(--sans);
+}
+
+.ast-eng-meta {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ast-animate-note {
+  font-size: 11px;
+  color: var(--ink-2);
+  font-style: italic;
+  margin-bottom: 11px;
+  line-height: 1.5;
+  font-family: var(--sans);
+}
+
+.ast-animate-section.dimmed {
+  opacity: 0.42;
+  pointer-events: none;
+}
+
+.ast-studio-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+  font-size: 12.5px;
+  color: var(--clay);
+  text-decoration: none;
+  font-weight: 500;
+  font-family: var(--sans);
+  transition: color 0.14s;
+}
+
+.ast-studio-link:hover {
+  color: var(--clay-hover);
+}
+
+/* ── Feedback anim ────────────────────────────────────── */
+.ast-btn-processing {
+  opacity: 0.65;
+  pointer-events: none;
+}
+
+/* ── Responsive ───────────────────────────────────────── */
+@media (max-width: 860px) {
+  .ast-layout {
+    grid-template-columns: 1fr;
+  }
+  .ast-panel {
+    position: static;
+  }
+}
+</style>
+
+<section class="page" id="assets">
+  <div class="content">
+
+    <!-- Page header -->
+    <div class="row" style="margin-bottom:4px;align-items:baseline;gap:10px">
+      <h1 style="margin:0">Assets</h1>
+      <span class="muted" style="font-size:14px;font-family:var(--sans)">My media</span>
+    </div>
+    <p class="lede" style="margin-bottom:20px;margin-top:4px">
+      Your photos and clips — upload, enhance, animate, then pull into any Studio lane as B-roll.
+    </p>
+
+    <!-- Action bar: Upload + filter chips -->
+    <div class="ast-bar">
+      <button class="btn" id="ast-upload-btn">↑ Upload</button>
+      <div class="ast-chips" id="ast-filter-chips" role="group" aria-label="Filter by tag">
+        <button class="ast-chip active" data-filter="all">All</button>
+        <button class="ast-chip" data-filter="you">👤 You</button>
+        <button class="ast-chip" data-filter="location">📍 Location</button>
+        <button class="ast-chip" data-filter="broll">🎬 B-roll</button>
+        <button class="ast-chip" data-filter="logo">◈ Logo</button>
+      </div>
+      <span class="muted right" style="font-size:12px" id="ast-count">8 assets · 3 enhanced</span>
+    </div>
+
+    <!-- Main two-column layout -->
+    <div class="ast-layout">
+
+      <!-- ── Media grid ─────────────────────── -->
+      <div class="ast-grid" id="ast-grid" role="list" aria-label="Media assets">
+        <!-- rendered by script -->
+      </div>
+
+      <!-- ── Side panel ─────────────────────── -->
+      <aside class="card ast-panel" id="ast-panel" aria-label="Asset detail panel">
+
+        <!-- Empty state -->
+        <div class="ast-panel-empty" id="ast-panel-empty">
+          <span class="ast-panel-empty-icon">✦</span>
+          <p class="muted" style="font-size:13px;margin:0;line-height:1.6">
+            Select an asset to<br>enhance or animate
+          </p>
+        </div>
+
+        <!-- Detail view (hidden until asset selected) -->
+        <div id="ast-panel-content" style="display:none">
+
+          <!-- Asset header -->
+          <div class="ast-panel-hd" id="ast-panel-hd">
+            <!-- filled by JS -->
+          </div>
+
+          <!-- ENHANCE section -->
+          <p class="ast-section-label">Enhance</p>
+          <div class="ast-enhance-opts" id="ast-enhance-opts" role="group" aria-label="Enhancement options">
+            <button class="opt" data-opt="upscale"      aria-pressed="false">Upscale</button>
+            <button class="opt" data-opt="face-restore" aria-pressed="false">Face-restore</button>
+            <button class="opt" data-opt="color-grade"  aria-pressed="false">Color-grade</button>
+            <button class="opt" data-opt="denoise"      aria-pressed="false">Denoise</button>
+            <button class="opt" data-opt="stabilize"    aria-pressed="false">Stabilize</button>
+          </div>
+          <p class="ast-panel-hint" id="ast-enhance-hint">
+            Face-restore applies to "You" tagged assets. Stabilize applies to video clips.
+          </p>
+          <button class="btn" id="ast-enhance-btn" style="width:100%">Enhance</button>
+
+          <div class="ast-divider"></div>
+
+          <!-- ANIMATE section -->
+          <div id="ast-animate-section" class="ast-animate-section">
+            <p class="ast-section-label">Animate still → B-roll</p>
+            <p class="ast-animate-note" id="ast-animate-note">
+              Convert this photo into smooth motion B-roll for use in any lane.
+            </p>
+            <div class="ast-engine-row" id="ast-engine-row" role="radiogroup" aria-label="Animation engine">
+              <button class="ast-engine-opt sel" data-engine="ltx" role="radio" aria-checked="true">
+                <span class="ast-eng-name">LTX on Mac</span>
+                <span class="ast-eng-meta">
+                  <span class="badge local">Local</span>
+                  <span class="muted" style="font-size:10px">Fast · no quota</span>
+                </span>
+              </button>
+              <button class="ast-engine-opt" data-engine="veo" role="radio" aria-checked="false">
+                <span class="ast-eng-name">Veo</span>
+                <span class="ast-eng-meta">
+                  <span class="badge quota">Quota</span>
+                  <span class="muted" style="font-size:10px">Higher quality</span>
+                </span>
+              </button>
+            </div>
+            <button class="btn ghost" id="ast-animate-btn" style="width:100%">Animate</button>
+          </div>
+
+          <!-- Use in Studio -->
+          <a href="#" class="ast-studio-link" id="ast-studio-link"
+             onclick="go('studio'); return false;"
+             title="Open Studio with this asset pre-selected as B-roll">
+            Use in Studio →
+          </a>
+
+        </div><!-- /ast-panel-content -->
+      </aside><!-- /ast-panel -->
+
+    </div><!-- /ast-layout -->
+
+    <!-- Info note -->
+    <div class="note" style="margin-top:22px">
+      Enhanced and animated assets are available as selectable B-roll in Studio for any lane. &nbsp;
+      <a href="#" onclick="go('studio');return false;"
+         style="color:var(--clay);font-weight:500;">Open Studio →</a>
+    </div>
+
+  </div><!-- /content -->
+</section>
+
+<script data-screen="assets">
+(function () {
+  'use strict';
+
+  /* ── Fixture data ─────────────────────────────────────── */
+  const ASSETS = [
+    {
+      id: 'ast_01', file: 'rijul_desk.jpg',
+      type: 'photo', emoji: '🖥️', bg: '#e9e4d6',
+      tags: ['you'],
+      uses: 3, usedIn: ['vid_a1b2', 'vid_c3d4', 'vid_k1l2'],
+      enhanced: false
+    },
+    {
+      id: 'ast_02', file: 'city_timelapse.mp4',
+      type: 'video', emoji: '🏙️', bg: '#d4dfd5',
+      tags: ['location', 'broll'],
+      uses: 5, usedIn: ['vid_a1b2', 'vid_c3d4', 'vid_i9j0', 'vid_k1l2', 'vid_m3n4'],
+      enhanced: true
+    },
+    {
+      id: 'ast_03', file: 'logo_mark.png',
+      type: 'photo', emoji: '✶', bg: '#d8dce8',
+      tags: ['logo'],
+      uses: 7, usedIn: ['vid_a1b2', 'vid_c3d4', 'vid_e5f6', 'vid_g7h8', 'vid_i9j0', 'vid_k1l2', 'vid_m3n4'],
+      enhanced: false
+    },
+    {
+      id: 'ast_04', file: 'keyboard_macro.mp4',
+      type: 'video', emoji: '⌨️', bg: '#e8ddd4',
+      tags: ['broll'],
+      uses: 2, usedIn: ['vid_a1b2', 'vid_g7h8'],
+      enhanced: false
+    },
+    {
+      id: 'ast_05', file: 'ai_tools_broll_01.mp4',
+      type: 'generated', emoji: '🤖', bg: '#d6e2de',
+      tags: ['broll'],
+      uses: 4, usedIn: ['vid_a1b2', 'vid_c3d4', 'vid_e5f6', 'vid_k1l2'],
+      enhanced: true
+    },
+    {
+      id: 'ast_06', file: 'gradient_loop_02.mp4',
+      type: 'generated', emoji: '✦', bg: '#e6e0d2',
+      tags: ['broll'],
+      uses: 1, usedIn: ['vid_g7h8'],
+      enhanced: true
+    },
+    {
+      id: 'ast_07', file: 'rijul_outdoor_02.jpg',
+      type: 'photo', emoji: '🌳', bg: '#d4e0d4',
+      tags: ['you', 'location'],
+      uses: 1, usedIn: ['vid_i9j0'],
+      enhanced: false
+    },
+    {
+      id: 'ast_08', file: 'desk_setup_wide.jpg',
+      type: 'photo', emoji: '📸', bg: '#ddd8e8',
+      tags: ['you', 'broll'],
+      uses: 2, usedIn: ['vid_m3n4', 'vid_k1l2'],
+      enhanced: false
+    }
+  ];
+
+  const TAG_LABELS = {
+    you: '👤 You',
+    location: '📍 Location',
+    broll: '🎬 B-roll',
+    logo: '◈ Logo'
+  };
+
+  /* tag → shell class mapping */
+  const TAG_CLASS = {
+    you: 'tag',
+    location: 'tag hi',
+    broll: 'tag en',
+    logo: 'tag'
+  };
+
+  /* ── State ────────────────────────────────────────────── */
+  let activeFilter = 'all';
+  let selectedId   = null;
+  let enhanceOpts  = new Set();
+  let activeEngine = 'ltx';
+
+  /* ── Helpers ──────────────────────────────────────────── */
+  function getAsset(id) { return ASSETS.find(a => a.id === id) || null; }
+
+  function tagEl(t) {
+    return `<span class="${TAG_CLASS[t]}">${TAG_LABELS[t]}</span>`;
+  }
+
+  function visibleAssets() {
+    return activeFilter === 'all'
+      ? ASSETS
+      : ASSETS.filter(a => a.tags.includes(activeFilter));
+  }
+
+  /* ── Render grid ──────────────────────────────────────── */
+  function renderGrid() {
+    const list   = visibleAssets();
+    const grid   = document.getElementById('ast-grid');
+    const countEl = document.getElementById('ast-count');
+
+    const enhancedTotal = ASSETS.filter(a => a.enhanced).length;
+    countEl.textContent = `${ASSETS.length} assets · ${enhancedTotal} enhanced`;
+
+    grid.innerHTML = list.map(a => {
+      const isSel = a.id === selectedId;
+      return `
+        <div class="ast-card${isSel ? ' sel' : ''}"
+             data-id="${a.id}" role="listitem" tabindex="0"
+             aria-label="${a.file}${isSel ? ', selected' : ''}">
+          <div class="ast-thumb" style="background:${a.bg}">
+            <span>${a.emoji}</span>
+            ${a.type === 'generated'
+              ? `<span class="ast-thumb-gen-badge">Gen</span>`
+              : ''}
+            ${a.enhanced
+              ? `<span class="ast-enhanced-star" title="Enhanced">★</span>`
+              : ''}
+          </div>
+          <div class="ast-card-body">
+            <div class="ast-filename" title="${a.file}">${a.file}</div>
+            <div class="ast-card-tags">
+              ${a.tags.map(tagEl).join('')}
+            </div>
+            <div class="ast-uses">Used in ${a.uses} video${a.uses !== 1 ? 's' : ''}</div>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    grid.querySelectorAll('.ast-card').forEach(el => {
+      el.addEventListener('click', () => selectAsset(el.dataset.id));
+      el.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectAsset(el.dataset.id); }
+      });
+    });
+  }
+
+  /* ── Select asset ─────────────────────────────────────── */
+  function selectAsset(id) {
+    selectedId  = id;
+    enhanceOpts = new Set();
+    renderGrid();
+    renderPanel();
+  }
+
+  /* ── Render panel ─────────────────────────────────────── */
+  function renderPanel() {
+    const emptyEl   = document.getElementById('ast-panel-empty');
+    const contentEl = document.getElementById('ast-panel-content');
+    const asset     = selectedId ? getAsset(selectedId) : null;
+
+    if (!asset) {
+      emptyEl.style.display   = '';
+      contentEl.style.display = 'none';
+      return;
+    }
+
+    emptyEl.style.display   = 'none';
+    contentEl.style.display = '';
+
+    /* header */
+    document.getElementById('ast-panel-hd').innerHTML = `
+      <div class="ast-pthumb" style="background:${asset.bg}">${asset.emoji}</div>
+      <div>
+        <div class="ast-pname">${asset.file}</div>
+        <div class="ast-pname-meta">
+          ${asset.tags.map(tagEl).join('')}
+          ${asset.enhanced ? `<span class="badge" style="background:rgba(199,154,62,0.15);color:var(--amber);border:1px solid rgba(199,154,62,0.3)">★ Enhanced</span>` : ''}
+        </div>
+      </div>
+    `;
+
+    /* enhance options */
+    const optsEl = document.getElementById('ast-enhance-opts');
+    optsEl.querySelectorAll('.opt').forEach(btn => {
+      const opt    = btn.dataset.opt;
+      const isSel  = enhanceOpts.has(opt);
+      btn.classList.toggle('sel', isSel);
+      btn.setAttribute('aria-pressed', String(isSel));
+
+      if (opt === 'face-restore') {
+        const ok = asset.tags.includes('you');
+        btn.style.opacity       = ok ? '' : '0.32';
+        btn.style.pointerEvents = ok ? '' : 'none';
+        btn.title = ok ? '' : 'Only applies to "You" tagged assets';
+      } else if (opt === 'stabilize') {
+        const ok = asset.type === 'video' || asset.type === 'generated';
+        btn.style.opacity       = ok ? '' : '0.32';
+        btn.style.pointerEvents = ok ? '' : 'none';
+        btn.title = ok ? '' : 'Only applies to video clips';
+      } else {
+        btn.style.opacity       = '';
+        btn.style.pointerEvents = '';
+        btn.title = '';
+      }
+    });
+
+    /* animate section */
+    const isStill = asset.type === 'photo';
+    const animSec = document.getElementById('ast-animate-section');
+    animSec.classList.toggle('dimmed', !isStill);
+    document.getElementById('ast-animate-note').textContent = isStill
+      ? 'Convert this photo into smooth motion B-roll for any lane.'
+      : 'Animate applies to photos/stills only. This clip is already motion.';
+
+    /* engine opts */
+    syncEngineOpts();
+  }
+
+  function syncEngineOpts() {
+    document.querySelectorAll('.ast-engine-opt').forEach(btn => {
+      const sel = btn.dataset.engine === activeEngine;
+      btn.classList.toggle('sel', sel);
+      btn.setAttribute('aria-checked', String(sel));
+    });
+  }
+
+  /* ── Filter chips ─────────────────────────────────────── */
+  document.getElementById('ast-filter-chips').addEventListener('click', e => {
+    const chip = e.target.closest('.ast-chip');
+    if (!chip) return;
+    activeFilter = chip.dataset.filter;
+    document.querySelectorAll('.ast-chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    renderGrid();
+  });
+
+  /* ── Enhance opts toggle ──────────────────────────────── */
+  document.getElementById('ast-enhance-opts').addEventListener('click', e => {
+    const btn = e.target.closest('.opt');
+    if (!btn) return;
+    const opt = btn.dataset.opt;
+    if (enhanceOpts.has(opt)) enhanceOpts.delete(opt);
+    else enhanceOpts.add(opt);
+    btn.classList.toggle('sel', enhanceOpts.has(opt));
+    btn.setAttribute('aria-pressed', String(enhanceOpts.has(opt)));
+  });
+
+  /* ── Engine selection ─────────────────────────────────── */
+  document.getElementById('ast-engine-row').addEventListener('click', e => {
+    const btn = e.target.closest('.ast-engine-opt');
+    if (!btn) return;
+    activeEngine = btn.dataset.engine;
+    syncEngineOpts();
+  });
+
+  /* ── Enhance button ───────────────────────────────────── */
+  document.getElementById('ast-enhance-btn').addEventListener('click', () => {
+    if (!selectedId) return;
+    if (enhanceOpts.size === 0) {
+      const hint = document.getElementById('ast-enhance-hint');
+      hint.style.color = 'var(--red)';
+      hint.textContent = '⚠ Select at least one enhancement option above.';
+      setTimeout(() => {
+        hint.style.color = '';
+        hint.textContent = 'Face-restore applies to "You" tagged assets. Stabilize applies to video clips.';
+      }, 2500);
+      return;
+    }
+    const btn = document.getElementById('ast-enhance-btn');
+    const opts = Array.from(enhanceOpts).join(' · ');
+    btn.textContent = `⏳ Enhancing (${opts})…`;
+    btn.classList.add('ast-btn-processing');
+    setTimeout(() => {
+      const asset = getAsset(selectedId);
+      if (asset) asset.enhanced = true;
+      btn.textContent = '✓ Enhanced';
+      setTimeout(() => {
+        btn.textContent = 'Enhance';
+        btn.classList.remove('ast-btn-processing');
+        renderGrid();
+        renderPanel();
+      }, 1600);
+    }, 2200);
+  });
+
+  /* ── Animate button ───────────────────────────────────── */
+  document.getElementById('ast-animate-btn').addEventListener('click', () => {
+    if (!selectedId) return;
+    const asset = getAsset(selectedId);
+    if (!asset || asset.type !== 'photo') return;
+    const btn       = document.getElementById('ast-animate-btn');
+    const engLabel  = activeEngine === 'ltx' ? 'LTX on Mac' : 'Veo';
+    btn.textContent = `⏳ Animating via ${engLabel}…`;
+    btn.classList.add('ast-btn-processing');
+    setTimeout(() => {
+      if (asset) asset.enhanced = true;
+      btn.textContent = '✓ Motion B-roll ready';
+      setTimeout(() => {
+        btn.textContent = 'Animate';
+        btn.classList.remove('ast-btn-processing');
+        renderGrid();
+        renderPanel();
+      }, 2000);
+    }, 2800);
+  });
+
+  /* ── Upload button (fake) ─────────────────────────────── */
+  document.getElementById('ast-upload-btn').addEventListener('click', () => {
+    const btn = document.getElementById('ast-upload-btn');
+    btn.textContent = '✓ Picker opened';
+    setTimeout(() => { btn.textContent = '↑ Upload'; }, 1400);
+  });
+
+  /* ── Boot ─────────────────────────────────────────────── */
+  renderGrid();
+  renderPanel();
+
+})();
+</script>

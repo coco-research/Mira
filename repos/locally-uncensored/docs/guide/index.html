@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Getting Started - Locally Uncensored</title>
+<meta name="description" content="Step-by-step guide to set up Locally Uncensored. Install, chat, generate images and videos locally. Zero config, fully private.">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#0a0a0a">
+<link rel="icon" href="../favicon.png">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a0a0a;color:#e5e5e5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.7;font-size:15px}
+a{color:#8b5cf6;text-decoration:none}
+a:hover{text-decoration:underline}
+.container{max-width:780px;margin:0 auto;padding:40px 24px 80px}
+.back{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:#6b7280;margin-bottom:32px}
+.back:hover{color:#e5e5e5;text-decoration:none}
+h1{font-size:28px;font-weight:700;color:#fff;margin-bottom:8px;letter-spacing:-0.02em}
+.subtitle{font-size:15px;color:#6b7280;margin-bottom:40px}
+h2{font-size:20px;font-weight:600;color:#fff;margin:48px 0 16px;padding-top:24px;border-top:1px solid #1a1a1a}
+h2:first-of-type{border-top:none;margin-top:0}
+h3{font-size:16px;font-weight:600;color:#d1d5db;margin:28px 0 10px}
+p{margin-bottom:14px;color:#d1d5db}
+.step{counter-increment:step;margin-bottom:20px}
+.step-num{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#8b5cf6;color:#fff;font-size:12px;font-weight:700;margin-right:8px;flex-shrink:0}
+.step-title{font-weight:600;color:#fff;font-size:15px}
+.step-body{margin-left:32px;margin-top:6px}
+img{width:100%;border-radius:8px;border:1px solid #1f1f1f;margin:16px 0 20px;display:block}
+.callout{background:#141414;border:1px solid #1f1f1f;border-radius:8px;padding:14px 18px;margin:16px 0;font-size:14px;color:#9ca3af}
+.callout-title{font-weight:600;color:#d1d5db;margin-bottom:4px;font-size:13px;text-transform:uppercase;letter-spacing:0.05em}
+.callout.tip{border-left:3px solid #8b5cf6}
+.callout.warn{border-left:3px solid #f59e0b}
+.callout.info{border-left:3px solid #6b7280}
+ul{margin:10px 0 16px 20px;color:#d1d5db}
+li{margin-bottom:6px}
+code{background:#1a1a1a;padding:2px 6px;border-radius:4px;font-size:13px;font-family:'Cascadia Code',Consolas,monospace;color:#a78bfa}
+.toc{background:#111;border:1px solid #1f1f1f;border-radius:8px;padding:20px 24px;margin-bottom:40px}
+.toc-title{font-size:13px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:12px}
+.toc a{display:block;padding:4px 0;font-size:14px;color:#9ca3af}
+.toc a:hover{color:#8b5cf6;text-decoration:none}
+.req-table{width:100%;border-collapse:collapse;margin:12px 0 20px}
+.req-table td{padding:8px 12px;border-bottom:1px solid #1a1a1a;font-size:14px}
+.req-table td:first-child{color:#6b7280;width:140px}
+.footer{text-align:center;padding:40px 0;border-top:1px solid #1a1a1a;margin-top:48px;font-size:12px;color:#4b5563}
+</style>
+</head>
+<body>
+<div class="container">
+
+<a href="../" class="back">&#8592; Back to home</a>
+
+<h1>Getting Started</h1>
+<p class="subtitle">From download to your first AI chat, image, and video in under 10 minutes.</p>
+
+<nav class="toc">
+<div class="toc-title">Contents</div>
+<a href="#requirements">System Requirements</a>
+<a href="#install">1. Install</a>
+<a href="#onboarding">2. Onboarding</a>
+<a href="#chat">3. Your First Chat</a>
+<a href="#images">4. Generate Images</a>
+<a href="#videos">5. Generate Videos</a>
+<a href="#settings">6. Settings</a>
+<a href="#troubleshooting">7. Troubleshooting</a>
+</nav>
+
+<!-- ─── Requirements ──────────────────────────── -->
+
+<h2 id="requirements">System Requirements</h2>
+
+<table class="req-table">
+<tr><td>Operating System</td><td>Windows 10 or later (64-bit)</td></tr>
+<tr><td>RAM</td><td>8 GB minimum, 16 GB recommended</td></tr>
+<tr><td>GPU (for chat)</td><td>Optional. CPU inference works, GPU is faster.</td></tr>
+<tr><td>GPU (for images)</td><td>NVIDIA GPU with 6+ GB VRAM recommended</td></tr>
+<tr><td>GPU (for video)</td><td>NVIDIA GPU with 8-12+ GB VRAM recommended</td></tr>
+<tr><td>Disk Space</td><td>2 GB for the app. 5-50 GB for models depending on selection.</td></tr>
+</table>
+
+<div class="callout info">
+<div class="callout-title">No GPU?</div>
+You can still use the chat features with CPU inference. It will be slower but fully functional. Image and video generation require a dedicated NVIDIA GPU.
+</div>
+
+<!-- ─── Install ──────────────────────────── -->
+
+<h2 id="install">1. Install</h2>
+
+<div class="step">
+<span class="step-num">1</span>
+<span class="step-title">Download the installer</span>
+<div class="step-body">
+<p>Download the latest release from the <a href="https://github.com/PurpleDoubleD/locally-uncensored/releases/latest">Releases page</a> or from <a href="https://locallyuncensored.com">locallyuncensored.com</a>. The file is called <code>Locally Uncensored_x.x.x_x64-setup.exe</code>.</p>
+</div>
+</div>
+
+<div class="step">
+<span class="step-num">2</span>
+<span class="step-title">Run the installer</span>
+<div class="step-body">
+<p>Double-click the downloaded file. Windows may show a SmartScreen warning because the app is not code-signed. Click "More info", then "Run anyway". The installer completes in a few seconds.</p>
+<div class="callout warn">
+<div class="callout-title">Windows SmartScreen</div>
+This warning appears for all unsigned applications. The app is open source and the full source code is available on <a href="https://github.com/PurpleDoubleD/locally-uncensored">GitHub</a> for review.
+</div>
+</div>
+</div>
+
+<div class="step">
+<span class="step-num">3</span>
+<span class="step-title">Launch the app</span>
+<div class="step-body">
+<p>After installation, the app launches automatically. You will see the onboarding wizard that guides you through the initial setup.</p>
+</div>
+</div>
+
+<!-- ─── Onboarding ──────────────────────────── -->
+
+<h2 id="onboarding">2. Onboarding</h2>
+
+<p>On first launch, a setup wizard walks you through five steps. Each step takes less than a minute.</p>
+
+<h3>Step 1: Welcome</h3>
+<p>Click "Get Started" to begin.</p>
+<img src="01-welcome.png" alt="Welcome screen" loading="lazy">
+
+<h3>Step 2: Theme</h3>
+<p>Choose Light or Dark mode. You can change this later in Settings.</p>
+<img src="02-theme.png" alt="Theme selection" loading="lazy">
+
+<h3>Step 3: Backend</h3>
+<p>The app scans your system for local AI backends. If Ollama is installed and running, it detects it automatically. If no backend is found, click "Install Ollama" to download and install it directly from the app with a progress bar.</p>
+<img src="03-backend.png" alt="Backend detection" loading="lazy">
+
+<div class="callout tip">
+<div class="callout-title">What is a backend?</div>
+A backend is the software that runs AI models on your machine. Ollama is the recommended option. It is free, lightweight, and supports hundreds of models. The app installs it for you in one click if needed.
+</div>
+
+<h3>Step 4: ComfyUI</h3>
+<p>If you want image and video generation, the app detects or installs ComfyUI automatically. If ComfyUI is already installed on your system, the app finds it and shows the path. If not, click "Install ComfyUI" for a one-click installation with step-by-step progress.</p>
+<img src="04-comfyui.png" alt="ComfyUI setup" loading="lazy">
+
+<h3>Step 5: Models</h3>
+<p>Choose which AI models to download. Models are split into "Uncensored" and "Mainstream" tabs. Each card shows the model name, a short description, file size, and VRAM requirement. Select the ones you want and click "Download Selected". You can always add more models later from the Model Manager.</p>
+<img src="05-models.png" alt="Model selection" loading="lazy">
+
+<div class="callout tip">
+<div class="callout-title">Which model should I pick?</div>
+If you are not sure, start with <strong>Llama 3.1 8B</strong> (marked as Recommended). It is a solid all-rounder that works on most hardware. For uncensored use, try <strong>Hermes 3 8B</strong> or <strong>Qwen 2.5 7B Abliterate</strong>.
+</div>
+
+<p>After setup, you see "You're all set!" and the app takes you to the main interface.</p>
+<img src="06-done.png" alt="Setup complete" loading="lazy">
+
+<!-- ─── Chat ──────────────────────────── -->
+
+<h2 id="chat">3. Your First Chat</h2>
+
+<div class="step">
+<span class="step-num">1</span>
+<span class="step-title">Open a new chat</span>
+<div class="step-body">
+<p>Click "+ New Chat" in the bottom left corner of the sidebar. The main area shows an empty chat with a message input at the bottom.</p>
+</div>
+</div>
+
+<div class="step">
+<span class="step-num">2</span>
+<span class="step-title">Type a message and send</span>
+<div class="step-body">
+<p>Type your message in the input field and press Enter. The AI responds in real time with streaming text.</p>
+</div>
+</div>
+
+<img src="08-chat-active.png" alt="Active chat conversation" loading="lazy">
+
+<div class="step">
+<span class="step-num">3</span>
+<span class="step-title">Switch models</span>
+<div class="step-body">
+<p>Click the model name in the top header bar (e.g. "phi4") to open the model dropdown. Select a different model to switch. Each conversation remembers which model it uses.</p>
+</div>
+</div>
+
+<h3>Think Mode</h3>
+<p>Click the "Think" toggle in the message input to enable chain-of-thought reasoning. The AI shows its reasoning process before giving the final answer. Works with compatible models like QwQ, DeepSeek-R1, and Qwen 3.</p>
+
+<h3>Agent Mode</h3>
+<p>Toggle "Agent" in the top right to enable tool-calling capabilities. The AI can search the web, read and write files, execute code, and take screenshots. Requires a compatible model (Hermes 3, Qwen 3, Gemma 4).</p>
+
+<!-- ─── Images ──────────────────────────── -->
+
+<h2 id="images">4. Generate Images</h2>
+
+<div class="step">
+<span class="step-num">1</span>
+<span class="step-title">Open the Create view</span>
+<div class="step-body">
+<p>Click the paintbrush icon in the top header bar or navigate to Create in the sidebar.</p>
+</div>
+</div>
+
+<img src="11-create.png" alt="Create view for image generation" loading="lazy">
+
+<div class="step">
+<span class="step-num">2</span>
+<span class="step-title">Install an image model</span>
+<div class="step-body">
+<p>If you have not installed an image model yet, go to the Model Manager (grid icon in the header), switch to the "Discover" tab, and look under "Image" models. Click "Install" on a model bundle. Recommended starting models:</p>
+<ul>
+<li><strong>SDXL</strong> -- High quality, widely supported, needs 6+ GB VRAM</li>
+<li><strong>Z-Image Turbo</strong> -- Fast generation (5 steps), uncensored, 8+ GB VRAM</li>
+<li><strong>FLUX 2 Klein</strong> -- Latest FLUX architecture, needs 8+ GB VRAM</li>
+</ul>
+</div>
+</div>
+
+<img src="12-models.png" alt="Model Manager with Discover tab" loading="lazy">
+
+<div class="step">
+<span class="step-num">3</span>
+<span class="step-title">Generate</span>
+<div class="step-body">
+<p>Back in the Create view, select your installed model from the dropdown, type a prompt describing what you want, and click "Generate". The first generation takes longer because the model needs to load into VRAM. Subsequent generations are faster.</p>
+</div>
+</div>
+
+<div class="callout info">
+<div class="callout-title">Image to Image</div>
+Switch to the "Image to Image" sub-tab to upload a source image and transform it with a prompt. Adjust the denoise slider to control how much the AI changes the original. Lower values (0.2-0.4) make subtle edits. Higher values (0.6-0.8) create major changes.
+</div>
+
+<!-- ─── Videos ──────────────────────────── -->
+
+<h2 id="videos">5. Generate Videos</h2>
+
+<div class="step">
+<span class="step-num">1</span>
+<span class="step-title">Install a video model</span>
+<div class="step-body">
+<p>Go to the Model Manager, switch to "Discover", and look under "Video" models. The VRAM tier tabs (All / Lightweight / Mid-Range / High-End) help you find models that match your GPU. Recommended:</p>
+<ul>
+<li><strong>AnimateDiff Lightning</strong> -- Lightweight, works on 4+ GB VRAM, short animations</li>
+<li><strong>Wan 2.1</strong> -- High quality, needs 8+ GB VRAM</li>
+<li><strong>LTX 2.3</strong> -- Good balance of speed and quality</li>
+</ul>
+</div>
+</div>
+
+<div class="step">
+<span class="step-num">2</span>
+<span class="step-title">Generate a video</span>
+<div class="step-body">
+<p>In the Create view, switch to the "Video" tab. Select your installed model, type a prompt, and click "Generate". Video generation takes 2-10 minutes depending on the model, resolution, and your hardware.</p>
+</div>
+</div>
+
+<div class="callout warn">
+<div class="callout-title">VRAM usage</div>
+Video generation uses significantly more VRAM than image generation. If you see out-of-memory errors, try a smaller resolution, fewer frames, or switch to a lightweight model like AnimateDiff.
+</div>
+
+<!-- ─── Settings ──────────────────────────── -->
+
+<h2 id="settings">6. Settings</h2>
+
+<p>Click the gear icon in the top right corner to open Settings.</p>
+
+<img src="09-settings.png" alt="Settings page" loading="lazy">
+
+<h3>Providers</h3>
+<p>Manage your AI backends. Ollama is enabled by default. You can add cloud providers (OpenAI, Anthropic, Groq) or additional local backends (LM Studio, vLLM, KoboldCpp). Click "+ Add Provider" to see all 20+ presets.</p>
+
+<h3>ComfyUI (Image and Video)</h3>
+<p>View ComfyUI status, start/stop/restart it, and configure the path and port. If you use the ComfyUI Desktop App instead of the browser-based version, you may need to change the port here to match your setup.</p>
+
+<img src="10-settings-comfyui.png" alt="ComfyUI settings with port configuration" loading="lazy">
+
+<h3>Generation</h3>
+<p>Adjust temperature, top-p, top-k, and max tokens for chat responses.</p>
+
+<h3>Other sections</h3>
+<ul>
+<li><strong>Voice</strong> -- Text-to-speech and speech-to-text settings</li>
+<li><strong>Memory</strong> -- Persistent memory system that remembers facts across conversations</li>
+<li><strong>Personas</strong> -- Create and manage AI personas with custom system prompts</li>
+<li><strong>Agent Permissions</strong> -- Control what tools the AI agent can use (file access, shell, web search)</li>
+<li><strong>Updates</strong> -- Check for new versions</li>
+</ul>
+
+<!-- ─── Troubleshooting ──────────────────────────── -->
+
+<h2 id="troubleshooting">7. Troubleshooting</h2>
+
+<h3>Chat does not respond</h3>
+<ul>
+<li>Make sure Ollama is running. Check in Settings under Providers -- the green dot next to Ollama should be visible.</li>
+<li>If the dot is gray or red, click "Test" to check the connection.</li>
+<li>Try restarting Ollama: open a terminal and run <code>ollama serve</code>.</li>
+</ul>
+
+<h3>ComfyUI not connecting</h3>
+<ul>
+<li>Go to Settings and expand "ComfyUI (Image & Video)". Check the status indicator.</li>
+<li>If it shows "Stopped", click "Start".</li>
+<li>If you use the <strong>ComfyUI Desktop App</strong> (not the browser version), you may need to change the port. The Desktop App often uses a different port than the default 8188. Check which port your ComfyUI is running on and enter it in the Port field.</li>
+<li>If the path is wrong, paste the correct path to your ComfyUI installation and click "Connect".</li>
+</ul>
+
+<h3>Image generation fails</h3>
+<ul>
+<li>Check that ComfyUI shows "Running" in Settings.</li>
+<li>Make sure you have installed an image model from the Model Manager.</li>
+<li>If you see out-of-memory errors, try a smaller resolution or a model that requires less VRAM.</li>
+</ul>
+
+<h3>Downloads are slow or stuck</h3>
+<ul>
+<li>Click the retry button next to the failed download in the Download Badge (top header bar).</li>
+<li>Check your internet connection.</li>
+<li>Large models (10+ GB) take time on slower connections. The progress bar shows the current speed.</li>
+</ul>
+
+<h3>Windows SmartScreen blocks the installer</h3>
+<ul>
+<li>Click "More info" in the SmartScreen dialog, then click "Run anyway".</li>
+<li>This appears because the app is not code-signed. The source code is fully open and auditable on GitHub.</li>
+</ul>
+
+<h3>Antivirus flags the app</h3>
+<ul>
+<li>Some antivirus software flags unsigned Tauri applications as suspicious. This is a false positive.</li>
+<li>Add the installation directory to your antivirus exceptions list.</li>
+</ul>
+
+<!-- ─── Footer ──────────────────────────── -->
+
+<div class="footer">
+<p>Locally Uncensored is AGPL-3.0 licensed and free to use.</p>
+<p><a href="https://github.com/PurpleDoubleD/locally-uncensored">GitHub</a> &middot; <a href="https://github.com/PurpleDoubleD/locally-uncensored/discussions">Community</a> &middot; <a href="../">Home</a></p>
+</div>
+
+</div>
+</body>
+</html>

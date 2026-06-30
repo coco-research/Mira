@@ -1,0 +1,197 @@
+<style data-screen="onboarding">
+  #onboarding .onb-wrap { max-width: 720px; }
+  #onboarding .onb-steps { display: flex; gap: 0; margin: 0 0 1.6rem; list-style: none; padding: 0; }
+  #onboarding .onb-step { flex: 1; display: flex; flex-direction: column; align-items: center; gap: .4rem; position: relative; }
+  #onboarding .onb-step::before { content: ""; position: absolute; top: 13px; left: -50%; width: 100%; height: 2px; background: var(--border-strong); z-index: 0; }
+  #onboarding .onb-step:first-child::before { display: none; }
+  #onboarding .onb-step.done::before, #onboarding .onb-step.active::before { background: var(--clay); }
+  #onboarding .onb-dot { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: var(--panel); border: 2px solid var(--border-strong); font-size: .8rem; font-weight: 600; color: var(--ink-2); z-index: 1; }
+  #onboarding .onb-step.active .onb-dot { background: var(--clay); border-color: var(--clay); color: #fff; }
+  #onboarding .onb-step.done .onb-dot { background: var(--green); border-color: var(--green); color: #fff; }
+  #onboarding .onb-step .onb-lbl { font-size: .76rem; color: var(--ink-2); text-align: center; }
+  #onboarding .onb-step.active .onb-lbl { color: var(--ink); font-weight: 600; }
+  #onboarding .onb-panel { display: none; }
+  #onboarding .onb-panel.active { display: block; animation: onbfade .25s ease; }
+  @keyframes onbfade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+  #onboarding .onb-detect { display: flex; align-items: center; gap: .7rem; padding: .7rem .9rem; border: 1px solid var(--border); border-radius: var(--radius); background: var(--panel-2); margin-bottom: .6rem; }
+  #onboarding .onb-detect .onb-meta { margin-left: auto; font-size: .78rem; color: var(--ink-2); }
+  #onboarding .onb-key { display: flex; align-items: center; gap: .7rem; padding: .55rem 0; border-bottom: 1px solid var(--border); }
+  #onboarding .onb-key:last-child { border-bottom: 0; }
+  #onboarding .onb-key .onb-kname { width: 150px; font-weight: 500; font-size: .9rem; }
+  #onboarding .onb-key .field { flex: 1; margin: 0; }
+  #onboarding .onb-key .field input { font-size: .82rem; }
+  #onboarding .onb-foot { display: flex; align-items: center; gap: .8rem; margin-top: 1.6rem; padding-top: 1.2rem; border-top: 1px solid var(--border); }
+  #onboarding .onb-cap-row { display: flex; align-items: center; gap: 1rem; margin: .9rem 0; }
+  #onboarding .onb-cap-row input[type=range] { flex: 1; accent-color: var(--clay); }
+  #onboarding .onb-cap-val { font-family: var(--serif); font-size: 1.5rem; min-width: 90px; }
+</style>
+
+<section class="page" id="onboarding">
+  <div class="onb-wrap">
+    <h1>Welcome to Mira</h1>
+    <p class="lede">Four quick steps and you're producing. Nothing here leaves your machine — keys are written to a local <code>.env</code>, never the cloud.</p>
+
+    <ol class="onb-steps">
+      <li class="onb-step active" data-step="1"><span class="onb-dot">1</span><span class="onb-lbl">Detect engines</span></li>
+      <li class="onb-step" data-step="2"><span class="onb-dot">2</span><span class="onb-lbl">Connect keys</span></li>
+      <li class="onb-step" data-step="3"><span class="onb-dot">3</span><span class="onb-lbl">Budget cap</span></li>
+      <li class="onb-step" data-step="4"><span class="onb-dot">4</span><span class="onb-lbl">First channel</span></li>
+    </ol>
+
+    <!-- ① Detect local engines -->
+    <div class="onb-panel active" data-panel="1">
+      <div class="card">
+        <h2>What's already running here</h2>
+        <p class="muted" style="margin-top:.2rem">Mira probes localhost and your hardware so it can pick free, local engines first.</p>
+        <div style="margin-top:1rem">
+          <div class="onb-detect">
+            <span class="status-dot ok"></span><strong>LM Studio</strong>
+            <span class="badge local">local</span>
+            <span class="onb-meta">found · http://localhost:1234/v1 · 6 models</span>
+          </div>
+          <div class="onb-detect">
+            <span class="status-dot ok"></span><strong>ComfyUI</strong>
+            <span class="badge local">local</span>
+            <span class="onb-meta">found · http://localhost:8188 · LTX-Video ready</span>
+          </div>
+          <div class="onb-detect">
+            <span class="status-dot ok"></span><strong>Machine tier</strong>
+            <span class="badge">Heavy</span>
+            <span class="onb-meta">Apple M4 Max · 64 GB · Metal GPU</span>
+          </div>
+          <div class="onb-detect">
+            <span class="status-dot local"></span><strong>ffmpeg / ffprobe</strong>
+            <span class="badge local">local</span>
+            <span class="onb-meta">found · v7.1</span>
+          </div>
+        </div>
+        <div class="note" style="margin-top:1rem">Heavy tier detected → everyday renders run on-device for $0. Cloud burst (Vultr → AWS) stays off until a job needs it.</div>
+      </div>
+    </div>
+
+    <!-- ② Connect keys -->
+    <div class="onb-panel" data-panel="2">
+      <div class="card">
+        <h2>Connect your keys (all optional)</h2>
+        <p class="muted" style="margin-top:.2rem">Skip any of these — Mira falls back to free/local. Test to verify before saving.</p>
+        <div style="margin-top:.8rem">
+          <div class="onb-key">
+            <span class="onb-kname">NVIDIA NIM <span class="badge free">free</span></span>
+            <label class="field"><input type="password" placeholder="nvapi-…" value="nvapi-••••••••••3f"></label>
+            <span class="status-dot ok"></span><button class="btn ghost sm" type="button">Test</button>
+          </div>
+          <div class="onb-key">
+            <span class="onb-kname">Gemini / Vertex <span class="badge quota">quota</span></span>
+            <label class="field"><input type="password" placeholder="AIza…" value="AIza••••••••d2"></label>
+            <span class="status-dot ok"></span><button class="btn ghost sm" type="button">Test</button>
+          </div>
+          <div class="onb-key">
+            <span class="onb-kname">Pexels <span class="badge free">free</span></span>
+            <label class="field"><input type="password" placeholder="stock footage key"></label>
+            <span class="status-dot local"></span><button class="btn ghost sm" type="button">Test</button>
+          </div>
+          <div class="onb-key">
+            <span class="onb-kname">Sarvam (HI voice) <span class="badge metered">metered</span></span>
+            <label class="field"><input type="password" placeholder="optional — Hindi dubs only"></label>
+            <span class="status-dot local"></span><button class="btn ghost sm" type="button">Test</button>
+          </div>
+          <div class="onb-key">
+            <span class="onb-kname">OpenRouter <span class="badge free">free</span></span>
+            <label class="field"><input type="password" placeholder="sk-or-…"></label>
+            <span class="status-dot local"></span><button class="btn ghost sm" type="button">Test</button>
+          </div>
+        </div>
+        <div class="note" style="margin-top:1rem">Saved to a local <code>.env</code> on this machine only. You can manage all providers later in <button class="btn ghost sm" type="button" onclick="go('connections')">Connections</button>.</div>
+      </div>
+    </div>
+
+    <!-- ③ Budget cap -->
+    <div class="onb-panel" data-panel="3">
+      <div class="card">
+        <h2>Set a monthly spend cap</h2>
+        <p class="muted" style="margin-top:.2rem">A hard ceiling on metered spend (Veo overflow, Kling, Sarvam, Suno, cloud burst). The header meter forecasts when you'll hit it.</p>
+        <div class="onb-cap-row">
+          <span class="muted">$0</span>
+          <input type="range" min="0" max="200" step="5" value="50" id="onb-cap">
+          <span class="onb-cap-val" id="onb-cap-val">$50<span class="muted" style="font-size:.8rem">/mo</span></span>
+        </div>
+        <label class="switch" style="margin:.6rem 0"><input type="checkbox" checked><span class="slider"></span> Allow cloud burst (Vultr free credit first, then AWS spot)</label>
+        <div class="onb-cap-row" style="margin-bottom:0">
+          <span style="min-width:150px">Burst budget</span>
+          <input type="range" min="0" max="100" step="5" value="25" id="onb-burst">
+          <span class="onb-cap-val" id="onb-burst-val" style="font-size:1.1rem">$25</span>
+        </div>
+        <div class="note" style="margin-top:1rem">Default stack is ~$0/video. This cap only governs the opt-in metered tiers — you'll see a live warning before anything spends.</div>
+      </div>
+    </div>
+
+    <!-- ④ First channel -->
+    <div class="onb-panel" data-panel="4">
+      <div class="card">
+        <h2>Create your first channel</h2>
+        <p class="muted" style="margin-top:.2rem">Pre-filled with a proven faceless shorts starter. You can edit everything later in Channels.</p>
+        <label class="field" style="margin-top:1rem"><span class="muted" style="font-size:.78rem">Channel name</span><input type="text" value="Mira AI Tools"></label>
+        <label class="field"><span class="muted" style="font-size:.78rem">Niche / angle</span><input type="text" value="Free AI tools & tips"></label>
+        <div class="grid cols-3" style="margin-top:.4rem">
+          <label class="field"><span class="muted" style="font-size:.78rem">Format</span><input type="text" value="Faceless" readonly></label>
+          <label class="field"><span class="muted" style="font-size:.78rem">Type / aspect</span><input type="text" value="Short · 9:16" readonly></label>
+          <label class="field"><span class="muted" style="font-size:.78rem">Language</span><input type="text" value="English" readonly></label>
+        </div>
+        <div class="row" style="margin-top:.8rem;gap:.5rem">
+          <span class="muted">Publishing</span>
+          <span class="opt sel">Review everything</span>
+          <span class="opt">Auto-publish (trusted)</span>
+        </div>
+        <div class="note" style="margin-top:1rem">Starts on <strong>Review everything</strong> — Mira holds each render at the approval gate until you trust the channel. The originality + AI-disclosure gates stay on regardless.</div>
+      </div>
+    </div>
+
+    <div class="onb-foot">
+      <button class="btn ghost" type="button" id="onb-back" style="display:none">← Back</button>
+      <button class="btn ghost sm" type="button" onclick="go('today')" style="margin-left:auto">Skip for now</button>
+      <button class="btn" type="button" id="onb-next">Next →</button>
+    </div>
+  </div>
+</section>
+
+<script data-screen="onboarding">
+  (function () {
+    var root = document.getElementById('onboarding');
+    if (!root) return;
+    var TOTAL = 4, cur = 1;
+    var steps = root.querySelectorAll('.onb-step');
+    var panels = root.querySelectorAll('.onb-panel');
+    var back = root.querySelector('#onb-back');
+    var next = root.querySelector('#onb-next');
+
+    function render() {
+      steps.forEach(function (s) {
+        var n = +s.dataset.step;
+        s.classList.toggle('active', n === cur);
+        s.classList.toggle('done', n < cur);
+      });
+      panels.forEach(function (p) { p.classList.toggle('active', +p.dataset.panel === cur); });
+      back.style.display = cur === 1 ? 'none' : '';
+      next.textContent = cur === TOTAL ? 'Finish setup →' : 'Next →';
+    }
+    back.addEventListener('click', function () { if (cur > 1) { cur--; render(); } });
+    next.addEventListener('click', function () {
+      if (cur < TOTAL) { cur++; render(); }
+      else if (typeof go === 'function') { cur = 1; render(); go('today'); }
+    });
+
+    var cap = root.querySelector('#onb-cap'), capV = root.querySelector('#onb-cap-val');
+    if (cap) cap.addEventListener('input', function () { capV.innerHTML = '$' + cap.value + '<span class="muted" style="font-size:.8rem">/mo</span>'; });
+    var burst = root.querySelector('#onb-burst'), burstV = root.querySelector('#onb-burst-val');
+    if (burst) burst.addEventListener('input', function () { burstV.textContent = '$' + burst.value; });
+
+    root.querySelectorAll('.onb-key .opt, .onb-panel .row .opt').forEach(function (o) {
+      o.addEventListener('click', function () {
+        var sibs = o.parentElement.querySelectorAll('.opt');
+        sibs.forEach(function (s) { s.classList.remove('sel'); });
+        o.classList.add('sel');
+      });
+    });
+    render();
+  })();
+</script>

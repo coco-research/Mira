@@ -1,0 +1,201 @@
+import { describe, it, expect, vi } from "vitest";
+import { installRuntimeControlBridge } from "./bridge";
+
+function createMockDeps() {
+  return {
+    onPlay: vi.fn(),
+    onPause: vi.fn(),
+    onSeek: vi.fn(),
+    onTick: vi.fn(),
+    onSetMuted: vi.fn(),
+    onSetVolume: vi.fn(),
+    onSetMediaOutputMuted: vi.fn(),
+    onSetPlaybackRate: vi.fn(),
+    onSetColorGrading: vi.fn(),
+    onSetColorGradingCompare: vi.fn(),
+    onEnablePickMode: vi.fn(),
+    onDisablePickMode: vi.fn(),
+  };
+}
+
+function makeControlMessage(action: string, extra?: Record<string, unknown>) {
+  return new MessageEvent("message", {
+    data: { source: "hf-parent", type: "control", action, ...extra },
+  });
+}
+
+describe("installRuntimeControlBridge", () => {
+  it("dispatches play command", () => {
+    const deps = createMockDeps();
+    const handler = installRuntimeControlBridge(deps);
+    handler(makeControlMessage("play"));
+    expect(deps.onPlay).toHaveBeenCalledOnce();
+  });
+
+  it("dispatches pause command", () => {
+    const deps = createMockDeps();
+    const handler = installRuntimeControlBridge(deps);
+    handler(makeControlMessage("pause"));
+    expect(deps.onPause).toHaveBeenCalledOnce();
+  });
+
+  it("dispatches seek command with frame and mode", () => {
+    const deps = createMockDeps();
+    const handler = installRuntimeControlBridge(deps);
+    handler(makeControlMessage("seek", { frame: 150, seekMode: "drag" }));
+    expect(deps.onSeek).toHaveBeenCalledWith(150, "drag");
+  });
+
+  it("seek defaults frame to 0 and seekMode to commit", () => {
+    const deps = createMockDeps();
+    const handler = installRuntimeControlBridge(deps);
+    handler(makeControlMessage("seek"));
+    expect(deps.onSeek).toHaveBeenCalledWith(0, "commit");
+  });
+
+  it("dispatches set-muted command", () => {
+    const deps = createMockDeps();
+    const handler = installRuntimeControlBridge(deps);
+    handler(makeControlMessage("set-muted", { muted: true }));
+    expect(deps.onSetMuted).toHaveBeenCalledWith(true);
+  });
+
+  it("dispatches set-volume command", () => {
+    const deps = createMockDeps();
+    const handler = installRuntimeControlBridge(deps);
+    handler(makeControlMessage("set-volume", { volume: 0.5 }));
+    expect(deps.onSetVolume).toHaveBeenCalledWith(0.5);
+  });
+
+  it("clamps set-volume to [0, 1]", () => {
+    const deps = createMockDeps();
+    const handler = installRuntimeControlBridge(deps);
+    handler(makeControlMessage("set-volume", { volume: 1.5 }));
+    expect(deps.onSetVolume).toHaveBeenCalledWith(1);
+    handler(makeControlMessage("set-volume", { volume: -0.5 }));
+    expect(deps.onSetVolume).toHaveBeenCalledWith(0);
+  });
+
+  it("defaults volume to 1 when absent", () => {
+    const deps = createMockDeps();
+    const handler = installRuntimeControlBridge(deps);
+    handler(makeControlMessage("set-volume"));
+    expect(deps.onSetVolume).toHaveBeenCalledWith(1);
+  });
+
+  it("dispatches set-media-output-muted command", () => {
+    const deps = createMockDeps();
+    const handler = installRuntimeControlBridge(deps);
+    handler(makeControlMessage("set-media-output-muted", { muted: true }));
+    expect(deps.onSetMediaOutputMuted).toHaveBeenCalledWith(true);
+    handler(makeControlMessage("set-media-output-muted", { muted: false }));
+    expect(deps.onSetMediaOutputMuted).toHaveBeenCalledWith(false);
+  });
+
+  it("set-media-output-muted coerces absent flag to false", () => {
+    const deps = createMockDeps();
+    const handler = installRuntimeControlBridge(deps);
+    handler(makeControlMessage("set-media-output-muted"));
+    expect(deps.onSetMediaOutputMuted).toHaveBeenCalledWith(false);
+  });
+
+  it("dispatches set-playback-rate command", () => {
+    const deps = createMockDeps();
+    const handler = installRuntimeControlBridge(deps);
+    handler(makeControlMessage("set-playback-rate", { playbackRate: 2 }));
+    expect(deps.onSetPlaybackRate).toHaveBeenCalledWith(2);
+  });
+
+  it("defaults playbackRate to 1", () => {
+    const deps = createMockDeps();
+    const handler = installRuntimeControlBridge(deps);
+    handler(makeControlMessage("set-playback-rate"));
+    expect(deps.onSetPlaybackRate).toHaveBeenCalledWith(1);
+  });
+
+  it("dispatches set-color-grading command with target and grading payload", () => {
+    const deps = createMockDeps();
+    const handler = installRuntimeControlBridge(deps);
+    const grading = { preset: "warm-clean", intensity: 0.7 };
+    const target = { id: "hero-video", selectorIndex: 0 };
+    handler(makeControlMessage("set-color-grading", { target, grading }));
+    expect(deps.onSetColorGrading).toHaveBeenCalledWith(target, grading);
+  });
+
+  it("dispatches set-color-grading-compare command with target and compare payload", () => {
+    const deps = createMockDeps();
+    const handler = installRuntimeControlBridge(deps);
+    const compare = { enabled: true, position: 0.42 };
+    const target = { id: "hero-video", selectorIndex: 0 };
+    handler(makeControlMessage("set-color-grading-compare", { target, compare }));
+    expect(deps.onSetColorGradingCompare).toHaveBeenCalledWith(target, compare);
+  });
+
+  it("dispatches tick command", () => {
+    const deps = createMockDeps();
+    const handler = installRuntimeControlBridge(deps);
+    handler(makeControlMessage("tick"));
+    expect(deps.onTick).toHaveBeenCalledOnce();
+  });
+
+  it("dispatches enable-pick-mode", () => {
+    const deps = createMockDeps();
+    const handler = installRuntimeControlBridge(deps);
+    handler(makeControlMessage("enable-pick-mode"));
+    expect(deps.onEnablePickMode).toHaveBeenCalledOnce();
+  });
+
+  it("dispatches disable-pick-mode", () => {
+    const deps = createMockDeps();
+    const handler = installRuntimeControlBridge(deps);
+    handler(makeControlMessage("disable-pick-mode"));
+    expect(deps.onDisablePickMode).toHaveBeenCalledOnce();
+  });
+
+  it("ignores messages from wrong source", () => {
+    const deps = createMockDeps();
+    const handler = installRuntimeControlBridge(deps);
+    handler(
+      new MessageEvent("message", {
+        data: { source: "other", type: "control", action: "play" },
+      }),
+    );
+    expect(deps.onPlay).not.toHaveBeenCalled();
+  });
+
+  it("ignores messages with wrong type", () => {
+    const deps = createMockDeps();
+    const handler = installRuntimeControlBridge(deps);
+    handler(
+      new MessageEvent("message", {
+        data: { source: "hf-parent", type: "state", action: "play" },
+      }),
+    );
+    expect(deps.onPlay).not.toHaveBeenCalled();
+  });
+
+  it("ignores null data", () => {
+    const deps = createMockDeps();
+    const handler = installRuntimeControlBridge(deps);
+    handler(new MessageEvent("message", { data: null }));
+    expect(deps.onPlay).not.toHaveBeenCalled();
+  });
+
+  it("handles flash-elements command without crashing", () => {
+    const deps = createMockDeps();
+    const handler = installRuntimeControlBridge(deps);
+    expect(() =>
+      handler(makeControlMessage("flash-elements", { selectors: [".test"], duration: 500 })),
+    ).not.toThrow();
+  });
+
+  it("posts a ready message to window.parent on install", () => {
+    // The bridge announces itself so the parent can replay any control
+    // messages it posted before the iframe runtime's listener was installed.
+    const postSpy = vi.spyOn(window.parent, "postMessage");
+    const deps = createMockDeps();
+    installRuntimeControlBridge(deps);
+    expect(postSpy).toHaveBeenCalledWith({ source: "hf-preview", type: "ready" }, "*");
+    postSpy.mockRestore();
+  });
+});

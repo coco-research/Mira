@@ -1,0 +1,110 @@
+{
+  "name": "Mira Daily Dispatch",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 24
+            }
+          ]
+        }
+      },
+      "id": "node_cron_trigger",
+      "name": "Daily Cron",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "http://127.0.0.1:8770/status",
+        "options": {}
+      },
+      "id": "node_get_status",
+      "name": "GET /status",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [480, 300]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "http://127.0.0.1:8770/videos",
+        "options": {}
+      },
+      "id": "node_get_videos",
+      "name": "GET /videos",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [720, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://127.0.0.1:8770/dispatch",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "dry_run",
+              "value": "false"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "node_dispatch",
+      "name": "POST /dispatch",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [960, 300],
+      "notes": "Triggers the daily dispatch plan — fires publish for auto_publish channels and queues hold items for review."
+    }
+  ],
+  "connections": {
+    "Daily Cron": {
+      "main": [
+        [
+          {
+            "node": "GET /status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GET /status": {
+      "main": [
+        [
+          {
+            "node": "GET /videos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GET /videos": {
+      "main": [
+        [
+          {
+            "node": "POST /dispatch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "instanceId": "mira-local",
+    "description": "Runs daily: checks Mira API status, lists due videos, then fires the dispatch endpoint which plans publish vs hold actions based on channel trust settings."
+  }
+}

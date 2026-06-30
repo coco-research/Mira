@@ -1,0 +1,405 @@
+<style data-screen="collaborators">
+/* ── Page layout ────────────────────────────────────────────── */
+.col-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+.col-header h1 { margin-bottom: 0.2rem; }
+
+/* ── Invite panel (collapsible) ─────────────────────────────── */
+.col-invite-panel {
+  background: var(--panel-2);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.5rem;
+  display: none;
+}
+.col-invite-panel.open { display: block; }
+.col-invite-row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  margin-top: 0.75rem;
+}
+.col-invite-row .field { flex: 1; min-width: 180px; }
+.col-invite-note {
+  font-size: 0.8125rem;
+  color: var(--ink-2);
+  margin-top: 0.6rem;
+  line-height: 1.5;
+}
+
+/* ── Member cards ────────────────────────────────────────────── */
+.col-members { display: flex; flex-direction: column; gap: 1rem; }
+
+.col-member-card { padding: 1.25rem 1.5rem; }
+
+.col-member-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.col-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border-strong);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--serif);
+  font-size: 1.0625rem;
+  font-weight: 600;
+  flex-shrink: 0;
+  color: var(--ink);
+  background: var(--panel);
+}
+.col-av-you  { background: var(--clay); color: #fff; border-color: var(--clay-hover); }
+.col-av-aman { background: #ebe7f6; border-color: #c9c0e4; color: #4e3d80; }
+.col-av-priya{ background: #e6f2e5; border-color: #b5d4b0; color: #336128; }
+
+.col-member-info { flex: 1; min-width: 0; }
+.col-name-row {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.3rem;
+}
+.col-name {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+.col-owner-badge {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.15rem 0.5rem;
+  background: var(--clay);
+  color: #fff;
+  border-radius: 4px;
+}
+
+.col-actions {
+  display: flex;
+  gap: 0.4rem;
+  flex-shrink: 0;
+  align-self: center;
+}
+
+/* ── Channel assignment row ─────────────────────────────────── */
+.col-channels-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.875rem;
+}
+.col-ch-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  min-width: 64px;
+}
+.col-none {
+  font-size: 0.8125rem;
+  color: var(--ink-2);
+  font-style: italic;
+}
+
+/* ── Agent status strip ──────────────────────────────────────── */
+.col-agent-strip {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.575rem 0.875rem;
+  background: var(--panel);
+  border-radius: 8px;
+  flex-wrap: wrap;
+}
+.col-strip-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  margin-right: 0.125rem;
+}
+.col-online  { font-size: 0.8125rem; font-weight: 600; color: var(--green); }
+.col-offline { font-size: 0.8125rem; font-weight: 600; color: var(--ink-2); }
+.col-vdiv {
+  width: 1px;
+  height: 13px;
+  background: var(--border-strong);
+  flex-shrink: 0;
+}
+.col-os { font-size: 0.8125rem; color: var(--ink-2); }
+.col-gpu-badge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+}
+.col-gpu-yes { background: #e6f2e5; color: #336128; border: 1px solid #b5d4b0; }
+.col-gpu-no  { background: var(--panel); color: var(--ink-2); border: 1px solid var(--border-strong); }
+.col-tier-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  letter-spacing: 0.015em;
+}
+.col-tier-heavy { background: #fdf0ec; color: #8c4a2f; border: 1px solid #e5c4b6; }
+.col-tier-mid   { background: #fdf6e8; color: #7a5a1e; border: 1px solid #e8d5a3; }
+.col-tier-light { background: var(--panel); color: var(--ink-2); border: 1px solid var(--border-strong); }
+.col-capacity-note { font-size: 0.775rem; color: var(--ink-2); margin-left: 0.125rem; }
+
+/* ── Pending agent strip ─────────────────────────────────────── */
+.col-pending-strip {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.575rem 0.875rem;
+  background: #fdf8ed;
+  border: 1px dashed var(--amber);
+  border-radius: 8px;
+  flex-wrap: wrap;
+}
+.col-pending-text { font-size: 0.8125rem; color: #6b5412; }
+.col-pending-resend { margin-left: auto; }
+
+/* ── Machine spec (pre-install) ──────────────────────────────── */
+.col-spec-strip {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.875rem;
+  background: var(--panel-2);
+  border-radius: 8px;
+  margin-top: 0.625rem;
+  flex-wrap: wrap;
+}
+.col-spec-label { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink-2); }
+
+/* ── Roles legend ────────────────────────────────────────────── */
+.col-roles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.875rem;
+  padding: 1rem 1.25rem;
+}
+.col-role-item .tag { margin-bottom: 0.35rem; display: inline-block; }
+.col-role-desc { font-size: 0.8rem; color: var(--ink-2); margin: 0; line-height: 1.45; }
+</style>
+
+<section class="page" id="collaborators">
+  <div class="content">
+
+    <!-- ── Page header ──────────────────────────────────────── -->
+    <div class="col-header">
+      <div>
+        <h1>Collaborators</h1>
+        <p class="lede">Each person runs their own Mira Agent with their own keys — the pod only coordinates jobs.</p>
+      </div>
+      <button class="btn" id="col-invite-btn">+ Invite collaborator</button>
+    </div>
+
+    <!-- ── Invite panel (hidden until button click) ─────────── -->
+    <div class="col-invite-panel" id="col-invite-panel">
+      <strong>Invite someone to your pod</strong>
+      <div class="col-invite-row">
+        <div class="field">
+          <label for="col-invite-email">Email address</label>
+          <input type="email" id="col-invite-email" placeholder="friend@example.com">
+        </div>
+        <div class="field">
+          <label for="col-invite-role">Role</label>
+          <select id="col-invite-role" style="width:100%;padding:0.55rem 0.75rem;border:1px solid var(--border-strong);border-radius:8px;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:0.875rem;">
+            <option>Research / Scripts</option>
+            <option>VO / Edit</option>
+            <option>Schedule / Community</option>
+          </select>
+        </div>
+        <button class="btn" onclick="document.getElementById('col-invite-panel').classList.remove('open');alert('Invite link sent! They\'ll install the Mira Agent and pair with a code.')">Send invite link</button>
+        <button class="btn ghost" onclick="document.getElementById('col-invite-panel').classList.remove('open')">Cancel</button>
+      </div>
+      <p class="col-invite-note">The invite link opens the Mira setup wizard. Their keys stay in their <code>.env</code> — never uploaded. Once their agent is paired, they appear here as ONLINE.</p>
+    </div>
+
+    <!-- ── Solo mode callout ─────────────────────────────────── -->
+    <div class="note" style="margin-bottom:1.75rem;">
+      <strong>Solo mode today</strong> — you are the only active agent. Collaborators light up here when a pod forms.
+      Keys are never shared: each person installs their own agent with their own credentials, and the pod only passes job metadata — not secrets, not media, not renders.
+      <span class="muted" style="display:inline-block;margin-top:0.3rem;">
+        Pod settings &amp; Supabase pairing live in
+        <button class="btn ghost sm" style="margin-left:0.25rem;" onclick="go('connections')">Connections →</button>
+      </span>
+    </div>
+
+    <!-- ── Collaborator list ──────────────────────────────────── -->
+    <div class="col-members">
+
+      <!-- ─ Rijul (You) — Owner ─────────────────────────────── -->
+      <div class="col-member-card card">
+        <div class="col-member-top">
+          <div class="col-avatar col-av-you" aria-label="Rijul">R</div>
+          <div class="col-member-info">
+            <div class="col-name-row">
+              <span class="col-name">Rijul (You)</span>
+              <span class="col-owner-badge">Owner</span>
+              <span class="tag">All roles</span>
+            </div>
+            <span class="muted">Drives the pod · manages all channels</span>
+          </div>
+          <div class="col-actions">
+            <button class="btn ghost sm" disabled title="Owner is assigned all channels">Assign channels</button>
+            <button class="btn ghost sm" disabled title="Owner role is fixed">Set role</button>
+          </div>
+        </div>
+
+        <div class="col-channels-row">
+          <span class="col-ch-label">Channels</span>
+          <span class="tag en">🛠️ AI Tools</span>
+          <span class="tag en">🔬 Deep Dives</span>
+          <span class="tag en">⚡ Quick Wins</span>
+        </div>
+
+        <div class="col-agent-strip">
+          <span class="col-strip-label">Agent</span>
+          <span class="status-dot ok" aria-label="Online"></span>
+          <span class="col-online">ONLINE</span>
+          <span class="col-vdiv"></span>
+          <span class="col-os">macOS</span>
+          <span class="col-vdiv"></span>
+          <span class="col-gpu-badge col-gpu-yes">GPU ✓ Metal</span>
+          <span class="col-vdiv"></span>
+          <span class="col-tier-badge col-tier-heavy">Heavy — M4 Max 64 GB</span>
+          <span class="col-capacity-note">· can take any job, including heavy renders</span>
+        </div>
+      </div>
+
+      <!-- ─ Aman — Research / Scripts ──────────────────────── -->
+      <div class="col-member-card card">
+        <div class="col-member-top">
+          <div class="col-avatar col-av-aman" aria-label="Aman">A</div>
+          <div class="col-member-info">
+            <div class="col-name-row">
+              <span class="col-name">Aman</span>
+              <span class="tag">Research / Scripts</span>
+            </div>
+            <span class="muted">Invited · agent paired · joined 3 days ago</span>
+          </div>
+          <div class="col-actions">
+            <button class="btn ghost sm">Assign channels</button>
+            <button class="btn ghost sm">Set role</button>
+          </div>
+        </div>
+
+        <div class="col-channels-row">
+          <span class="col-ch-label">Channels</span>
+          <span class="tag en">🔬 Deep Dives</span>
+        </div>
+
+        <div class="col-agent-strip">
+          <span class="col-strip-label">Agent</span>
+          <span class="status-dot ok" aria-label="Online"></span>
+          <span class="col-online">ONLINE</span>
+          <span class="col-vdiv"></span>
+          <span class="col-os">Windows</span>
+          <span class="col-vdiv"></span>
+          <span class="col-gpu-badge col-gpu-yes">GPU ✓ CUDA</span>
+          <span class="col-vdiv"></span>
+          <span class="col-tier-badge col-tier-mid">Mid — 32 GB</span>
+          <span class="col-capacity-note">· medium jobs OK · heavy render → cloud burst</span>
+        </div>
+      </div>
+
+      <!-- ─ Priya — VO / Edit — Pending install ─────────────── -->
+      <div class="col-member-card card">
+        <div class="col-member-top">
+          <div class="col-avatar col-av-priya" aria-label="Priya">P</div>
+          <div class="col-member-info">
+            <div class="col-name-row">
+              <span class="col-name">Priya</span>
+              <span class="tag">VO / Edit</span>
+            </div>
+            <span class="muted">Invited · pending agent install · link sent 1 day ago</span>
+          </div>
+          <div class="col-actions">
+            <button class="btn ghost sm">Assign channels</button>
+            <button class="btn ghost sm">Set role</button>
+          </div>
+        </div>
+
+        <div class="col-channels-row">
+          <span class="col-ch-label">Channels</span>
+          <span class="col-none">None assigned yet</span>
+        </div>
+
+        <div class="col-pending-strip">
+          <span class="status-dot local" aria-label="Offline"></span>
+          <span class="col-pending-text"><strong>Pending install</strong> — Priya hasn't installed her Mira Agent yet. She'll appear ONLINE once paired.</span>
+          <button class="btn ghost sm col-pending-resend" onclick="alert('Install link resent to Priya.')">Resend install link</button>
+        </div>
+
+        <!-- Self-reported machine spec from onboarding questionnaire -->
+        <div class="col-spec-strip">
+          <span class="col-spec-label">Reported machine</span>
+          <span class="col-gpu-badge col-gpu-no">No GPU</span>
+          <span class="col-vdiv"></span>
+          <span class="col-tier-badge col-tier-light">Light — 16 GB</span>
+          <span class="col-capacity-note">· heavy jobs will offload to cloud or another pod machine</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── Roles legend ───────────────────────────────────────── -->
+    <div style="margin-top:2rem;">
+      <h2 style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--ink-2);margin-bottom:0.75rem;">Available roles</h2>
+      <div class="card col-roles-grid">
+        <div class="col-role-item">
+          <span class="tag">Research / Scripts</span>
+          <p class="col-role-desc">Ideate, topic queue, script review. Ownership labels appear on idea cards and queue items.</p>
+        </div>
+        <div class="col-role-item">
+          <span class="tag">VO / Edit</span>
+          <p class="col-role-desc">Voice review, final cut approval, assets library. Assigned to review-gate checkpoints.</p>
+        </div>
+        <div class="col-role-item">
+          <span class="tag">Schedule / Community</span>
+          <p class="col-role-desc">Queue scheduling, publish windows, reply triage. Manages the topic calendar.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<script data-screen="collaborators">
+(function () {
+  var btn   = document.getElementById('col-invite-btn');
+  var panel = document.getElementById('col-invite-panel');
+  if (btn && panel) {
+    btn.addEventListener('click', function () {
+      panel.classList.toggle('open');
+      if (panel.classList.contains('open')) {
+        var emailInput = document.getElementById('col-invite-email');
+        if (emailInput) emailInput.focus();
+      }
+    });
+  }
+})();
+</script>

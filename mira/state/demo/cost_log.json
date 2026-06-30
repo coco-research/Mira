@@ -1,0 +1,74 @@
+[
+  {
+    "video_id": "vid_3caa1dff",
+    "stage": "script",
+    "provider": "offline-template",
+    "units": 1.0,
+    "cost": 0.0,
+    "note": null,
+    "ts": "2026-06-20T04:38:27Z"
+  },
+  {
+    "video_id": "vid_3caa1dff",
+    "stage": "voice_en",
+    "provider": "offline-anullsrc",
+    "units": 1.0,
+    "cost": 0.0,
+    "note": null,
+    "ts": "2026-06-20T04:38:27Z"
+  },
+  {
+    "video_id": "vid_3caa1dff",
+    "stage": "clip",
+    "provider": "offline-ffmpeg",
+    "units": 2.0,
+    "cost": 0.0,
+    "note": "scene 0",
+    "ts": "2026-06-20T04:38:27Z"
+  },
+  {
+    "video_id": "vid_3caa1dff",
+    "stage": "clip",
+    "provider": "offline-ffmpeg",
+    "units": 2.0,
+    "cost": 0.0,
+    "note": "scene 1",
+    "ts": "2026-06-20T04:38:27Z"
+  },
+  {
+    "video_id": "vid_3caa1dff",
+    "stage": "clip",
+    "provider": "offline-ffmpeg",
+    "units": 2.0,
+    "cost": 0.0,
+    "note": "scene 2",
+    "ts": "2026-06-20T04:38:27Z"
+  },
+  {
+    "video_id": "vid_3caa1dff",
+    "stage": "clip",
+    "provider": "offline-ffmpeg",
+    "units": 2.0,
+    "cost": 0.0,
+    "note": "scene 3",
+    "ts": "2026-06-20T04:38:28Z"
+  },
+  {
+    "video_id": "vid_3caa1dff",
+    "stage": "captions",
+    "provider": "offline-srt",
+    "units": 1.0,
+    "cost": 0.0,
+    "note": null,
+    "ts": "2026-06-20T04:38:28Z"
+  },
+  {
+    "video_id": "vid_3caa1dff",
+    "stage": "production_engine",
+    "provider": "offline-ffmpeg",
+    "units": 1.0,
+    "cost": 0.0,
+    "note": null,
+    "ts": "2026-06-20T04:38:28Z"
+  }
+]

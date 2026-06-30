@@ -1,0 +1,206 @@
+/**
+ * `hyperframes auth status` — print the active credential's source,
+ * type, and identity (verified against `GET /v3/users/me`).
+ *
+ * Exits non-zero when nothing is configured or the API rejects the
+ * credential, so scripts can check "am I logged in?" with `$?`.
+ */
+
+import { defineCommand } from "citty";
+import {
+  AuthClient,
+  isAuthError,
+  refreshTokens,
+  tryResolveCredential,
+  type ResolvedCredential,
+  type UserInfo,
+} from "../../auth/index.js";
+import { c } from "../../ui/colors.js";
+
+interface VerifiedStatus {
+  credential: ResolvedCredential;
+  user: UserInfo | null;
+  apiError: string | null;
+}
+
+export default defineCommand({
+  meta: { name: "status", description: "Show the active HeyGen credential" },
+  args: {
+    json: {
+      type: "boolean",
+      description: "Emit machine-readable JSON",
+      default: false,
+    },
+  },
+  // fallow-ignore-next-line complexity
+  async run({ args }) {
+    const asJson = Boolean(args.json);
+    let credential;
+    try {
+      credential = await tryResolveCredential();
+    } catch (err) {
+      handleResolveError(err, asJson);
+      return;
+    }
+    if (!credential) {
+      handleUnconfigured(asJson);
+      return;
+    }
+
+    const status = await verify(credential);
+    if (asJson) printJsonStatus(status);
+    else printHumanStatus(status);
+    process.exit(status.apiError ? 1 : 0);
+  },
+});
+
+function handleUnconfigured(asJson: boolean): never {
+  if (asJson) {
+    console.log(JSON.stringify({ configured: false }));
+  } else {
+    console.log(c.warn("Not signed in to HeyGen."));
+    console.log(`Run ${c.accent("hyperframes auth login --api-key")} to sign in.`);
+  }
+  process.exit(1);
+}
+
+// fallow-ignore-next-line complexity
+function handleResolveError(err: unknown, asJson: boolean): never {
+  if (!isAuthError(err)) throw err;
+  if (asJson) {
+    console.log(JSON.stringify({ configured: false, error: err.message, hint: err.hint ?? null }));
+  } else {
+    console.error(c.error(err.message));
+    if (err.hint) console.error(c.dim(err.hint));
+  }
+  process.exit(1);
+}
+
+async function verify(credential: ResolvedCredential): Promise<VerifiedStatus> {
+  const client = new AuthClient({
+    // Return the full new token set so the retry's credential carries
+    // a rotated refresh_token forward (defends against IdPs that
+    // invalidate the old RT on every refresh).
+    onUnauthenticatedRefresh: async (rt) => await refreshTokens(rt),
+  });
+  try {
+    const user = await client.getCurrentUser(credential);
+    return { credential, user, apiError: null };
+  } catch (err) {
+    if (!isAuthError(err)) throw err;
+    return {
+      credential,
+      user: null,
+      apiError: err instanceof Error ? err.message : String(err),
+    };
+  }
+}
+
+function printJsonStatus(s: VerifiedStatus): void {
+  const payload: Record<string, unknown> = {
+    configured: true,
+    source: s.credential.source,
+    type: s.credential.type,
+    user: s.user,
+    api_error: s.apiError,
+  };
+  if (s.credential.type === "oauth") {
+    payload["expires_at"] = s.credential.expires_at?.toISOString() ?? null;
+    payload["refreshable"] = s.credential.refreshable;
+    payload["scope"] = s.credential.scope ?? null;
+  }
+  console.log(JSON.stringify(payload, null, 2));
+}
+
+function printHumanStatus(s: VerifiedStatus): void {
+  const rows = collectStatusRows(s);
+  for (const [label, value] of rows) console.log(`${c.bold(label)} ${value}`);
+}
+
+// fallow-ignore-next-line complexity
+function collectStatusRows(s: VerifiedStatus): [string, string][] {
+  const rows: [string, string][] = [
+    ["Source:", describeSource(s.credential.source)],
+    ["Type:  ", s.credential.type === "oauth" ? "oauth" : "api_key"],
+  ];
+  if (s.credential.type === "oauth") rows.push(...oauthRows(s.credential));
+  if (s.apiError) {
+    rows.push([c.error("API check failed:"), s.apiError]);
+    return rows;
+  }
+  if (s.user) rows.push(...identityRows(s.user));
+  return rows;
+}
+
+// fallow-ignore-next-line complexity
+function oauthRows(credential: Extract<ResolvedCredential, { type: "oauth" }>): [string, string][] {
+  const rows: [string, string][] = [];
+  if (credential.expires_at) {
+    const fresh = credential.expires_at.getTime() > Date.now();
+    const tag = fresh ? c.success("(valid)") : c.warn("(expired)");
+    const refresh = credential.refreshable ? c.dim(" · refreshable") : "";
+    rows.push(["Expires:", `${credential.expires_at.toISOString()} ${tag}${refresh}`]);
+  }
+  if (credential.scope) rows.push(["Scope: ", credential.scope]);
+  return rows;
+}
+
+function identityRows(user: UserInfo): [string, string][] {
+  const identity = user.email ?? user.username ?? "(unknown user)";
+  return [["Account:", identity], ...billingRows(user)];
+}
+
+const SOURCE_LABELS: Record<ResolvedCredential["source"], string> = {
+  env: "env (HEYGEN_API_KEY)",
+  env_alias: "env (HYPERFRAMES_API_KEY)",
+  file_legacy: "file (~/.heygen/credentials — legacy plaintext)",
+  file_json: "file (~/.heygen/credentials)",
+};
+
+function describeSource(source: ResolvedCredential["source"]): string {
+  return SOURCE_LABELS[source];
+}
+
+function billingRows(user: UserInfo): [string, string][] {
+  const rows: [string, string][] = [];
+  if (user.billing_type) rows.push(["Billing:", user.billing_type]);
+  pushWalletRow(rows, user);
+  pushSubscriptionRows(rows, user);
+  pushUsageRow(rows, user);
+  return rows;
+}
+
+// fallow-ignore-next-line complexity
+function pushWalletRow(rows: [string, string][], user: UserInfo): void {
+  const balance = user.wallet?.remaining_balance;
+  if (balance === undefined) return;
+  const currency = user.wallet?.currency ? ` ${user.wallet.currency}` : "";
+  rows.push(["Wallet: ", `${balance}${currency}`]);
+}
+
+// fallow-ignore-next-line complexity
+function pushSubscriptionRows(rows: [string, string][], user: UserInfo): void {
+  if (user.subscription?.plan) rows.push(["Plan:   ", user.subscription.plan]);
+  pushCreditRow(rows, "Premium credits:", user.subscription?.credits?.premium_credits);
+  pushCreditRow(rows, "Add-on credits: ", user.subscription?.credits?.add_on_credits);
+}
+
+// fallow-ignore-next-line complexity
+function pushCreditRow(
+  rows: [string, string][],
+  label: string,
+  credit: { remaining?: number; resets_at?: string } | undefined,
+): void {
+  if (!credit || credit.remaining === undefined) return;
+  const resets = credit.resets_at ? ` (resets ${credit.resets_at.slice(0, 10)})` : "";
+  rows.push([label, `${credit.remaining}${resets}`]);
+}
+
+// fallow-ignore-next-line complexity
+function pushUsageRow(rows: [string, string][], user: UserInfo): void {
+  const current = user.usage_based?.spending_current_usd;
+  if (current === undefined) return;
+  const cap = user.usage_based?.spending_cap_usd;
+  const capPart = cap !== undefined ? ` / $${cap}` : "";
+  rows.push(["Usage:  ", `$${current}${capPart}`]);
+}

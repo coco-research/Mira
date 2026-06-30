@@ -1,0 +1,253 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Studio is a dark-only UI — pin the user-agent color scheme to dark so that
+ * browser-native chrome (scrollbars, form controls, focus rings) picks the
+ * matching palette instead of defaulting to light against our #0a0a0a body.
+ */
+:root {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: #0a0a0a;
+  color: #e5e5e5;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  overflow: hidden;
+}
+
+.hf-color-grading-number::-webkit-outer-spin-button,
+.hf-color-grading-number::-webkit-inner-spin-button {
+  margin: 0;
+  appearance: none;
+}
+
+.hf-color-grading-number {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.hf-color-grading-range {
+  height: 1.5rem;
+  cursor: default;
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+}
+
+.hf-color-grading-range:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.hf-color-grading-range::-webkit-slider-runnable-track {
+  height: 1.25rem;
+  border: 0;
+  background: transparent;
+}
+
+.hf-color-grading-range::-webkit-slider-thumb {
+  width: 0.625rem;
+  height: 1rem;
+  margin-top: 0.125rem;
+  border: 0;
+  border-radius: 999px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: #ffffff;
+  box-shadow:
+    0 0 0 2px #0c0c0e,
+    0 1px 4px rgba(0, 0, 0, 0.55);
+  cursor: default;
+}
+
+.hf-color-grading-range::-moz-range-track {
+  height: 1.25rem;
+  border: 0;
+  background: transparent;
+}
+
+.hf-color-grading-range::-moz-range-thumb {
+  width: 0.625rem;
+  height: 1rem;
+  border: 0;
+  border-radius: 999px;
+  background: #ffffff;
+  box-shadow:
+    0 0 0 2px #0c0c0e,
+    0 1px 4px rgba(0, 0, 0, 0.55);
+  cursor: default;
+}
+
+.hf-color-grading-range:focus-visible {
+  outline: none;
+}
+
+.hf-color-grading-range:focus-visible::-webkit-slider-thumb {
+  box-shadow:
+    0 0 0 2px #0c0c0e,
+    0 0 0 4px rgba(60, 230, 172, 0.22),
+    0 1px 4px rgba(0, 0, 0, 0.55);
+}
+
+.hf-color-grading-range:focus-visible::-moz-range-thumb {
+  box-shadow:
+    0 0 0 2px #0c0c0e,
+    0 0 0 4px rgba(60, 230, 172, 0.22),
+    0 1px 4px rgba(0, 0, 0, 0.55);
+}
+
+#root {
+  width: 100vw;
+  /*
+   * 100vh on iOS Safari measures the LARGEST viewport (toolbars hidden) and
+   * stays fixed at that value, so when the toolbar is visible the bottom of
+   * the layout sits *under* it and anything at flex-end — the player
+   * controls row, notably — becomes untappable. `100dvh` follows the
+   * dynamic viewport, shrinking when the toolbar is shown so the bottom of
+   * #root lines up with the bottom of the visible area. Fallback to 100vh
+   * keeps older browsers (pre-Safari 15.4 / Firefox 101 / Chrome 108) on
+   * the existing behaviour.
+   */
+  height: 100vh;
+  height: 100dvh;
+}
+
+/* CodeMirror overrides */
+.cm-editor {
+  height: 100%;
+  font-size: 13px;
+}
+
+.cm-editor .cm-scroller {
+  font-family: "JetBrains Mono", "Fira Code", "SF Mono", monospace;
+}
+
+.cm-editor.cm-focused {
+  outline: none;
+}
+
+/*
+ * HyperFrames brand loader. Shared by preview overlays that need a calm,
+ * branded loading state instead of a generic spinner.
+ */
+.hf-loader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  width: min(34rem, 100%);
+  padding: 1.5rem;
+  box-sizing: border-box;
+  text-align: center;
+  cursor: default;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-user-drag: none;
+}
+
+.hf-frame {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  min-height: 12rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.52);
+}
+
+.hf-loader-mark-frame {
+  display: grid;
+  place-items: center;
+  overflow: visible;
+  transform-origin: 50% 50%;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-user-drag: none;
+}
+
+.hf-loader-mark {
+  display: block;
+  overflow: visible;
+  filter: drop-shadow(0 0 7px rgba(79, 219, 94, 0.2));
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-user-drag: none;
+}
+
+.hf-loader-title {
+  font-family:
+    Inter,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--hf-heading, #f4f4f5);
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hf-loader-detail {
+  max-width: 32rem;
+  min-height: 2.5rem;
+  overflow: hidden;
+  color: var(--hf-text-secondary, rgba(244, 244, 245, 0.68));
+  font-family:
+    Inter,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  font-size: 0.82rem;
+  line-height: 1.6;
+}
+
+.hf-loader-mono {
+  width: min(36rem, 100%);
+  min-height: 1.5rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--hf-text-tertiary, rgba(244, 244, 245, 0.46));
+  font-family: "IBM Plex Mono", "SF Mono", "Fira Code", monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.hf-loader-progress {
+  width: min(18rem, 72vw);
+  height: 0.375rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+@keyframes hf-thumb-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.hf-loader-progress__fill {
+  width: 100%;
+  height: 100%;
+  transform: scaleX(0);
+  transform-origin: left center;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #06e3fa, #4fdb5e);
+  transition: transform 160ms ease;
+}

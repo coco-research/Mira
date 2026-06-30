@@ -1,0 +1,367 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ─────────────────────────────────────────────────────────────────────
+   Visual layer aligned with the uselu web companion (DD 2026-06-05)
+   The previous build collapsed the whole cool-accent family
+   (blue/indigo/violet/purple/sky/cyan) onto ONE muted-violet ramp via a
+   @theme override, which tinted the entire app lilac. The web companion
+   keeps Tailwind's DEFAULT palette + neutral greys and only uses a few
+   deliberate purple accents. To match it we drop the colour-family override
+   entirely (Tailwind defaults return: blue is blue, green is green, the
+   sparse purple accents render as real purple, same classes the web uses)
+   and keep only the neutral ramp + structural radius/shadow tokens, which
+   carry no colour identity.
+   ───────────────────────────────────────────────────────────────────── */
+@theme {
+  /* ── Neutral ramp — spread for depth (uselu base, widened). Used by the
+     elevated-surface helper below; the canvas/sidebar/header shades live as
+     literals in the layout components. ── */
+  --color-lu-base: #202020;     /* app canvas */
+  --color-lu-panel: #262626;    /* sidebar, panels */
+  --color-lu-raised: #2d2d2d;   /* cards, hover */
+  --color-lu-overlay: #363636;  /* dropdowns, modals, popovers */
+
+  /* ── Form: moderately less round (pills/cards read less "toy") ── */
+  --radius-xl: 0.5rem;
+  --radius-2xl: 0.625rem;
+  --radius-3xl: 0.75rem;
+
+  /* ── Depth: shadows tuned to be visible on dark backgrounds ── */
+  --shadow-lg: 0 8px 24px -6px rgba(0, 0, 0, 0.6), 0 2px 6px -2px rgba(0, 0, 0, 0.4);
+  --shadow-xl: 0 16px 48px -12px rgba(0, 0, 0, 0.7), 0 4px 12px -4px rgba(0, 0, 0, 0.5);
+  --shadow-2xl: 0 24px 64px -16px rgba(0, 0, 0, 0.8);
+}
+
+html {
+  font-size: 18.4px; /* 16px * 1.15 = 15% larger UI */
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+#root {
+  width: 100%;
+  height: 100vh;
+}
+
+/* Glass card — aligned with the web companion: near-invisible (a single
+   hairline divider, no filled surface) so panels read as light structure
+   instead of stacked cards. */
+.light .glass-card {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 0;
+  padding-bottom: 0.75rem;
+  margin-bottom: 0.25rem;
+}
+
+.dark .glass-card {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 0;
+  padding-bottom: 0.75rem;
+  margin-bottom: 0.25rem;
+}
+
+/* Custom scrollbar */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.dark .scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+.light .scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 3px;
+}
+
+/* Kill the legacy up/down arrow buttons WebView2 paints on custom-styled
+   scrollbars by default — they read as Windows-XP-era chrome and look
+   completely wrong against an otherwise modern dark UI. Affects all
+   .scrollbar-thin containers including the chat textarea. */
+.scrollbar-thin::-webkit-scrollbar-button,
+.scrollbar-thin::-webkit-scrollbar-button:start,
+.scrollbar-thin::-webkit-scrollbar-button:end,
+.scrollbar-thin::-webkit-scrollbar-button:vertical:start,
+.scrollbar-thin::-webkit-scrollbar-button:vertical:end,
+.scrollbar-thin::-webkit-scrollbar-button:horizontal:start,
+.scrollbar-thin::-webkit-scrollbar-button:horizontal:end {
+  display: none;
+  width: 0;
+  height: 0;
+}
+button:not(:disabled) {
+  cursor: pointer;
+}
+
+.scrollbar-thin::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Global scrollbar (David 2026-06-02): every scrollable surface — not only
+   .scrollbar-thin containers — gets the themed scrollbar so the bare white
+   Windows/WebView2 default never shows (it was visible on the coding file-tree
+   and other panes). .scrollbar-thin above still wins for the slim 6px variant. */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.18);
+  border-radius: 5px;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.30);
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+::-webkit-scrollbar-button,
+::-webkit-scrollbar-button:start,
+::-webkit-scrollbar-button:end {
+  display: none;
+  width: 0;
+  height: 0;
+}
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* ── Themed scrollbars via the STANDARD properties (David 2026-06-02 r2) ──
+   The `::-webkit-scrollbar` rules ABOVE were being IGNORED on every
+   `.scrollbar-thin` container: when `scrollbar-width: thin` is active (it is,
+   via the scrollbar-thin utility), Chromium/WebView2 (Edge 148) switches to
+   the STANDARD scrollbar and drops all -webkit- pseudo styling — falling back
+   to `scrollbar-color: auto`, i.e. the bare grey/white Windows scrollbar.
+   Setting `scrollbar-color` explicitly is the ONLY thing that themes it here.
+   `scrollbar-color` inherits, so the theme-root rules cover every pane. */
+.dark {
+  scrollbar-color: rgba(255, 255, 255, 0.22) transparent;
+}
+.light {
+  scrollbar-color: rgba(0, 0, 0, 0.24) transparent;
+}
+.scrollbar-thin {
+  scrollbar-width: thin;
+}
+.dark .scrollbar-thin {
+  scrollbar-color: rgba(255, 255, 255, 0.24) transparent;
+}
+.light .scrollbar-thin {
+  scrollbar-color: rgba(0, 0, 0, 0.28) transparent;
+}
+
+/* Range slider */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  border-radius: 2px;
+  outline: none;
+}
+
+.dark input[type="range"] {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.light input[type="range"] {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.dark input[type="range"]::-webkit-slider-thumb {
+  background: #ffffff;
+}
+
+.light input[type="range"]::-webkit-slider-thumb {
+  background: #333333;
+}
+
+/* Markdown content */
+.markdown-content > *:last-child {
+  margin-bottom: 0;
+}
+
+/* Titlebar drag region */
+[data-tauri-drag-region] {
+  -webkit-app-region: drag;
+  user-select: none;
+}
+
+[data-tauri-drag-region] button {
+  -webkit-app-region: no-drag;
+}
+
+/* Selection — neutral grey (web companion), no accent tint */
+::selection {
+  background: rgba(100, 100, 100, 0.3);
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   HUD layer — kept from the web companion. Gives the desktop the same
+   "alive / tech instrument" character and keeps the two visually consistent.
+   ───────────────────────────────────────────────────────────────────── */
+
+/* Faint vertical scan-grid over the app canvas — barely-there texture so
+   the large empty dark areas stop reading as a flat void. */
+.dark #root {
+  background-image: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.012) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  background-size: 100% 3px;
+  background-repeat: repeat-y;
+}
+.light #root {
+  background-image: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0.01) 50%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  background-size: 100% 3px;
+  background-repeat: repeat-y;
+}
+
+/* Refined focus ring — thin, neutral blue (web companion), replaces the
+   browser default. Limited to clickable elements; inputs/textareas get their
+   focus affordance from their own border-color change (adding an outline
+   there reads as a doubled "Windows accent ring"). */
+:is(button, a):focus-visible {
+  outline: 1px solid rgba(96, 165, 250, 0.6);
+  outline-offset: 1px;
+}
+:is(input, textarea, select):focus-visible {
+  outline: none;
+}
+
+/* Status readouts (token counters, version strings, t/s, VRAM) in mono
+   with tabular figures so digits stop jittering. Opt-in via `.lu-hud-num`. */
+.lu-hud-num {
+  font-variant-numeric: tabular-nums;
+  font-family: ui-monospace, 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+  letter-spacing: 0.01em;
+}
+
+/* Elevated surfaces — modals, dropdowns, popovers. Pairs the overlay bg
+   with a real shadow so floating layers actually float on dark. */
+.lu-elevated {
+  background: var(--color-lu-overlay);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: var(--shadow-xl);
+}
+.light .lu-elevated {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-lg);
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   Theme-contrast rescue layer — ported from the web companion.
+   Many components were authored dark-first and use raw `text-gray-300/400`,
+   `text-white`, `bg-white/N`, `border-white/N` without a `dark:` variant.
+   On the darker #1a1a1a base those dim greys nearly vanish; in light mode the
+   dark-first whites/white-tints disappear on white. We remap them theme-
+   conditionally so the 300+ component call-sites don't each need touching.
+   Specificity: `.light .x` / `.dark .x` (0,2,0) beats the plain utility (0,1,0).
+   (The web scopes these to `.lu-app-scaled`; the desktop has no landing page,
+   so a plain theme-root scope is equivalent and simpler.)
+   ───────────────────────────────────────────────────────────────────── */
+
+/* Light mode: too-dim greys turn invisible on white. Darken them. */
+.light .text-gray-300 { color: rgb(75 85 99); }   /* → gray-600 */
+.light .text-gray-400 { color: rgb(55 65 81); }   /* → gray-700 */
+.light .text-gray-500 { color: rgb(55 65 81); }   /* → gray-700 — same so 500 isn't dimmer than 400 */
+.light .text-gray-600 { color: rgb(31 41 55); }   /* → gray-800 */
+
+/* Dark mode (#1a1a1a bg): too-dim greys turn invisible. Bump them up. */
+.dark .text-gray-700 { color: rgb(107 114 128); } /* → gray-500 */
+.dark .text-gray-600 { color: rgb(156 163 175); } /* → gray-400 */
+.dark .text-gray-500 { color: rgb(156 163 175); } /* → gray-400 — same as 600 so weight is consistent */
+
+/* Placeholders — Tailwind doesn't add a `dark:` for these. */
+.light ::placeholder { color: rgb(31 41 55); }     /* gray-800 */
+.dark ::placeholder { color: rgb(229 231 235); }   /* gray-200 */
+
+/* Light-mode rescue for legacy dark-first components that bake in
+   `text-white` / `bg-white/N` / `border-white/N` without a `dark:` variant.
+   Re-map them to dark-on-light equivalents so modals/tutorials stay legible.
+   Tailwind escapes the slash ("/" → "\/") and brackets ("[" → "\["), so the
+   selectors below need backslashes to match. */
+.light .text-white { color: rgb(17 24 39); }                /* gray-900 */
+.light .hover\:text-white:hover { color: rgb(17 24 39); }
+
+.light .bg-white\/5  { background-color: rgba(0, 0, 0, 0.04); }
+.light .bg-white\/8  { background-color: rgba(0, 0, 0, 0.05); }
+.light .bg-white\/10 { background-color: rgba(0, 0, 0, 0.06); }
+.light .bg-white\/12 { background-color: rgba(0, 0, 0, 0.07); }
+.light .bg-white\/15 { background-color: rgba(0, 0, 0, 0.08); }
+.light .bg-white\/20 { background-color: rgba(0, 0, 0, 0.10); }
+.light .bg-white\/\[0\.03\] { background-color: rgba(0, 0, 0, 0.03); }
+.light .bg-white\/\[0\.05\] { background-color: rgba(0, 0, 0, 0.04); }
+.light .bg-white\/\[0\.06\] { background-color: rgba(0, 0, 0, 0.05); }
+.light .bg-white\/\[0\.08\] { background-color: rgba(0, 0, 0, 0.06); }
+
+.light .hover\:bg-white\/5:hover  { background-color: rgba(0, 0, 0, 0.04); }
+.light .hover\:bg-white\/8:hover  { background-color: rgba(0, 0, 0, 0.06); }
+.light .hover\:bg-white\/10:hover { background-color: rgba(0, 0, 0, 0.07); }
+.light .hover\:bg-white\/12:hover { background-color: rgba(0, 0, 0, 0.08); }
+.light .hover\:bg-white\/15:hover { background-color: rgba(0, 0, 0, 0.09); }
+.light .hover\:bg-white\/20:hover { background-color: rgba(0, 0, 0, 0.10); }
+
+.light .border-white\/5  { border-color: rgba(0, 0, 0, 0.06); }
+.light .border-white\/8  { border-color: rgba(0, 0, 0, 0.08); }
+.light .border-white\/10 { border-color: rgba(0, 0, 0, 0.10); }
+.light .border-white\/15 { border-color: rgba(0, 0, 0, 0.12); }
+.light .border-white\/20 { border-color: rgba(0, 0, 0, 0.15); }
+.light .border-white\/25 { border-color: rgba(0, 0, 0, 0.18); }
+.light .border-white\/\[0\.04\] { border-color: rgba(0, 0, 0, 0.06); }
+.light .border-white\/\[0\.06\] { border-color: rgba(0, 0, 0, 0.08); }
+.light .border-white\/\[0\.08\] { border-color: rgba(0, 0, 0, 0.10); }
+.light .border-white\/\[0\.1\] { border-color: rgba(0, 0, 0, 0.12); }
+
+.light .hover\:border-white\/15:hover { border-color: rgba(0, 0, 0, 0.12); }
+.light .hover\:border-white\/20:hover { border-color: rgba(0, 0, 0, 0.15); }
+.light .hover\:border-white\/25:hover { border-color: rgba(0, 0, 0, 0.18); }
+
+.light .focus\:border-white\/20:focus { border-color: rgba(0, 0, 0, 0.20); }
+.light .focus\:border-white\/25:focus { border-color: rgba(0, 0, 0, 0.22); }
+
+.light .placeholder-gray-500::placeholder,
+.light .placeholder-gray-600::placeholder { color: rgb(75 85 99); }

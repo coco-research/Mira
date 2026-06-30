@@ -1,0 +1,627 @@
+<style data-screen="library">
+/* ── Filter chips ───────────────────────────────────────── */
+.lib2-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+.lib2-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 13px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--paper);
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--ink-2);
+  cursor: pointer;
+  transition: background 0.14s, border-color 0.14s, color 0.14s;
+  user-select: none;
+  white-space: nowrap;
+}
+.lib2-chip:hover {
+  border-color: var(--border-strong);
+  color: var(--ink);
+}
+.lib2-chip.active {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+}
+.lib2-chip.active .lib2-chip-emoji { filter: brightness(10); }
+
+.lib2-sep {
+  width: 1px;
+  height: 28px;
+  background: var(--border);
+  align-self: center;
+  border-radius: 1px;
+}
+
+/* ── Grid ───────────────────────────────────────────────── */
+.lib2-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 18px;
+}
+
+/* Wide card takes 2 cols */
+.lib2-card-wide {
+  grid-column: span 2;
+}
+
+/* ── Card ───────────────────────────────────────────────── */
+.lib2-card {
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: box-shadow 0.15s, border-color 0.15s;
+}
+.lib2-card:hover {
+  border-color: var(--border-strong);
+  box-shadow: 0 4px 16px rgba(20,20,19,0.09);
+}
+
+/* ── Thumb wrapper (holds thumb + hover overlay) ───────── */
+.lib2-thumb-wrap {
+  position: relative;
+  overflow: hidden;
+}
+.lib-thumb { /* reuse shared */
+  width: 100%;
+}
+
+/* Hover overlay with per-card quick actions */
+.lib2-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(20,20,19,0.62);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  opacity: 0;
+  transition: opacity 0.16s;
+  padding: 12px;
+}
+.lib2-thumb-wrap:hover .lib2-overlay,
+.lib2-card:focus-within .lib2-overlay {
+  opacity: 1;
+}
+.lib2-overlay .btn {
+  width: 100%;
+  justify-content: center;
+  font-size: 0.75rem;
+  padding: 7px 10px;
+  background: rgba(250,249,245,0.15);
+  border: 1px solid rgba(250,249,245,0.35);
+  color: #faf9f5;
+  backdrop-filter: blur(4px);
+}
+.lib2-overlay .btn:hover {
+  background: rgba(250,249,245,0.28);
+}
+
+/* ── Body ───────────────────────────────────────────────── */
+.lib2-body {
+  padding: 11px 13px 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+.lib2-title {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.38;
+  color: var(--ink);
+}
+.lib2-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  align-items: center;
+}
+.lib2-dur {
+  font-size: 11px;
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+}
+.lib2-views {
+  font-size: 11px;
+  color: var(--ink-2);
+}
+/* Platform links row */
+.lib2-platforms {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-top: 2px;
+}
+.lib2-plat {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  color: var(--ink-2);
+  text-decoration: none;
+  background: var(--panel);
+  cursor: pointer;
+  transition: border-color 0.12s, color 0.12s;
+}
+.lib2-plat:hover { border-color: var(--border-strong); color: var(--ink); }
+
+/* ── Long-form CTA banner ───────────────────────────────── */
+.lib2-make-shorts {
+  margin: 10px 13px 13px;
+  padding: 10px 12px;
+  background: var(--panel);
+  border: 1px dashed var(--clay);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.lib2-make-shorts .btn {
+  background: var(--clay);
+  color: #fff;
+  border: none;
+  font-size: 0.78rem;
+  padding: 7px 12px;
+  align-self: flex-start;
+}
+.lib2-make-shorts .btn:hover { background: var(--clay-hover); }
+.lib2-make-shorts-note {
+  font-size: 0.72rem;
+  color: var(--ink-2);
+  line-height: 1.45;
+}
+
+/* ── Empty state ─────────────────────────────────────────── */
+.lib2-empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--ink-2);
+  font-size: 0.9rem;
+}
+
+/* ── Scheduled chip on thumb ──────────────────────────────── */
+.lib2-sched-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: var(--amber);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 4px;
+  pointer-events: none;
+}
+
+/* ── Draft stamp ─────────────────────────────────────────── */
+.lib2-draft-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: var(--ink-2);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 4px;
+  pointer-events: none;
+}
+
+/* ── Section divider ──────────────────────────────────────── */
+.lib2-section-head {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+  margin-bottom: -4px;
+}
+.lib2-section-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+.lib2-section-line {
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* ── Responsive: collapse to 2 cols on narrow ───────────── */
+@media (max-width: 860px) {
+  .lib2-grid { grid-template-columns: repeat(2, 1fr); }
+  .lib2-card-wide { grid-column: span 2; }
+}
+@media (max-width: 540px) {
+  .lib2-grid { grid-template-columns: 1fr; }
+  .lib2-card-wide { grid-column: span 1; }
+}
+</style>
+
+<section class="page" id="library">
+  <div class="content">
+
+    <!-- Header -->
+    <div class="row" style="margin-bottom:6px">
+      <div>
+        <h1 style="margin:0 0 2px">Library</h1>
+        <p class="lede" style="margin:0">History &amp; status of every video in the pipeline.</p>
+      </div>
+      <div class="right">
+        <span class="muted" style="font-size:0.78rem">7 videos total</span>
+      </div>
+    </div>
+
+    <!-- Filter chips -->
+    <div class="lib2-filters" role="group" aria-label="Filter by channel and language">
+      <!-- Channel chips -->
+      <button class="lib2-chip active" data-filter="channel" data-value="all" aria-pressed="true">
+        All channels
+      </button>
+      <button class="lib2-chip" data-filter="channel" data-value="chn_aitools" aria-pressed="false">
+        <span class="lib2-chip-emoji">🛠️</span> Mira AI Tools
+      </button>
+      <button class="lib2-chip" data-filter="channel" data-value="chn_deepdives" aria-pressed="false">
+        <span class="lib2-chip-emoji">🔬</span> Mira Deep Dives
+      </button>
+      <button class="lib2-chip" data-filter="channel" data-value="chn_quickwins" aria-pressed="false">
+        <span class="lib2-chip-emoji">⚡</span> Mira Quick Wins
+      </button>
+      <!-- Language separator -->
+      <div class="lib2-sep" aria-hidden="true"></div>
+      <!-- Language chips -->
+      <button class="lib2-chip active" data-filter="lang" data-value="all" aria-pressed="true">
+        EN + HI
+      </button>
+      <button class="lib2-chip" data-filter="lang" data-value="en" aria-pressed="false">
+        <span class="tag en" style="pointer-events:none;margin:0">EN</span>
+      </button>
+      <button class="lib2-chip" data-filter="lang" data-value="hi" aria-pressed="false">
+        <span class="tag hi" style="pointer-events:none;margin:0">HI</span>
+      </button>
+    </div>
+
+    <!-- Video grid -->
+    <div class="lib2-grid" id="lib2-grid">
+
+      <!-- ─── POSTED section ─────────────────────────────────── -->
+      <div class="lib2-section-head">
+        <span class="lib2-section-label">Posted</span>
+        <div class="lib2-section-line"></div>
+      </div>
+
+      <!-- vid_k1l2 — Posted 9:16 -->
+      <div class="lib2-card"
+           data-channel="chn_aitools"
+           data-lang="en"
+           data-state="posted">
+        <div class="lib2-thumb-wrap">
+          <div class="lib-thumb" aria-label="Thumbnail for Upscale any blurry photo to 4K for free" role="img">🖼️</div>
+          <div class="lib2-overlay" aria-hidden="true">
+            <button class="btn" onclick="event.stopPropagation()" title="Re-download final video file">
+              ↓ Re-download
+            </button>
+            <button class="btn" onclick="event.stopPropagation()" title="Repost to platform">
+              ↺ Repost
+            </button>
+            <button class="btn" onclick="go('studio');event.stopPropagation()" title="Clone as a new topic in Studio">
+              ⊕ Duplicate as topic
+            </button>
+          </div>
+        </div>
+        <div class="lib2-body">
+          <div class="lib2-title">Upscale any blurry photo to 4K for free</div>
+          <div class="lib2-meta">
+            <span class="tag">🛠️ AI Tools</span>
+            <span class="tag en">EN</span>
+            <span class="pill posted">Posted</span>
+          </div>
+          <div class="lib2-meta" style="margin-top:2px">
+            <span class="lib2-dur">0:44</span>
+            <span class="muted">·</span>
+            <span class="lib2-views">12.3k views</span>
+          </div>
+          <div class="lib2-platforms">
+            <span class="lib2-plat" title="View on YouTube">YT</span>
+            <span class="lib2-plat" title="View on Instagram">IG</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- vid_m3n4 — Posted 9:16 -->
+      <div class="lib2-card"
+           data-channel="chn_quickwins"
+           data-lang="en"
+           data-state="posted">
+        <div class="lib2-thumb-wrap">
+          <div class="lib-thumb" aria-label="Thumbnail for 7 AI sites every creator should bookmark" role="img">🔖</div>
+          <div class="lib2-overlay" aria-hidden="true">
+            <button class="btn" onclick="event.stopPropagation()" title="Re-download final video file">
+              ↓ Re-download
+            </button>
+            <button class="btn" onclick="event.stopPropagation()" title="Repost to platform">
+              ↺ Repost
+            </button>
+            <button class="btn" onclick="go('studio');event.stopPropagation()" title="Clone as a new topic in Studio">
+              ⊕ Duplicate as topic
+            </button>
+          </div>
+        </div>
+        <div class="lib2-body">
+          <div class="lib2-title">7 AI sites every creator should bookmark</div>
+          <div class="lib2-meta">
+            <span class="tag">⚡ Quick Wins</span>
+            <span class="tag en">EN</span>
+            <span class="pill posted">Posted</span>
+          </div>
+          <div class="lib2-meta" style="margin-top:2px">
+            <span class="lib2-dur">0:36</span>
+            <span class="muted">·</span>
+            <span class="lib2-views">31k views</span>
+          </div>
+          <div class="lib2-platforms">
+            <span class="lib2-plat" title="View on YouTube">YT</span>
+            <span class="lib2-plat" title="View on Instagram">IG</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Extra posted short #1 — vid_x1 -->
+      <div class="lib2-card"
+           data-channel="chn_quickwins"
+           data-lang="en"
+           data-state="posted">
+        <div class="lib2-thumb-wrap">
+          <div class="lib-thumb" aria-label="Thumbnail for 3 free Canva alternatives designers use" role="img">🎨</div>
+          <div class="lib2-overlay" aria-hidden="true">
+            <button class="btn" onclick="event.stopPropagation()" title="Re-download final video file">
+              ↓ Re-download
+            </button>
+            <button class="btn" onclick="event.stopPropagation()" title="Repost to platform">
+              ↺ Repost
+            </button>
+            <button class="btn" onclick="go('studio');event.stopPropagation()" title="Clone as a new topic in Studio">
+              ⊕ Duplicate as topic
+            </button>
+          </div>
+        </div>
+        <div class="lib2-body">
+          <div class="lib2-title">3 free Canva alternatives designers actually use</div>
+          <div class="lib2-meta">
+            <span class="tag">⚡ Quick Wins</span>
+            <span class="tag en">EN</span>
+            <span class="pill posted">Posted</span>
+          </div>
+          <div class="lib2-meta" style="margin-top:2px">
+            <span class="lib2-dur">0:41</span>
+            <span class="muted">·</span>
+            <span class="lib2-views">8.9k views</span>
+          </div>
+          <div class="lib2-platforms">
+            <span class="lib2-plat" title="View on YouTube">YT</span>
+            <span class="lib2-plat" title="View on Instagram">IG</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Extra posted short #2 — vid_x2 (HI dub) -->
+      <div class="lib2-card"
+           data-channel="chn_aitools"
+           data-lang="hi"
+           data-state="posted">
+        <div class="lib2-thumb-wrap">
+          <div class="lib-thumb" aria-label="Thumbnail for Upscale any blurry photo to 4K for free — HI dub" role="img">🌐</div>
+          <div class="lib2-overlay" aria-hidden="true">
+            <button class="btn" onclick="event.stopPropagation()" title="Re-download final video file">
+              ↓ Re-download
+            </button>
+            <button class="btn" onclick="event.stopPropagation()" title="Repost to platform">
+              ↺ Repost
+            </button>
+            <button class="btn" onclick="go('studio');event.stopPropagation()" title="Clone as a new topic in Studio">
+              ⊕ Duplicate as topic
+            </button>
+          </div>
+        </div>
+        <div class="lib2-body">
+          <div class="lib2-title">Upscale any blurry photo to 4K for free</div>
+          <div class="lib2-meta">
+            <span class="tag">🛠️ AI Tools</span>
+            <span class="tag hi">HI dub</span>
+            <span class="pill posted">Posted</span>
+          </div>
+          <div class="lib2-meta" style="margin-top:2px">
+            <span class="lib2-dur">0:44</span>
+            <span class="muted">·</span>
+            <span class="lib2-views">2.1k views</span>
+          </div>
+          <div class="lib2-platforms">
+            <span class="lib2-plat" title="View on YouTube">YT</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── SCHEDULED section ──────────────────────────────── -->
+      <div class="lib2-section-head">
+        <span class="lib2-section-label">Scheduled</span>
+        <div class="lib2-section-line"></div>
+      </div>
+
+      <!-- vid_g7h8 — Scheduled 9:16 -->
+      <div class="lib2-card"
+           data-channel="chn_aitools"
+           data-lang="en"
+           data-state="scheduled">
+        <div class="lib2-thumb-wrap">
+          <div class="lib-thumb" aria-label="Thumbnail for This free local AI runs with no internet" role="img">💻</div>
+          <span class="lib2-sched-badge">Today 2:00 pm</span>
+          <div class="lib2-overlay" aria-hidden="true">
+            <button class="btn" onclick="event.stopPropagation()" title="Re-download draft">
+              ↓ Re-download
+            </button>
+            <button class="btn" onclick="event.stopPropagation()" title="Reschedule post">
+              ↺ Reschedule
+            </button>
+            <button class="btn" onclick="go('studio');event.stopPropagation()" title="Clone as a new topic in Studio">
+              ⊕ Duplicate as topic
+            </button>
+          </div>
+        </div>
+        <div class="lib2-body">
+          <div class="lib2-title">This free local AI runs with no internet</div>
+          <div class="lib2-meta">
+            <span class="tag">🛠️ AI Tools</span>
+            <span class="tag en">EN</span>
+            <span class="pill review">Scheduled</span>
+          </div>
+          <div class="lib2-meta" style="margin-top:2px">
+            <span class="lib2-dur">0:41</span>
+            <span class="muted">·</span>
+            <span class="lib2-views muted">Posting today</span>
+          </div>
+          <div class="lib2-platforms">
+            <span class="lib2-plat" title="YouTube scheduled">YT</span>
+            <span class="lib2-plat" title="Instagram scheduled">IG</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── DRAFTS section ─────────────────────────────────── -->
+      <div class="lib2-section-head">
+        <span class="lib2-section-label">Drafts</span>
+        <div class="lib2-section-line"></div>
+      </div>
+
+      <!-- vid_i9j0 — Draft LONG-FORM 16:9 — spans 2 cols -->
+      <div class="lib2-card lib2-card-wide"
+           data-channel="chn_deepdives"
+           data-lang="en"
+           data-state="draft"
+           id="lib2-card-longform">
+        <div class="lib2-thumb-wrap">
+          <div class="lib-thumb wide" aria-label="Thumbnail for I tested every free AI video tool — the winner" role="img" style="font-size:40px">🎬</div>
+          <span class="lib2-draft-badge">Draft · 9 scenes</span>
+          <div class="lib2-overlay" aria-hidden="true">
+            <button class="btn" onclick="event.stopPropagation()" title="Re-download draft">
+              ↓ Re-download
+            </button>
+            <button class="btn" onclick="go('studio');event.stopPropagation()" title="Open in Studio to continue editing">
+              ✎ Continue in Studio
+            </button>
+            <button class="btn" onclick="go('studio');event.stopPropagation()" title="Clone as a new topic in Studio">
+              ⊕ Duplicate as topic
+            </button>
+          </div>
+        </div>
+        <div class="lib2-body">
+          <div class="row" style="align-items:flex-start;gap:10px">
+            <div style="flex:1">
+              <div class="lib2-title" style="font-size:14px">I tested every free AI video tool — the winner</div>
+              <div class="lib2-meta" style="margin-top:5px">
+                <span class="tag">🔬 Deep Dives</span>
+                <span class="tag en">EN</span>
+                <span class="pill draft">Draft</span>
+              </div>
+              <div class="lib2-meta" style="margin-top:4px">
+                <span class="lib2-dur">4:12</span>
+                <span class="muted">·</span>
+                <span class="lib2-views muted">Long-form · 16:9 · 9 scenes</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Make Shorts CTA -->
+        <div class="lib2-make-shorts">
+          <button class="btn" onclick="go('studio')" title="Run clip-factory to create vertical Shorts from this long-form video">
+            ✂️ Make Shorts from this
+          </button>
+          <p class="lib2-make-shorts-note">
+            Runs <strong>clip-factory</strong> → extracts 4–10 vertical clips into the Shorts channels (<code>mira clip-factory vid_i9j0</code>).
+          </p>
+        </div>
+      </div>
+
+    </div><!-- /lib2-grid -->
+
+  </div><!-- /content -->
+</section>
+
+<script data-screen="library">
+(function () {
+  var activeChannel = 'all';
+  var activeLang    = 'all';
+
+  function applyFilters() {
+    var cards = document.querySelectorAll('#lib2-grid .lib2-card');
+    var heads = document.querySelectorAll('#lib2-grid .lib2-section-head');
+
+    // Show/hide cards
+    cards.forEach(function (card) {
+      var matchCh   = activeChannel === 'all' || card.dataset.channel === activeChannel;
+      var cardLang  = card.dataset.lang || 'en';
+      var matchLang = activeLang === 'all' || cardLang === activeLang;
+      card.style.display = (matchCh && matchLang) ? '' : 'none';
+    });
+
+    // Hide section headers when all cards in that section are hidden
+    heads.forEach(function (head) {
+      var section = head.nextElementSibling;
+      var visible = false;
+      while (section && !section.classList.contains('lib2-section-head')) {
+        if (section.classList.contains('lib2-card') && section.style.display !== 'none') {
+          visible = true;
+          break;
+        }
+        section = section.nextElementSibling;
+      }
+      head.style.display = visible ? '' : 'none';
+    });
+
+    // Show empty state if nothing visible
+    var anyVisible = Array.from(cards).some(function (c) { return c.style.display !== 'none'; });
+    var empty = document.getElementById('lib2-empty');
+    if (empty) empty.style.display = anyVisible ? 'none' : '';
+  }
+
+  // Chip click handler
+  document.querySelectorAll('.lib2-chip').forEach(function (chip) {
+    chip.addEventListener('click', function () {
+      var filter = chip.dataset.filter;
+      var value  = chip.dataset.value;
+
+      // Deactivate siblings in same group
+      document.querySelectorAll('.lib2-chip[data-filter="' + filter + '"]').forEach(function (c) {
+        c.classList.remove('active');
+        c.setAttribute('aria-pressed', 'false');
+      });
+
+      chip.classList.add('active');
+      chip.setAttribute('aria-pressed', 'true');
+
+      if (filter === 'channel') activeChannel = value;
+      if (filter === 'lang')    activeLang    = value;
+
+      applyFilters();
+    });
+  });
+})();
+</script>

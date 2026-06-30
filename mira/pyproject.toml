@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mira"
+version = "0.1.0"
+description = "Mira command layer — the test seam for the AI video engine (Phase 0)."
+requires-python = ">=3.11"
+dependencies = []                       # core is stdlib-only on purpose (no wheel risk on 3.14)
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[project.scripts]
+mira = "mira.cli:main"
+
+[tool.setuptools]
+packages = ["mira"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

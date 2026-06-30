@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+# local-only state (never synced)
+.env
+config.toml
+state/cost_log.json
+state/cost_model.json
+media/

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Remote Access - Locally Uncensored</title>
+<meta name="description" content="Use Locally Uncensored from your phone over your home Wi-Fi or anywhere via Cloudflare Tunnel. Six-digit passcode. Full mobile web app — chat, Coding Agent, tools, plugins. Your desktop does the compute.">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#0a0a0a">
+<link rel="icon" href="../favicon.png">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a0a0a;color:#e5e5e5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.7;font-size:15px}
+a{color:#8b5cf6;text-decoration:none}
+a:hover{text-decoration:underline}
+.container{max-width:780px;margin:0 auto;padding:40px 24px 80px}
+.back{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:#6b7280;margin-bottom:32px}
+.back:hover{color:#e5e5e5;text-decoration:none}
+h1{font-size:28px;font-weight:700;color:#fff;margin-bottom:8px;letter-spacing:-0.02em}
+.subtitle{font-size:15px;color:#6b7280;margin-bottom:40px}
+h2{font-size:20px;font-weight:600;color:#fff;margin:48px 0 16px;padding-top:24px;border-top:1px solid #1a1a1a}
+h2:first-of-type{border-top:none;margin-top:0}
+h3{font-size:16px;font-weight:600;color:#d1d5db;margin:28px 0 10px}
+p{margin-bottom:14px;color:#d1d5db}
+.callout{background:#141414;border:1px solid #1f1f1f;border-radius:8px;padding:14px 18px;margin:16px 0;font-size:14px;color:#9ca3af}
+.callout-title{font-weight:600;color:#d1d5db;margin-bottom:4px;font-size:13px;text-transform:uppercase;letter-spacing:0.05em}
+.callout.tip{border-left:3px solid #8b5cf6}
+.callout.warn{border-left:3px solid #f59e0b}
+.callout.info{border-left:3px solid #3b82f6}
+ul{margin:10px 0 16px 20px;color:#d1d5db}
+li{margin-bottom:6px}
+code{background:#1a1a1a;padding:2px 6px;border-radius:4px;font-size:13px;font-family:'Cascadia Code',Consolas,monospace;color:#a78bfa}
+.toc{background:#111;border:1px solid #1f1f1f;border-radius:8px;padding:20px 24px;margin-bottom:40px}
+.toc-title{font-size:13px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:12px}
+.toc a{display:block;padding:4px 0;font-size:14px;color:#9ca3af}
+.toc a:hover{color:#8b5cf6;text-decoration:none}
+.step{margin-bottom:20px}
+.step-num{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#8b5cf6;color:#fff;font-size:12px;font-weight:700;margin-right:8px;flex-shrink:0}
+.step-title{font-weight:600;color:#fff;font-size:15px}
+.step-body{margin-left:32px;margin-top:6px}
+.footer{text-align:center;padding:40px 0;border-top:1px solid #1a1a1a;margin-top:48px;font-size:12px;color:#4b5563}
+table{width:100%;border-collapse:collapse;margin:12px 0 20px}
+table td,table th{padding:8px 12px;border-bottom:1px solid #1a1a1a;font-size:14px;text-align:left}
+th{color:#6b7280;font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:0.05em}
+</style>
+</head>
+<body>
+<div class="container">
+
+<a href="../" class="back">&#8592; Back to home</a>
+
+<h1>Remote Access</h1>
+<p class="subtitle">Drive Locally Uncensored from your phone &mdash; over your home Wi-Fi or from anywhere via Cloudflare Tunnel. Your desktop does the compute.</p>
+
+<nav class="toc">
+<div class="toc-title">Contents</div>
+<a href="#overview">What remote access does</a>
+<a href="#lan">1. LAN mode (same Wi-Fi)</a>
+<a href="#tunnel">2. Internet mode (Cloudflare Tunnel)</a>
+<a href="#passcode">3. The six-digit passcode</a>
+<a href="#qr">4. QR code pairing</a>
+<a href="#permissions">5. Permissions per device</a>
+<a href="#trouble">Troubleshooting</a>
+<a href="#privacy">Privacy notes</a>
+</nav>
+
+<h2 id="overview">What remote access does</h2>
+<p>Remote access turns your phone into a thin client for the LU instance running on your desktop. Every chat, Coding Agent run, image generation, and tool call still executes on the desktop &mdash; the phone just sends prompts and receives results.</p>
+<p>Two modes, both opt-in:</p>
+<ul>
+<li><strong>LAN</strong> &mdash; phone and desktop share the same Wi-Fi. Traffic never leaves your home network.</li>
+<li><strong>Internet (Cloudflare Tunnel)</strong> &mdash; reach your desktop from anywhere through a Cloudflare-fronted HTTPS URL. Cloudflare relays the traffic; your desktop is never directly exposed.</li>
+</ul>
+<div class="callout info">
+<div class="callout-title">Local-first stays local-first</div>
+The LU brand promise is unchanged: every inference happens on your desktop. Remote access is purely a UI bridge.
+</div>
+
+<h2 id="lan">1. LAN mode (same Wi-Fi)</h2>
+
+<div class="step">
+<span class="step-num">1</span><span class="step-title">Open the Remote panel.</span>
+<div class="step-body"><p>In the desktop app, click the radio icon in the bottom-left sidebar. The Remote Access panel opens.</p></div>
+</div>
+
+<div class="step">
+<span class="step-num">2</span><span class="step-title">Click <code>Start LAN</code>.</span>
+<div class="step-body"><p>The desktop binds an HTTPS server to your machine's LAN IP (something like <code>192.168.1.42:8788</code>). The panel shows the URL and a QR code.</p></div>
+</div>
+
+<div class="step">
+<span class="step-num">3</span><span class="step-title">Open the URL on your phone.</span>
+<div class="step-body"><p>Scan the QR code or type the URL into your phone's browser. The phone shows the LU web app login screen.</p></div>
+</div>
+
+<div class="step">
+<span class="step-num">4</span><span class="step-title">Enter the passcode.</span>
+<div class="step-body"><p>The desktop panel displays a six-digit passcode. Type it on your phone. The phone is now paired &mdash; chat, Coding Agent, tools, plugins all work as on the desktop.</p></div>
+</div>
+
+<div class="callout tip">
+<div class="callout-title">No port forwarding needed</div>
+LAN mode works without router configuration. If your phone is on the same Wi-Fi network as your desktop, the connection just works.
+</div>
+
+<h2 id="tunnel">2. Internet mode (Cloudflare Tunnel)</h2>
+<p>For accessing your desktop from coffee shops, hotels, or anywhere off-network. Cloudflare's <code>cloudflared</code> binary creates an outbound TLS tunnel; your desktop never opens a port to the public internet.</p>
+
+<div class="step">
+<span class="step-num">1</span><span class="step-title">Install <code>cloudflared</code> (one-time).</span>
+<div class="step-body">
+<p>Cloudflare's free tier is enough for personal use. Follow the official installer for your platform:</p>
+<ul>
+<li>Windows: <a href="https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/" target="_blank" rel="noopener">cloudflared installer</a></li>
+<li>macOS: <code>brew install cloudflared</code></li>
+<li>Linux: package from your distro or the Cloudflare apt/yum repos</li>
+</ul>
+</div>
+</div>
+
+<div class="step">
+<span class="step-num">2</span><span class="step-title">Click <code>Start Tunnel</code> in the Remote panel.</span>
+<div class="step-body"><p>LU launches <code>cloudflared tunnel --url localhost:8788</code> in the background. After a few seconds you get a <code>trycloudflare.com</code> URL plus a fresh QR code.</p></div>
+</div>
+
+<div class="step">
+<span class="step-num">3</span><span class="step-title">Open the tunnel URL on your phone &mdash; from anywhere.</span>
+<div class="step-body"><p>Same passcode flow as LAN mode. Once paired, the phone keeps working until you either stop the tunnel or restart the desktop.</p></div>
+</div>
+
+<div class="callout warn">
+<div class="callout-title">Free tier limits</div>
+The free <code>trycloudflare</code> URL changes every restart. For a stable URL, use a Cloudflare account-bound tunnel &mdash; configure <code>cloudflared tunnel login</code> first; LU picks it up automatically on the next Start Tunnel.
+</div>
+
+<h2 id="passcode">3. The six-digit passcode</h2>
+<p>LU generates a random six-digit passcode on every server start. It's the gate between "anyone with the URL" and "this phone, paired with my desktop right now".</p>
+<ul>
+<li>Shown in the Remote panel next to the QR code.</li>
+<li>Each connected device exchanges the passcode for a per-device token.</li>
+<li>Stop the server &rarr; new passcode on next start. Old tokens stop working.</li>
+<li>Regenerate the passcode any time via the <code>Regenerate</code> button &mdash; revokes all paired devices.</li>
+</ul>
+
+<h2 id="qr">4. QR code pairing</h2>
+<p>The QR code encodes <code>https://&lt;url&gt;/#passcode=&lt;6-digit&gt;</code>. Scanning it on your phone opens the web app already authenticated &mdash; no typing.</p>
+<div class="callout info">
+<div class="callout-title">QR is the same secret as the passcode</div>
+Treat the QR code as a one-time token. Don't share a screenshot in a public chat. If you do leak it, just hit <code>Regenerate</code>.
+</div>
+
+<h2 id="permissions">5. Permissions per device</h2>
+<p>Once a phone has paired, the Remote panel lists it as a connected device. You can:</p>
+<ul>
+<li><strong>Toggle chat / Coding Agent / tool access</strong> per device &mdash; e.g. let your kid use chat from their tablet but block <code>shell_execute</code>.</li>
+<li><strong>Rename the device</strong> so the list stays readable.</li>
+<li><strong>Disconnect</strong> &mdash; revokes the token immediately.</li>
+</ul>
+
+<h2 id="trouble">Troubleshooting</h2>
+<table>
+<tr><th>Symptom</th><th>Likely cause / fix</th></tr>
+<tr><td>QR shows but phone can't open the URL</td><td>Phone is on a different Wi-Fi (e.g. 5 GHz vs 2.4 GHz). Switch the phone to the same SSID as the desktop, or use Internet mode.</td></tr>
+<tr><td>Browser warns "Not secure"</td><td>LAN mode uses a self-signed cert by default. Tap "Advanced &rarr; Proceed". For trusted HTTPS, use Internet mode (Cloudflare's cert is real).</td></tr>
+<tr><td>Tunnel button greyed out</td><td><code>cloudflared</code> not on PATH. Install it (see step 1 of Internet mode) and click <code>Refresh</code>.</td></tr>
+<tr><td>Passcode rejected</td><td>Passcode regenerated after the QR was scanned. Open the panel, scan the fresh QR.</td></tr>
+<tr><td>Phone disconnects after a few minutes</td><td>Desktop went to sleep. Disable system sleep, or pair again on wake.</td></tr>
+</table>
+
+<h2 id="privacy">Privacy notes</h2>
+<ul>
+<li><strong>Compute stays local.</strong> Models, prompts, and tool calls execute on your desktop. The phone just renders the UI and ships keystrokes.</li>
+<li><strong>Cloudflare sees encrypted bytes only.</strong> The tunnel is TLS-terminated at your desktop &mdash; Cloudflare relays the encrypted stream but cannot read it.</li>
+<li><strong>No telemetry.</strong> LU does not phone home, and the Remote module is no exception.</li>
+<li><strong>You're in control.</strong> Stop the server any time &mdash; everything pairs again next session.</li>
+</ul>
+
+<div class="footer">
+Locally Uncensored &mdash; private, local AI that you can drive from your couch. <a href="../">Back to home</a>.
+</div>
+
+</div>
+</body>
+</html>

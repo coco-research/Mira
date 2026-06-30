@@ -1,0 +1,47 @@
+[
+  {
+    "video_id": "vid_bde14ed6",
+    "stage": "script",
+    "provider": "offline-template",
+    "units": 1.0,
+    "cost": 0.0,
+    "note": null,
+    "ts": "2026-06-20T18:44:44Z"
+  },
+  {
+    "video_id": "vid_bde14ed6",
+    "stage": "voice_en",
+    "provider": "offline-anullsrc",
+    "units": 1.0,
+    "cost": 0.0,
+    "note": null,
+    "ts": "2026-06-20T18:44:44Z"
+  },
+  {
+    "video_id": "vid_bde14ed6",
+    "stage": "clip",
+    "provider": "designed-hyperframes",
+    "units": 6.0,
+    "cost": 0.0,
+    "note": "hyperframes (designed visual)",
+    "ts": "2026-06-20T18:45:18Z"
+  },
+  {
+    "video_id": "vid_bde14ed6",
+    "stage": "captions",
+    "provider": "offline-srt",
+    "units": 1.0,
+    "cost": 0.0,
+    "note": null,
+    "ts": "2026-06-20T18:45:18Z"
+  },
+  {
+    "video_id": "vid_bde14ed6",
+    "stage": "production_engine",
+    "provider": "offline-ffmpeg",
+    "units": 1.0,
+    "cost": 0.0,
+    "note": null,
+    "ts": "2026-06-20T18:45:18Z"
+  }
+]

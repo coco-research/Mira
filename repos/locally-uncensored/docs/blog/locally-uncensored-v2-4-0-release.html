@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Locally Uncensored v2.4.0 — Settings Polish, Linux Drag Fix, and Configurable HuggingFace Path</title>
+<meta name="description" content="v2.4.0 release notes: single-instance lock, working Reset tutorial button, Re-run onboarding, in-app Privacy section, configurable HuggingFace download folder, Linux window drag fix.">
+<meta property="og:title" content="Locally Uncensored v2.4.0 — Settings Polish, Linux Drag Fix, and Configurable HuggingFace Path">
+<meta property="og:description" content="v2.4.0 release notes: single-instance lock, Re-run onboarding, in-app Privacy section, configurable HuggingFace download folder, Linux drag fix.">
+<meta property="og:image" content="https://raw.githubusercontent.com/PurpleDoubleD/locally-uncensored/master/docs/social-preview.png">
+<meta property="og:url" content="https://locallyuncensored.com/blog/locally-uncensored-v2-4-0-release.html">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2026-04-23">
+<meta property="article:author" content="PurpleDoubleD">
+<meta property="article:tag" content="Release">
+<meta property="article:tag" content="Tauri">
+<meta property="article:tag" content="HuggingFace">
+<meta property="article:tag" content="Linux">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Locally Uncensored v2.4.0 — Settings Polish + Linux Drag Fix">
+<meta name="twitter:description" content="v2.4.0: single-instance lock, configurable HF path, in-app Privacy section, Linux drag fix.">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/PurpleDoubleD/locally-uncensored/master/docs/social-preview.png">
+<link rel="canonical" href="https://locallyuncensored.com/blog/locally-uncensored-v2-4-0-release.html">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#0a0a0a">
+<link rel="icon" href="../favicon.png">
+<!-- Privacy: No external fonts loaded. Using system fonts. -->
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","headline":"Locally Uncensored v2.4.0 — Settings Polish, Linux Drag Fix, and Configurable HuggingFace Path","description":"Locally Uncensored v2.4.0 ships a single-instance lock, working Reset tutorial button, Re-run onboarding action, in-app Privacy section, configurable HuggingFace GGUF download path, and a Linux window-drag permission fix.","image":"https://raw.githubusercontent.com/PurpleDoubleD/locally-uncensored/master/docs/social-preview.png","datePublished":"2026-04-23","dateModified":"2026-04-23","author":{"@type":"Person","name":"PurpleDoubleD","url":"https://github.com/PurpleDoubleD"},"publisher":{"@type":"Organization","name":"Locally Uncensored","url":"https://locallyuncensored.com/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://locallyuncensored.com/blog/locally-uncensored-v2-4-0-release.html"},"keywords":"locally uncensored v2.4.0, configurable huggingface download path, tauri single instance, linux window drag fix, agent permissions tutorial reset, in-app privacy section, re-run onboarding"}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What changed in Locally Uncensored v2.4.0?","acceptedAnswer":{"@type":"Answer","text":"Eight fixes total: single-instance lock so a double-launch focuses the existing window, working Reset tutorial button (was the opposite of its label before), new Re-run onboarding action, in-app Privacy section, configurable HuggingFace GGUF download path, removed duplicate path display in Discover, Linux window-drag capability fix, and a HuggingFace search filename-heuristic fix that affected repo names containing quant tags."}},{"@type":"Question","name":"How do I change the HuggingFace download folder in v2.4.0?","acceptedAnswer":{"@type":"Answer","text":"Open Settings, expand the new Model Storage section, paste a folder path or click Browse to pick one. Leave empty to keep the previous auto-detect behaviour (the active openai-compat provider's models folder, e.g. LM Studio). Takes effect immediately, no restart required."}},{"@type":"Question","name":"Will the auto-update bring v2.4.0 to me?","acceptedAnswer":{"@type":"Answer","text":"Yes. The signed updater channel is live for Windows (NSIS + MSI), Linux (deb, rpm, AppImage), and the latest.json endpoint serves all of them. Existing v2.3.x installs prompt for v2.4.0 on next launch."}},{"@type":"Question","name":"Why did the Reset tutorial button stop working before v2.4.0?","acceptedAnswer":{"@type":"Answer","text":"The button was wired to setTutorialCompleted() which always sets tutorialCompleted to true. Clicking it on a fresh install silently skipped the tour, and clicking after seeing the tour did nothing. v2.4.0 adds a dedicated resetTutorial() store action that flips it back to false."}},{"@type":"Question","name":"Is Locally Uncensored really 100% local?","acceptedAnswer":{"@type":"Answer","text":"Yes. Chat, agent runs, image and video generation all execute on your machine. The only outbound network calls without explicit opt-in are GitHub Releases update checks. Cloud-provider APIs (OpenAI, Anthropic, OpenRouter, Groq) only fire when you configure them with your own keys. The new Settings - Privacy section spells this out in-app."}},{"@type":"Question","name":"Where does Locally Uncensored store my data?","acceptedAnswer":{"@type":"Answer","text":"%APPDATA%/Locally Uncensored on Windows (and the equivalent on Linux/macOS). Conversations, memories, generated media, settings backups, agent workspace files all live there. Back the folder up, move it between machines, delete it - LU writes nothing else."}}]}
+</script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0a;--bg-subtle:#111;--bg-card:#161616;--border:#222;--border-hover:#333;--text:#ededed;--text-secondary:#888;--text-tertiary:#555;--accent:#8b5cf6;--accent-dim:rgba(139,92,246,0.08);--radius:12px;--font:'Inter',system-ui,-apple-system,sans-serif}
+body{font-family:var(--font);background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;line-height:1.6}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+::selection{background:var(--accent);color:#fff}
+nav{position:fixed;top:0;width:100%;padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;background:rgba(10,10,10,0.8);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);z-index:100}
+.nav-left{display:flex;align-items:center;gap:32px}
+.nav-logo{font-weight:700;font-size:15px;letter-spacing:-0.3px;display:flex;align-items:center;gap:8px;color:var(--text)}
+.nav-logo:hover{text-decoration:none}
+.nav-logo svg{width:18px;height:18px;opacity:0.7}
+.nav-links{display:flex;gap:24px}
+.nav-links a{font-size:14px;color:var(--text-secondary);transition:color 0.15s}
+.nav-links a:hover{color:var(--text);text-decoration:none}
+.nav-links a.active{color:var(--text)}
+.nav-right{display:flex;align-items:center;gap:12px}
+.btn-nav{font-size:13px;font-weight:500;padding:6px 14px;border-radius:8px;border:1px solid var(--border);color:var(--text-secondary);transition:all 0.15s;background:transparent;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.btn-nav:hover{border-color:var(--border-hover);color:var(--text);text-decoration:none}
+.btn-nav-primary{background:#fff;color:#000;border-color:#fff}
+.btn-nav-primary:hover{opacity:0.9}
+.container{max-width:720px;margin:0 auto;padding:120px 24px 80px}
+.breadcrumb{font-size:13px;color:var(--text-tertiary);margin-bottom:32px}
+.breadcrumb a{color:var(--text-secondary);border-bottom:1px solid var(--border)}
+.breadcrumb a:hover{color:var(--text);text-decoration:none}
+.post-meta{display:flex;align-items:center;gap:12px;margin-bottom:24px;font-size:13px;color:var(--text-tertiary)}
+.post-tag{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent-dim);color:var(--accent);font-size:12px;font-weight:500}
+article h1{font-size:clamp(28px,4vw,40px);font-weight:700;letter-spacing:-1px;line-height:1.2;margin-bottom:24px}
+article h2{font-size:24px;font-weight:600;letter-spacing:-0.5px;margin-top:48px;margin-bottom:16px;padding-top:16px;border-top:1px solid var(--border)}
+article h3{font-size:18px;font-weight:600;margin-top:32px;margin-bottom:12px}
+article p{font-size:16px;color:var(--text-secondary);line-height:1.8;margin-bottom:16px}
+article p strong{color:var(--text)}
+article ul,article ol{margin:0 0 16px 24px;color:var(--text-secondary);line-height:1.8}
+article li{margin-bottom:6px;font-size:16px}
+article li strong{color:var(--text)}
+article code{font-family:'SF Mono',SFMono-Regular,Consolas,'Liberation Mono',Menlo,monospace;background:var(--bg-card);border:1px solid var(--border);padding:2px 6px;border-radius:4px;font-size:14px;color:var(--accent)}
+article pre{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin:16px 0 24px;overflow-x:auto}
+article pre code{background:none;border:none;padding:0;font-size:14px;color:var(--text-secondary);line-height:1.7}
+article table{width:100%;border-collapse:collapse;margin:16px 0 24px;font-size:14px}
+article th{text-align:left;padding:10px 16px;background:var(--bg-card);border:1px solid var(--border);font-weight:600;color:var(--text);font-size:13px;text-transform:uppercase;letter-spacing:0.5px}
+article td{padding:10px 16px;border:1px solid var(--border);color:var(--text-secondary)}
+article tr:hover td{background:var(--bg-card)}
+article hr{border:none;border-top:1px solid var(--border);margin:48px 0 24px}
+.post-footer{margin-top:48px;padding:24px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);text-align:center}
+.post-footer p{font-size:14px;color:var(--text-secondary);margin-bottom:12px}
+.post-footer a.cta-btn{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:500;padding:10px 20px;border-radius:10px;background:#fff;color:#000;transition:opacity 0.15s}
+.post-footer a.cta-btn:hover{opacity:0.9;text-decoration:none}
+footer{max-width:720px;margin:0 auto;padding:40px 24px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--text-tertiary)}
+footer a{color:var(--text-secondary);transition:color 0.15s}
+footer a:hover{color:var(--text);text-decoration:none}
+.footer-links{display:flex;gap:16px}
+@media(max-width:640px){.nav-links{display:none}.container{padding:100px 16px 60px}article table{font-size:13px}article th,article td{padding:8px 10px}}
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-left">
+    <a href="../" class="nav-logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+      Locally Uncensored
+    </a>
+    <div class="nav-links">
+      <a href="../#features">Features</a>
+      <a href="../#models">Models</a>
+      <a href="../#compare">Compare</a>
+      <a href="../#faq">FAQ</a>
+      <a href="./" class="active">Blog</a>
+    </div>
+  </div>
+  <div class="nav-right">
+    <a href="https://github.com/PurpleDoubleD/locally-uncensored" class="btn-nav" target="_blank">GitHub</a>
+    <a href="https://github.com/PurpleDoubleD/locally-uncensored/releases" class="btn-nav btn-nav-primary" target="_blank">Download</a>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="breadcrumb"><a href="../">Locally Uncensored</a> / <a href="./">Blog</a> / This Post</div>
+
+  <div class="post-meta">
+    <span class="post-tag">Release</span>
+    <span>April 23, 2026</span>
+    <span>&middot;</span>
+    <span>6 min read</span>
+  </div>
+
+  <article>
+    <h1>v2.4.0 &mdash; Settings Polish, Linux Drag Fix, and Configurable HuggingFace Path</h1>
+
+    <p><a href="https://github.com/PurpleDoubleD/locally-uncensored">Locally Uncensored</a> v2.4.0 is a polish release. Eight fixes, two of them surfaced through community feedback on Discord, six caught during an internal end-to-end pass on the v2.3.9 build. No new headline features &mdash; this release exists so the next feature release lands on a cleaner foundation.</p>
+
+    <p>Quick TL;DR before we dig in:</p>
+
+    <ul>
+      <li><strong>Single-instance lock</strong> &mdash; double-clicking the shortcut focuses the existing window instead of spawning a second process</li>
+      <li><strong>Settings &gt; Model Storage</strong> &mdash; paste or pick the folder where HuggingFace GGUF downloads land</li>
+      <li><strong>Settings &gt; Privacy</strong> &mdash; in-app statement of what runs locally and what doesn&rsquo;t</li>
+      <li><strong>Settings &gt; Onboarding</strong> &mdash; a button that re-runs the first-launch wizard on demand</li>
+      <li><strong>Reset tutorial</strong> &mdash; the button now actually does what its label promises</li>
+      <li><strong>Linux window drag</strong> &mdash; the title-bar drag works on Ubuntu 24.04 again</li>
+      <li><strong>Discover</strong> &mdash; the HuggingFace download path is no longer printed twice</li>
+      <li><strong>HuggingFace search heuristic</strong> &mdash; search results for repos with a quant tag in the name no longer 404 on download</li>
+    </ul>
+
+    <h2>Single-Instance Lock</h2>
+
+    <p>Before v2.4.0, double-clicking the desktop shortcut started a second <code>locally-uncensored.exe</code> process. Both instances would race each other writing to <code>%APPDATA%/Locally Uncensored/store_backup.json</code> &mdash; not a frequent corruption source, but a real one when both happened to flush at the same millisecond.</p>
+
+    <p>v2.4.0 ships with <code>tauri-plugin-single-instance</code>. The second launch focuses, un-minimizes, and brings the existing window to front. No new process. Double-checked with three back-to-back launches: only one PID survives.</p>
+
+    <h2>Settings &gt; Model Storage &mdash; Configurable HuggingFace Folder</h2>
+
+    <p>The <strong>Model Manager &gt; Discover &gt; Text</strong> tab lets you download GGUF models from HuggingFace. Until v2.4.0, the destination folder was always auto-detected from the active openai-compat provider &mdash; usually LM Studio&rsquo;s <code>~/.lmstudio/models</code> or the equivalent on Linux/macOS.</p>
+
+    <p>That worked fine for single-disk setups. It did <strong>not</strong> work for dual-boot users who wanted a shared model partition between Linux and Windows, or anyone running a NAS-mounted models folder. Reported on Discord by <code>diimmortalis</code>.</p>
+
+    <p>v2.4.0 adds a dedicated <strong>Settings &gt; Model Storage</strong> section. Three controls:</p>
+
+    <ul>
+      <li>A path input (placeholder shows <code>(auto-detect)</code> when empty &mdash; meaning the previous behaviour)</li>
+      <li>A <strong>Browse&hellip;</strong> button that opens the native folder picker</li>
+      <li>A <strong>Reset</strong> button that clears the override (only visible when set)</li>
+    </ul>
+
+    <p>The override takes effect immediately. Discover&rsquo;s subtitle updates live to show the new <code>Saves to: &lt;path&gt;</code>. Verified end-to-end with a Gemma 4 E4B download (4.6 GB) landing in a custom Desktop folder, while the LM Studio default folder stayed untouched.</p>
+
+    <h2>Settings &gt; Privacy &mdash; In-App Statement</h2>
+
+    <p>The privacy claim has always been on the README and in the schema.org metadata, but never inside the app itself. That mattered for first-launch trust &mdash; if you can&rsquo;t be bothered to open GitHub, you were taking the README at its word.</p>
+
+    <p>v2.4.0 adds a <strong>Settings &gt; Privacy</strong> section that lays out the actual behaviour:</p>
+
+    <ul>
+      <li><strong>100% local by default.</strong> Chat, agent runs, image and video generation all execute on your machine. No telemetry, no analytics, no model pings home.</li>
+      <li>The only outbound network calls without explicit opt-in are <strong>GitHub Releases update checks</strong>.</li>
+      <li>Cloud provider APIs (OpenAI, Anthropic, OpenRouter, Groq) <strong>only fire when you configure them with your own keys</strong>.</li>
+      <li>Conversations, memories, and generated media live in <code>%APPDATA%/Locally Uncensored</code> on Windows (or the equivalent on Linux/macOS). Back up the folder, move it between machines, or delete it &mdash; LU writes nothing else.</li>
+    </ul>
+
+    <h2>Settings &gt; Onboarding &mdash; Re-Run Wizard</h2>
+
+    <p>The first-launch wizard runs once: hardware scan, recommended models, agent-mode tour. After that, the only way to see it again was <strong>Reset to Defaults</strong>, which wipes every other preference too &mdash; not great if you wanted to redo the hardware scan or show the app to a friend.</p>
+
+    <p>v2.4.0 adds an <strong>Onboarding</strong> section to Settings with a single <strong>Re-run onboarding</strong> button. It clears the marker file, flips <code>onboardingDone</code> back to false, and reloads the app. The wizard renders again from step 1.</p>
+
+    <p>The Rust command <code>set_onboarding_done</code> now accepts an optional boolean instead of always writing the marker, so callers can also clear it.</p>
+
+    <h2>Reset Tutorial &mdash; Actually Resets Now</h2>
+
+    <p>This was a quiet bug for several releases. The Reset tutorial link in <strong>Settings &gt; Agent Permissions</strong> called <code>setTutorialCompleted()</code>, which unconditionally sets <code>tutorialCompleted: true</code>. Clicking it on a fresh install silently <em>skipped</em> the agent-mode tour. Clicking it after seeing the tour did nothing at all.</p>
+
+    <p>v2.4.0 adds a dedicated <code>resetTutorial()</code> store action that flips the flag back to <code>false</code>, and rewires the button. Verified live: click Reset, create a new chat, click the Agent toggle &mdash; the &ldquo;Welcome to Agent Mode&rdquo; tutorial renders again. A regression test in <code>stores.test.ts</code> guards against the next regression.</p>
+
+    <h2>Linux Window Drag Fix</h2>
+
+    <p>On Ubuntu 24.04, dragging the LU title bar threw an unhandled Promise rejection:</p>
+
+    <pre><code>window.start_dragging not allowed.
+Permissions associated with this command: core:window:allow-start-dragging</code></pre>
+
+    <p>The window stayed anchored. Keyboard tiling (Super+arrows) still worked, so the bug only bit users who actually dragged windows around. Reported on Discord by <code>diimmortalis</code> with a clean Promise-rejection dump.</p>
+
+    <p>The fix was one line in <code>src-tauri/capabilities/default.json</code> &mdash; <code>core:window:allow-start-dragging</code> was missing from the capability list. Added.</p>
+
+    <h2>Discover &mdash; No More Duplicate Path Display</h2>
+
+    <p>Cosmetic but jarring: the Discover tab showed the HuggingFace download path twice. Once in the section subtitle (<em>&ldquo;Download GGUF models from HuggingFace. Saves to: ...&rdquo;</em>) and again in a paragraph below the download grid (<em>&ldquo;Downloads save to: ...&rdquo;</em>). v2.4.0 removes the second one.</p>
+
+    <h2>HuggingFace Search Filename Fix</h2>
+
+    <p>This one is a pre-existing bug that surfaced while end-to-end testing the new Model Storage feature. Searching the Discover tab for <em>tinyllama Q4</em> returned repos like <code>hieupt/TinyLlama-1.1B-Chat-v1.0-Q4_K_M-GGUF</code>. The client guessed the inner GGUF filename by appending <code>-Q4_K_M.gguf</code> to the repo&rsquo;s base name. For repos that <em>already</em> ended in a quant tag, that produced doubled tags &mdash; <code>...-Q4_K_M-Q4_K_M.gguf</code> &mdash; which 404 every time on HuggingFace.</p>
+
+    <p>v2.4.0 extracts the heuristic into <code>deriveQ4FilenameFromRepo()</code>, adds a case-insensitive quant-suffix detector (matching <code>Q4_K_M</code>, <code>Q5_K_M</code>, <code>IQ2_XXS</code>, <code>UD-IQ</code>, <code>BF16</code>, <code>FP16</code> and friends), and collapses the doubled tag. Nine regression tests in <code>discover-hf-filename.test.ts</code> cover the edge cases.</p>
+
+    <h2>Tests &amp; Verification</h2>
+
+    <p>Test suite went from 2205 to 2216 (+11 regression tests). <code>cargo check</code> clean. <code>tsc --noEmit</code> clean.</p>
+
+    <p>Live end-to-end on the installed v2.4.0 build:</p>
+
+    <ul>
+      <li><strong>Single-instance:</strong> 3 back-to-back exe launches &rarr; 1 PID</li>
+      <li><strong>HF download override:</strong> typed custom path, Discover subtitle updated, Gemma 4 E4B partial download (35.9 MB at 897 KB/s) landed in the picked folder, LM Studio default untouched</li>
+      <li><strong>Re-run onboarding:</strong> click &rarr; marker deleted &rarr; 6-step wizard renders &rarr; Get Started &rarr; marker re-created with fresh timestamp</li>
+      <li><strong>Reset tutorial:</strong> click &rarr; <code>tutorialCompleted</code> flipped to false in the persisted store &rarr; new chat &rarr; Agent toggle &rarr; tutorial renders</li>
+    </ul>
+
+    <h2>Download</h2>
+
+    <p>v2.4.0 is on <a href="https://github.com/PurpleDoubleD/locally-uncensored/releases/tag/v2.4.0">GitHub Releases</a>. Installers for Windows (<code>.exe</code>, <code>.msi</code>) and Linux (<code>.deb</code>, <code>.rpm</code>, <code>.AppImage</code>) — the auto-update channel is signed against a public minisign key. Auto-update picks the new build up on next launch for anyone on v2.3.x.</p>
+
+    <h2>Related</h2>
+
+    <ul>
+      <li><a href="locally-uncensored-v2-3-1-release.html">v2.3.1 release notes</a> &mdash; in-app Ollama install + configurable ComfyUI port</li>
+      <li><a href="locally-uncensored-v2-3-0-release.html">v2.3.0 release notes</a> &mdash; Remote Access + Coding Agent streaming + agent overhaul</li>
+      <li><a href="run-uncensored-ai-locally.html">How to run uncensored AI locally</a> &mdash; full setup walkthrough</li>
+      <li><a href="best-local-ai-apps-2026.html">Best local AI apps in 2026</a> &mdash; landscape overview</li>
+    </ul>
+
+    <hr>
+
+    <p><em>Locally Uncensored v2.4.0. AGPL-3.0 licensed. Built by <a href="https://github.com/PurpleDoubleD">PurpleDoubleD</a>. Bug reports and feature requests on <a href="https://github.com/PurpleDoubleD/locally-uncensored/discussions">GitHub Discussions</a> or in the <a href="https://locallyuncensored.com/discord">Discord</a>.</em></p>
+  </article>
+
+  <div class="post-footer">
+    <p>Eight fixes, configurable HuggingFace path, in-app Privacy section</p>
+    <a href="https://github.com/PurpleDoubleD/locally-uncensored/releases/tag/v2.4.0" class="cta-btn" target="_blank">
+      Download v2.4.0
+    </a>
+  </div>
+</div>
+
+<footer>
+  <span>AGPL-3.0 License. Built by <a href="https://github.com/PurpleDoubleD" target="_blank">PurpleDoubleD</a>.</span>
+  <div class="footer-links">
+    <a href="https://github.com/PurpleDoubleD/locally-uncensored" target="_blank">GitHub</a>
+    <a href="https://github.com/PurpleDoubleD/locally-uncensored/discussions" target="_blank">Discussions</a>
+    <a href="../">Home</a>
+  </div>
+</footer>
+
+</body>
+</html>

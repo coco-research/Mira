@@ -1,0 +1,495 @@
+<style data-screen="engines">
+/* ── Layout helpers ─────────────────────────────────────── */
+.eng-scope-bar        { display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:20px; }
+.eng-channel-tabs     { display:flex; gap:6px; flex-wrap:wrap; }
+.eng-channel-tab      { font:var(--sans); font-size:12px; padding:3px 12px; border-radius:20px;
+                        border:1px solid var(--border); background:var(--paper); color:var(--ink-2);
+                        cursor:pointer; transition:all .15s; }
+.eng-channel-tab:hover  { border-color:var(--ink-2); color:var(--ink); }
+.eng-channel-tab.active { background:var(--ink); color:#fff; border-color:var(--ink); }
+
+/* ── Machine tier bar ───────────────────────────────────── */
+.eng-tier-bar         { display:flex; align-items:center; gap:10px; padding:10px 16px;
+                        background:var(--panel); border:1px solid var(--border);
+                        border-radius:var(--radius); margin-bottom:24px; flex-wrap:wrap; }
+.eng-machine-info     { font-size:13px; color:var(--ink); }
+
+/* ── Matrix card ────────────────────────────────────────── */
+.eng-matrix-card      { padding:0; overflow:hidden; }
+.eng-matrix-head      { display:flex; align-items:center; gap:10px;
+                        padding:14px 20px; border-bottom:1px solid var(--border); }
+.eng-stage-sub        { font-size:11px; color:var(--ink-2); margin-top:2px; font-weight:400; }
+
+/* ── Mixed badge (thumbnail row) ────────────────────────── */
+.badge.eng-mixed      { background:#e8e0d4; color:#58503e; }
+
+/* ── Policy grid ────────────────────────────────────────── */
+.eng-policy-grid      { margin-top:20px; }
+.eng-policy-label     { font-size:14px; font-weight:600; }
+.eng-credit-bar       { background:var(--panel); border-radius:20px; height:6px; overflow:hidden; margin:6px 0; }
+.eng-credit-fill      { background:var(--green); height:100%; border-radius:20px; transition:width .4s; }
+
+/* ── Notes stack ─────────────────────────────────────────  */
+.eng-notes            { display:flex; flex-direction:column; gap:10px; margin-top:20px; }
+.eng-notes .note      { line-height:1.55; }
+.eng-notes code       { font-family:ui-monospace, monospace; font-size:12px;
+                        background:var(--panel); padding:1px 5px; border-radius:4px; }
+
+/* ── Local engines supervisor card ───────────────────────── */
+.eng-local-card       { padding:0; overflow:hidden; margin-bottom:24px; }
+.eng-local-head       { display:flex; align-items:center; gap:10px;
+                        padding:14px 20px; border-bottom:1px solid var(--border); }
+.eng-local-head h2    { margin:0; flex:1; }
+.eng-row              { display:flex; align-items:center; gap:14px;
+                        padding:14px 20px; border-bottom:1px solid var(--border); }
+.eng-row:last-child   { border-bottom:none; }
+.eng-dot              { width:9px; height:9px; border-radius:50%; flex:none;
+                        background:var(--ink-2); }
+.eng-dot.run          { background:var(--green); box-shadow:0 0 0 3px color-mix(in srgb, var(--green) 22%, transparent); }
+.eng-dot.off          { background:#c9c1b3; }
+.eng-dot.missing      { background:var(--amber); }
+.eng-row-main         { flex:1; min-width:0; }
+.eng-row-name         { font-size:14px; font-weight:600; color:var(--ink); }
+.eng-row-sub          { font-size:12px; color:var(--ink-2); margin-top:2px; }
+.eng-row-state        { font-size:12px; font-weight:600; }
+.eng-row-state.run    { color:var(--green); }
+.eng-row-state.off    { color:var(--ink-2); }
+.eng-row-state.missing{ color:var(--amber); }
+.eng-row-actions      { display:flex; gap:6px; }
+.eng-offline-hint     { padding:12px 20px; font-size:12px; color:var(--ink-2);
+                        background:var(--panel); border-bottom:1px solid var(--border); }
+</style>
+
+<section class="page" id="engines">
+  <div class="content">
+
+    <h1>Engines</h1>
+    <p class="lede">Which provider runs each pipeline stage. Layered: global defaults → per-channel overrides → per-video override in Studio.</p>
+
+    <!-- ── Scope selector ─────────────────────────── -->
+    <div class="eng-scope-bar">
+      <div class="tabs" id="eng-scope-tabs">
+        <button class="tab active" data-scope="global">Global defaults</button>
+        <button class="tab" data-scope="channel">Per-channel</button>
+      </div>
+      <div id="eng-channel-tabs" class="eng-channel-tabs" style="display:none" aria-label="Channel scope">
+        <button class="eng-channel-tab active">🛠️ AI Tools</button>
+        <button class="eng-channel-tab">🔬 Deep Dives</button>
+        <button class="eng-channel-tab">⚡ Quick Wins</button>
+      </div>
+    </div>
+
+    <!-- ── Machine tier bar ───────────────────────── -->
+    <div class="eng-tier-bar">
+      <span class="badge" style="background:var(--ink);color:#fff;font-weight:600;">Heavy</span>
+      <span class="eng-machine-info">detected: Apple M4 Max · 64GB · Metal</span>
+      <span class="badge local" style="margin-left:2px">running lean</span>
+      <span class="muted" style="font-size:12px">auto-downgrades to a smaller quant/resolution or offloads when free RAM is tight; concurrency stays at 1</span>
+    </div>
+
+    <!-- ── Local engines (backend-supervised) ─────── -->
+    <div class="card eng-local-card">
+      <div class="eng-local-head">
+        <h2>Local engines</h2>
+        <span class="muted" style="font-size:12px">started &amp; stopped by the backend — no terminal needed</span>
+        <button class="btn ghost sm" id="eng-local-refresh">Refresh</button>
+      </div>
+      <div id="eng-offline-hint" class="eng-offline-hint" hidden>
+        Backend offline — run <code>mira up</code> once (or open the app) and the backend takes over engine start/stop. Showing last-known defaults.
+      </div>
+      <div id="eng-local-rows">
+        <!-- Static fallback (shown until /engines/status hydrates) -->
+        <div class="eng-row">
+          <span class="eng-dot run"></span>
+          <div class="eng-row-main">
+            <div class="eng-row-name">LM Studio</div>
+            <div class="eng-row-sub">Local script LLM · port 1234 · launch the app once, then it's auto-detected</div>
+          </div>
+          <span class="eng-row-state run">running</span>
+          <div class="eng-row-actions"></div>
+        </div>
+        <div class="eng-row">
+          <span class="eng-dot off"></span>
+          <div class="eng-row-main">
+            <div class="eng-row-name">ComfyUI <span class="badge" style="background:var(--panel-2);color:var(--ink-2)">optional</span></div>
+            <div class="eng-row-sub">Local AI b-roll · port 8188 · auto-starts when installed (Veo/stock cover this otherwise)</div>
+          </div>
+          <span class="eng-row-state off">stopped</span>
+          <div class="eng-row-actions">
+            <button class="btn ghost sm" disabled>Start</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Routing matrix ─────────────────────────── -->
+    <div class="card eng-matrix-card">
+      <div class="eng-matrix-head">
+        <h2 style="margin:0;flex:1">Routing matrix</h2>
+        <button class="btn ghost sm">Reset to recommended</button>
+      </div>
+
+      <div class="matrix">
+
+        <!-- Script LLM -->
+        <div class="mrow">
+          <div class="mstage">
+            Script LLM
+            <div class="eng-stage-sub">write &amp; structure</div>
+          </div>
+          <div class="mopts">
+            <button class="opt sel">LM Studio local <span class="badge local">Local</span></button>
+            <button class="opt">NIM MiniMax-M3 / Nemotron <span class="badge free">Free</span></button>
+            <button class="opt">OpenRouter <span class="badge free">Free</span></button>
+            <button class="opt">Mistral La Plateforme <span class="badge free">Free</span></button>
+            <button class="opt">Groq <span class="badge free">Free</span></button>
+            <button class="opt">Cerebras <span class="badge free">Free</span></button>
+            <button class="opt">Cloudflare Workers AI <span class="badge free">Free</span></button>
+            <button class="opt">GitHub Models <span class="badge free">Free</span></button>
+            <button class="opt">HuggingFace local <span class="badge local">Local</span></button>
+            <button class="opt">Gemini <span class="badge free">Free</span></button>
+            <button class="opt">Uncensored local — abliterated GGUF <span class="badge local">Local</span></button>
+          </div>
+        </div>
+
+        <!-- Voice EN -->
+        <div class="mrow">
+          <div class="mstage">
+            Voice EN
+            <div class="eng-stage-sub">English narration</div>
+          </div>
+          <div class="mopts">
+            <button class="opt sel">edge-tts <span class="badge free">Free</span></button>
+            <button class="opt">Kokoro local <span class="badge local">Local</span></button>
+            <button class="opt">ElevenLabs <span class="badge metered">Metered</span></button>
+          </div>
+        </div>
+
+        <!-- Voice HI -->
+        <div class="mrow">
+          <div class="mstage">
+            Voice HI
+            <div class="eng-stage-sub">Hindi dub</div>
+          </div>
+          <div class="mopts">
+            <button class="opt sel">Sarvam <span class="badge metered">Metered</span></button>
+            <button class="opt">edge-tts hi-IN <span class="badge free">Free</span></button>
+          </div>
+        </div>
+
+        <!-- Images -->
+        <div class="mrow">
+          <div class="mstage">
+            Images
+            <div class="eng-stage-sub">stills &amp; b-roll</div>
+          </div>
+          <div class="mopts">
+            <button class="opt sel">local SDXL-Flux <span class="badge local">Local</span></button>
+            <button class="opt">Imagen <span class="badge quota">Quota</span></button>
+            <button class="opt">Gemini <span class="badge free">Free</span></button>
+            <button class="opt">NIM FLUX / Qwen-Image <span class="badge free">Free</span></button>
+            <button class="opt">Uncensored local checkpoint <span class="badge local">Local</span></button>
+          </div>
+        </div>
+
+        <!-- AI video -->
+        <div class="mrow">
+          <div class="mstage">
+            AI video
+            <div class="eng-stage-sub">hero clips</div>
+          </div>
+          <div class="mopts">
+            <button class="opt sel">Veo on quota <span class="badge quota">Quota</span></button>
+            <button class="opt">ComfyUI LTX Mac <span class="badge local">Local</span></button>
+            <button class="opt">Seedance 2.0 Mini <span class="badge metered">Metered</span></button>
+            <button class="opt">Cloud-burst Vultr→AWS · SkyReels-14B / Wan <span class="badge metered">Metered</span></button>
+          </div>
+        </div>
+
+        <!-- Motion transfer -->
+        <div class="mrow">
+          <div class="mstage">
+            Motion transfer
+            <div class="eng-stage-sub">animate stills</div>
+          </div>
+          <div class="mopts">
+            <button class="opt sel">Kling 3 Turbo <span class="muted" style="font-size:10px">(Open-Generative-AI)</span> <span class="badge metered">Metered</span></button>
+            <button class="opt">Wan2.2-Animate local <span class="badge local">Local</span></button>
+            <button class="opt">Viggle <span class="badge free">Free</span></button>
+          </div>
+        </div>
+
+        <!-- Music -->
+        <div class="mrow">
+          <div class="mstage">
+            Music
+            <div class="eng-stage-sub">royalty-free bed</div>
+          </div>
+          <div class="mopts">
+            <button class="opt sel">Pixabay / Freesound <span class="badge free">Free</span></button>
+            <button class="opt">local music_gen <span class="badge local">Local</span></button>
+            <button class="opt">Suno <span class="badge metered">Metered</span></button>
+          </div>
+        </div>
+
+        <!-- Thumbnail + metadata -->
+        <div class="mrow">
+          <div class="mstage">
+            Thumbnail + metadata
+            <div class="eng-stage-sub">title / desc / tags</div>
+          </div>
+          <div class="mopts">
+            <button class="opt sel">Imagen / Flux + script LLM <span class="badge quota">Quota</span><span class="badge local" style="margin-left:3px">Local</span></button>
+          </div>
+        </div>
+
+        <!-- Captions -->
+        <div class="mrow">
+          <div class="mstage">
+            Captions
+            <div class="eng-stage-sub">transcribe &amp; sync</div>
+          </div>
+          <div class="mopts">
+            <button class="opt sel">faster-whisper local <span class="badge local">Local</span></button>
+          </div>
+        </div>
+
+        <!-- Posting -->
+        <div class="mrow">
+          <div class="mstage">
+            Posting
+            <div class="eng-stage-sub">publish &amp; distribute</div>
+          </div>
+          <div class="mopts">
+            <button class="opt sel">YouTube Data API <span class="badge free">Free</span></button>
+            <button class="opt">Blotato <span class="badge metered">Metered</span></button>
+            <button class="opt">IG Graph <span class="badge free">Free</span></button>
+          </div>
+        </div>
+
+        <!-- Production engine -->
+        <div class="mrow">
+          <div class="mstage">
+            Production engine
+            <div class="eng-stage-sub">pipeline orchestrator</div>
+          </div>
+          <div class="mopts">
+            <button class="opt sel">OpenMontage — in-the-loop <span class="badge local">Local</span></button>
+            <button class="opt">MoneyPrinterTurbo — headless volume <span class="badge local">Local</span></button>
+          </div>
+        </div>
+
+      </div><!-- /.matrix -->
+    </div><!-- /.card -->
+
+    <!-- ── Policy cards ───────────────────────────── -->
+    <div class="grid cols-2 eng-policy-grid">
+
+      <!-- Cloud burst -->
+      <div class="card">
+        <div class="row" style="margin-bottom:14px">
+          <div>
+            <div class="eng-policy-label">Cloud burst</div>
+            <div class="muted" style="font-size:12px;margin-top:2px">GPU offload when the Mac is saturated</div>
+          </div>
+          <label class="switch" style="margin-left:auto" title="Allow cloud burst">
+            <input type="checkbox" id="eng-burst-toggle" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="field" style="margin-bottom:14px">
+          <label for="eng-burst-budget">Burst budget cap ($/month)</label>
+          <input id="eng-burst-budget" type="number" value="20" min="0" step="5" placeholder="e.g. 20">
+        </div>
+
+        <div class="note" style="margin-bottom:12px">
+          Order: Vultr free credit first → AWS spot
+        </div>
+
+        <div class="row" style="margin-bottom:4px">
+          <span style="font-size:13px">Vultr credit remaining</span>
+          <span style="font-size:13px;font-weight:600;margin-left:auto">$247.20 / $250 left</span>
+        </div>
+        <div class="eng-credit-bar">
+          <div class="eng-credit-fill" style="width:98.9%"></div>
+        </div>
+
+        <p class="muted" style="font-size:12px;margin-top:10px">
+          auto-returns to local + tears down GPU when idle
+        </p>
+      </div>
+
+      <!-- Compute swarm -->
+      <div class="card">
+        <div class="row" style="margin-bottom:14px">
+          <div>
+            <div class="eng-policy-label">Compute swarm (pod)</div>
+            <div class="muted" style="font-size:12px;margin-top:2px">Auto-route across pod accounts</div>
+          </div>
+          <label class="switch" style="margin-left:auto" title="Auto-route across pod accounts">
+            <input type="checkbox" id="eng-swarm-toggle">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <p class="muted" style="margin-bottom:14px">
+          Solo mode — turns on when a pod forms; pools capacity not keys.
+        </p>
+
+        <div class="note" style="margin-bottom:14px">
+          Policy chain: free-local → own free cloud → pod swarm → metered → burst. Keys never leave your machine.
+        </div>
+
+        <div style="padding-top:12px;border-top:1px solid var(--border)">
+          <div class="row">
+            <span class="muted" style="font-size:12px">Pod members</span>
+            <span class="badge" style="margin-left:auto;background:var(--panel-2);color:var(--ink-2)">Solo</span>
+          </div>
+          <p class="muted" style="font-size:12px;margin-top:6px">
+            Invite friends from
+            <button class="btn ghost sm" onclick="go('collaborators')" style="padding:0 6px;font-size:12px;height:auto;line-height:1.6">Collaborators</button>
+            to form a pod.
+          </p>
+        </div>
+      </div>
+
+    </div><!-- /.eng-policy-grid -->
+
+    <!-- ── Notes ──────────────────────────────────── -->
+    <div class="eng-notes">
+
+      <div class="note">
+        <strong>Backed by OpenMontage</strong> — this matrix renders from <code>tool_registry.provider_menu()</code> / <code>support_envelope()</code>; new providers (e.g. Seedance 2.5, Kling updates) appear automatically as options the moment OpenMontage registers a tool for them — no UI change needed. Each is tagged draft vs hero and priced into the cost preview.
+      </div>
+
+      <div class="note">
+        <strong>NIM caveat</strong> — free · dev tier ~40 req/min; auto-falls back on 429.
+        <strong style="color:var(--amber)">MiniMax-M3 non-commercial flag</strong>: a warning surfaces at the publish gate for monetization-phase channels.
+      </div>
+
+      <div class="note">
+        <strong>Free Script-LLM pool</strong> — all OpenAI-compatible overflow endpoints the swarm rotates through: <strong>Mistral La Plateforme</strong> (~1B tokens/mo — the largest free tier), <strong>Groq</strong> &amp; <strong>Cerebras</strong> (very fast, ~14.4k req/day), <strong>Cloudflare Workers AI</strong> (10k neurons/day), <strong>GitHub Models</strong> (frontier — gpt-5/o3/DeepSeek, tight token caps). LM Studio local stays the private default; these are free overflow + per-member swarm capacity. Each pod member adds their own accounts, multiplying headroom. Source: <code>cheahjs/free-llm-api-resources</code> (accessed 2026-06-19).
+      </div>
+
+      <div class="note">
+        <strong>Uncensored local</strong> — edgy-but-legal creative, no refusals — content policy + AI disclosure checks still run at the publish gate regardless of which engine produced the content.
+      </div>
+
+    </div><!-- /.eng-notes -->
+
+  </div><!-- /.content -->
+</section>
+
+<script data-screen="engines">
+(function () {
+  'use strict';
+
+  // ── Single-select per matrix row ──────────────────────
+  document.querySelectorAll('#engines .mrow').forEach(function (row) {
+    row.querySelectorAll('.opt').forEach(function (opt) {
+      opt.addEventListener('click', function () {
+        row.querySelectorAll('.opt').forEach(function (o) { o.classList.remove('sel'); });
+        opt.classList.add('sel');
+      });
+    });
+  });
+
+  // ── Scope tab: toggle channel sub-tabs ───────────────
+  var scopeTabs    = document.querySelectorAll('#eng-scope-tabs .tab');
+  var channelBlock = document.getElementById('eng-channel-tabs');
+
+  scopeTabs.forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      scopeTabs.forEach(function (t) { t.classList.remove('active'); });
+      tab.classList.add('active');
+      channelBlock.style.display = tab.dataset.scope === 'channel' ? 'flex' : 'none';
+    });
+  });
+
+  // ── Channel sub-tab single-select ─────────────────────
+  var cTabs = document.querySelectorAll('.eng-channel-tab');
+  cTabs.forEach(function (ct) {
+    ct.addEventListener('click', function () {
+      cTabs.forEach(function (t) { t.classList.remove('active'); });
+      ct.classList.add('active');
+    });
+  });
+
+  // ── Local engines: live status + start/stop (backend-supervised) ──────
+  var rowsEl = document.getElementById('eng-local-rows');
+  var hintEl = document.getElementById('eng-offline-hint');
+
+  function stateOf(e) {
+    if (e.running) return { cls: 'run', dot: 'run', label: 'running' };
+    if (!e.installed) return { cls: 'missing', dot: 'missing', label: 'not installed' };
+    return { cls: 'off', dot: 'off', label: 'stopped' };
+  }
+
+  function subline(e) {
+    var bits = [];
+    bits.push(e.optional ? 'optional' : 'core');
+    bits.push('port ' + e.port);
+    if (e.running && e.models && e.models.length) bits.push(e.models.length + ' models loaded');
+    else if (e.note) bits.push(e.note);
+    return bits.join(' · ');
+  }
+
+  function actionsFor(key, e) {
+    if (!e.managed) return '';                 // LM Studio: detected, not spawned
+    if (e.running)   return '<button class="btn ghost sm" data-stop="' + key + '">Stop</button>';
+    if (!e.installed) return '<a class="btn ghost sm" href="' + (e.install_url||'#') + '" target="_blank" rel="noopener">Install</a>';
+    return '<button class="btn primary sm" data-start="' + key + '">Start</button>';
+  }
+
+  function render(status) {
+    var keys = Object.keys(status);
+    rowsEl.innerHTML = keys.map(function (k) {
+      var e = status[k], s = stateOf(e);
+      return '' +
+        '<div class="eng-row">' +
+          '<span class="eng-dot ' + s.dot + '"></span>' +
+          '<div class="eng-row-main">' +
+            '<div class="eng-row-name">' + e.label +
+              (e.optional ? ' <span class="badge" style="background:var(--panel-2);color:var(--ink-2)">optional</span>' : '') +
+            '</div>' +
+            '<div class="eng-row-sub">' + subline(e) + '</div>' +
+          '</div>' +
+          '<span class="eng-row-state ' + s.cls + '">' + s.label + '</span>' +
+          '<div class="eng-row-actions">' + actionsFor(k, e) + '</div>' +
+        '</div>';
+    }).join('');
+    bindButtons();
+  }
+
+  function bindButtons() {
+    rowsEl.querySelectorAll('[data-start]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        b.textContent = 'Starting…'; b.disabled = true;
+        window.mira.postJSON('/engine/start?name=' + b.dataset.start).then(refresh);
+      });
+    });
+    rowsEl.querySelectorAll('[data-stop]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        b.textContent = 'Stopping…'; b.disabled = true;
+        window.mira.postJSON('/engine/stop?name=' + b.dataset.stop, 8000).then(refresh);
+      });
+    });
+  }
+
+  function refresh() {
+    if (!window.mira) return;
+    window.mira.fetchJSON('/engines/status', null).then(function (status) {
+      if (!status) { if (hintEl) hintEl.hidden = false; return; }  // offline → keep static fallback
+      if (hintEl) hintEl.hidden = true;
+      render(status);
+    });
+  }
+
+  var rb = document.getElementById('eng-local-refresh');
+  if (rb) rb.addEventListener('click', refresh);
+  document.addEventListener('mira:live', refresh);
+  refresh();   // attempt immediately; silently stays on fallback if backend is down
+
+})();
+</script>
