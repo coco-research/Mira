@@ -156,16 +156,20 @@ Read in this order:
 
 ---
 
-## License notes
+## License
 
-This monorepo **vendors** multiple upstream projects with different licenses. Respect each engine's terms before commercial use:
+**Mira is licensed under [AGPL-3.0](LICENSE).** Copyright © 2026 Coco Inc. If you run a modified Mira as a network service, AGPL §13 requires you to offer users the complete corresponding source.
 
-| Engine | License | Note |
-|--------|---------|------|
-| OpenMontage, locally-uncensored | AGPL-3.0 | Copyleft applies if you distribute modified software |
-| MoneyPrinterTurbo, Open-Generative-AI, StoryGen-Atelier, HyperFrames | MIT / Apache-2.0 | Generally permissive |
-| AVTR-1 | PolyForm Noncommercial | Paid license needed for monetized channels |
-| SkyReels-V2 | Skywork Community | Read license before commercial reliance |
+Mira bundles several upstream engines under their own (compatible) licenses and references two more externally. Full attribution and the pinned upstreams are in [`THIRD-PARTY.md`](THIRD-PARTY.md).
+
+| Engine | License | Status |
+|--------|---------|--------|
+| OpenMontage, locally-uncensored | AGPL-3.0 | Bundled (`repos/`) |
+| MoneyPrinterTurbo, Open-Generative-AI, Free-ai-video-generator | MIT | Bundled (`repos/`) |
+| Wan2.2, hyperframes, StoryGen-Atelier | Apache-2.0 | Bundled (`repos/`) |
+| n8n | Sustainable Use License (fair-code) | External — `bash scripts/setup-engines.sh` |
+| SkyReels-V2 | Skywork Community License | External — `bash scripts/setup-engines.sh` |
+| AVTR-1 | Goodsize model license | Dropped (AGPL-incompatible + commercial trigger) |
 
 Details: [`plan/SECURITY.md`](plan/SECURITY.md) and [`plan/repos/`](plan/repos/).
 
