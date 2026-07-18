@@ -3,135 +3,134 @@
 **Status: 🔴 NOT CLEARED FOR PUBLIC.** Do not flip `coco-research/Mira` to public until
 every 🔴 blocker below is resolved and the final go/no-go gate passes.
 
+> **License decision (owner, 2026-07-18): Mira ships under AGPL-3.0.**
+> Chosen so the AGPL engines (OpenMontage, locally-uncensored) can be bundled directly
+> without arm's-length gymnastics. See §1 for what this does and does not permit.
+
 This checklist was produced from an audit of `main` (26,163 tracked files; ~10 MB
-git history; ~200 MB working tree, mostly gitignored media). The core problem is
-**not size — it is license compatibility and third-party redistribution.**
+git history; ~200 MB working tree, mostly gitignored media).
 
 ---
 
-## 0. TL;DR — the three things that block publication
+## 0. TL;DR — what AGPL-3.0 resolves, and what still blocks
 
-1. **AGPL copyleft is wired into Mira's own code.** The primary engine
-   **OpenMontage is AGPL-3.0** (referenced in 27 core files) and
-   **`locally-uncensored` is AGPL-3.0** (5 core files). You cannot license Mira
-   as "Coco proprietary / all rights reserved" while bundling and distributing
-   AGPL code — AGPL's copyleft would reach the combined work. This must be
-   resolved structurally (submodule/external-dep the engines) before publishing.
-2. **`CLAUDE-FABLE-5.md`** (internal Anthropic system-prompt doc) is committed at
-   the repo root and lives in history. Must be deleted AND purged from history.
-3. **Wholesale third-party redistribution.** `repos/` vendors 12 external
-   projects (~26,000 files) under mixed licenses, republished under coco-research
-   with no attribution/NOTICE and no license audit.
+**Resolved by choosing AGPL-3.0 for Mira:**
+- OpenMontage (AGPL) + locally-uncensored (AGPL) — same license, bundle freely.
+- MIT engines — MIT is compatible *into* AGPL (keep notices).
+- Apache-2.0 engines — one-way compatible *into* AGPLv3 (keep NOTICE).
+
+**Still blocking (AGPL does NOT fix these):**
+1. 🔴 **License-incompatible vendored engines** — **n8n** (Sustainable Use License /
+   fair-code — not open source, not AGPL-compatible), **avtr-1** (Goodsize model
+   license), **SkyReels-V2** ("license: other"). Cannot be redistributed under AGPL.
+   Remove or keep strictly external.
+2. 🔴 **`CLAUDE-FABLE-5.md`** — internal Anthropic system-prompt doc, committed at root
+   and in history. Delete AND purge from history. (Content issue, not licensing.)
+3. 🔴 **Full-history secret sweep** — files were committed; scan all history.
+4. 🟡 **`locally-uncensored` name** — legal under AGPL, but a reputational flag under a
+   McKinsey-affiliated org. Owner's call whether to keep.
 
 ---
 
-## 1. 🔴 License audit of vendored `repos/` (the core blocker)
+## 1. License disposition of vendored `repos/` (under Mira = AGPL-3.0)
 
-| Vendored project | License | Referenced in Mira core | Disposition |
+| Vendored project | License | Refs in core | Disposition under AGPL |
 |---|---|---|---|
-| **OpenMontage** (primary engine) | **AGPL-3.0** | 27 files | ⚠️ Copyleft — submodule/external only; do NOT bundle |
-| **locally-uncensored** | **AGPL-3.0** | 5 files | 🔴 Remove entirely (copyleft + brand — see §4) |
-| n8n | Sustainable Use License (fair-code) | via top-level `n8n/` | ⚠️ Redistribution-restricted — do NOT bundle |
-| avtr-1 | Goodsize Inc. "AVTR-1 Community License" (model) | 1 file | ⚠️ Model license — review terms; likely non-commercial |
-| SkyReels-V2 | "license: other" (custom/research) | 7 files | ⚠️ Review custom terms before any use |
-| Wan2.2 | Apache-2.0 | 7 files | ✅ OK if attribution/NOTICE preserved |
-| hyperframes | Apache-2.0 | 21 files | ✅ OK if attribution/NOTICE preserved |
-| StoryGen-Atelier | Apache-2.0 | 6 files | ✅ OK if attribution/NOTICE preserved |
-| MoneyPrinterTurbo | MIT | 18 files | ✅ OK if copyright/notice preserved |
-| Open-Generative-AI | MIT | 10 files | ✅ OK if copyright/notice preserved |
-| Free-ai-video-generator | MIT | 3 files | ✅ OK if copyright/notice preserved |
-| ltx-video-mac | MIT | 0 files | ✅ Unused — remove |
+| **OpenMontage** (primary engine) | AGPL-3.0 | 27 | ✅ Bundle OK — same license |
+| **locally-uncensored** | AGPL-3.0 | 5 | ✅ Legal to bundle; 🟡 brand call (see §4) |
+| MoneyPrinterTurbo | MIT | 18 | ✅ Bundle OK — preserve copyright/notice |
+| Open-Generative-AI | MIT | 10 | ✅ Bundle OK — preserve copyright/notice |
+| Free-ai-video-generator | MIT | 3 | ✅ Bundle OK — preserve copyright/notice |
+| ltx-video-mac | MIT | 0 | ➖ Unused — remove |
+| Wan2.2 | Apache-2.0 | 7 | ✅ Bundle OK — preserve NOTICE |
+| hyperframes | Apache-2.0 | 21 | ✅ Bundle OK — preserve NOTICE |
+| StoryGen-Atelier | Apache-2.0 | 6 | ✅ Bundle OK — preserve NOTICE |
+| **n8n** | Sustainable Use License (fair-code) | via `n8n/` | 🔴 NOT AGPL-compatible — external/remove |
+| **avtr-1** | Goodsize model license | 1 | 🔴 Review terms — likely external/remove |
+| **SkyReels-V2** | "license: other" (custom) | 7 | 🔴 Review terms — likely external/remove |
 
 **Action items:**
-- [ ] Confirm each license above against the upstream repo's current LICENSE (they
-      were snapshotted; upstream may have changed).
-- [ ] For every project you keep a dependency on, record: upstream URL, exact
-      commit/tag vendored, license, and how Mira uses it.
-- [ ] Get a licensing sign-off (ideally legal) on the final dependency set before public.
+- [ ] Re-verify each license against the current upstream (these are snapshots).
+- [ ] For every retained engine, record upstream URL, exact commit/tag vendored, license.
+- [ ] Confirm avtr-1 and SkyReels-V2 terms (commercial use? redistribution? research-only?).
+- [ ] Licensing sign-off (ideally legal) on the final bundled set before public.
 
-## 2. 🔴 Remove / relocate the vendored `repos/` tree
+## 2. Remove / externalize the incompatible engines
 
-Mira's README calls `repos/` its "Engines," and code references real paths
-(`repos/OpenMontage`, etc.), so you cannot just `rm -rf repos/` — it breaks Mira.
-Choose ONE strategy per engine:
+Only n8n, avtr-1, SkyReels-V2 (and unused ltx-video-mac) must leave the bundle now;
+the AGPL/MIT/Apache engines may stay.
 
-- [ ] **Preferred — git submodules.** Replace each kept engine with a submodule
-      pointing at its upstream at a pinned commit. Mira's repo then contains
-      *pointers, not third-party code* → no redistribution, copyleft obligations
-      shift to whoever runs `git submodule update`. AGPL/fair-code engines
-      (OpenMontage, n8n) become submodules the user opts into.
-- [ ] **Alternative — external-dependency install.** Remove `repos/` entirely and
-      add a `scripts/fetch-engines.sh` that clones the engines locally on setup;
-      document in README.
-- [ ] Remove engines with **0 references** and no plan to use (`ltx-video-mac`).
-- [ ] Update every `repos/<X>` path reference in `mira/`, `dashboard/`, `plan/`,
-      `n8n/` to the new submodule/local path.
-- [ ] Update README "Engines" section to describe the new structure.
-- [ ] **Purge `repos/` from git history** (they were committed):
-      `git filter-repo --path repos/ --invert-paths`
-      (history is ~10 MB, so this is fast; coordinate the force-push).
+- [ ] Remove `ltx-video-mac` (0 references).
+- [ ] Remove or externalize **n8n**, **avtr-1**, **SkyReels-V2** (submodule the user
+      inits, or a `scripts/fetch-engines.sh`) — do not redistribute under AGPL.
+- [ ] Update every `repos/<X>` path reference in `mira/`, `dashboard/`, `plan/`, `n8n/`
+      for anything moved to external.
+- [ ] Update README "Engines" section to reflect bundled vs external.
+- [ ] Purge removed engines from git history:
+      `git filter-repo --path repos/ltx-video-mac --path repos/n8n --path repos/avtr-1 --path repos/SkyReels-V2 --invert-paths`
+      (history is ~10 MB — fast; coordinate the force-push).
 
 ## 3. 🔴 Remove internal / confidential artifacts
 
 - [ ] Delete `CLAUDE-FABLE-5.md` from the working tree.
-- [ ] **Purge it from history:** `git filter-repo --path CLAUDE-FABLE-5.md --invert-paths`
-- [ ] Confirm the same file is removed from the `coco` repo too (it's untracked there).
-- [ ] Grep `plan/` for any internal architecture/roadmap that shouldn't be public.
-      (Audit found no "mckinsey/client/confidential" strings — re-verify after edits.)
-- [ ] Confirm `.claude/` is not committed (it's in `.gitignore` — verify history is clean).
+- [ ] Purge from history: `git filter-repo --path CLAUDE-FABLE-5.md --invert-paths`
+- [ ] Confirm the same file is removed from the `coco` repo (untracked there today).
+- [ ] Grep `plan/` for internal architecture/roadmap not meant to be public
+      (audit found no mckinsey/client/confidential strings — re-verify after edits).
+- [ ] Confirm `.claude/` is not in history (it's gitignored).
 
-## 4. 🔴 Reputational / brand review
+## 4. 🟡 Reputational / brand review
 
-- [ ] **Remove `locally-uncensored` entirely** — an "uncensored LLM" project
-      published under a McKinsey-affiliated org is a brand risk, and it's AGPL.
-      Remove its 5 code references and any feature depending on it.
-- [ ] Review the "Anthropic-styled" dashboard for any Anthropic trademark/logo
-      misuse before public.
-- [ ] Confirm "faceless channels / personal-brand automation" framing is acceptable
+- [ ] Decide on **locally-uncensored** — legal under AGPL, but an "uncensored LLM" under
+      a McKinsey-affiliated org is a brand risk. If removing, strip its 5 code refs.
+- [ ] Review the "Anthropic-styled" dashboard for any Anthropic trademark/logo misuse.
+- [ ] Confirm the "faceless channels / personal-brand automation" framing is acceptable
       for the org's public image.
 
 ## 5. 🟡 Secret & credential sweep
 
 - [ ] `.gitignore` already excludes `.env`, `config.toml`, media, `node_modules` — good.
-- [ ] Run a **full-history** secret scan (files were committed):
-      `gitleaks detect --source . --log-opts="--all"` and/or `trufflehog git file://.`
-- [ ] Verify every `.env.example` contains only placeholders (no real keys).
-- [ ] If any real key ever touched a committed file in history, **rotate it** — public
-      history is forever.
-- [ ] Confirm no API keys hardcoded in `mira/` (audit found only a redaction-test string).
+- [ ] Full-history scan: `gitleaks detect --source . --log-opts="--all"` and/or
+      `trufflehog git file://.`
+- [ ] Verify every `.env.example` holds only placeholders.
+- [ ] Rotate any key that ever touched a committed file — public history is forever.
 
-## 6. 🟡 License Mira itself + attribution
+## 6. License Mira itself (AGPL-3.0) + attribution
 
-- [ ] Add a top-level `LICENSE`. Per the org open-core pattern, Coco-Research
-      proprietary (source-available) is fine **only once no bundled copyleft code
-      remains** (i.e. after §2). If any AGPL/fair-code code is still bundled, a
-      proprietary license is invalid.
-- [ ] Add a `NOTICE` / `THIRD-PARTY.md` crediting every retained dependency
-      (name, license, upstream URL) — required by MIT/Apache, good practice overall.
+- [ ] Add the **full AGPL-3.0 license text** as top-level `LICENSE`.
+- [ ] Add copyright header + AGPL notice to Mira's own source files (`mira/`, etc.).
+- [ ] Add `THIRD-PARTY.md` / `NOTICE` crediting every retained engine (name, license,
+      upstream URL, vendored commit) — preserve each engine's own LICENSE file in-tree.
+- [ ] Mark modifications where you changed a vendored engine (AGPL §5 / §7).
+- [ ] Note the **§13 network clause**: if Mira is ever hosted, network users must be able
+      to obtain complete corresponding source. Document how (repo link) in README.
 
 ## 7. 🟡 Repo hygiene before flip
 
 - [ ] Mira's own test suite (~400 tests in `mira/`) passes.
-- [ ] LFS/large-file check — `.mp4/.mov/.wav/.mp3` already gitignored; confirm none in history.
-- [ ] Add CI (lint + tests) mirroring the other coco-research repos.
-- [ ] Enable branch protection + secret scanning on the repo.
+- [ ] LFS/large-file check — `.mp4/.mov/.wav/.mp3` gitignored; confirm none in history.
+- [ ] Add CI (lint + tests).
+- [ ] Enable branch protection + secret scanning.
 
 ## 8. ✅ Final go/no-go gate (the git-guard rule)
 
-Only after §1–§4 are 🟢 and §5–§7 done:
+Only after §1–§3 are 🟢 and §4–§7 done:
 - [ ] Owner explicitly authorizes public publication.
 - [ ] No internal/confidential material in tree OR history.
 - [ ] No secrets in tree OR history.
+- [ ] No license-incompatible engine (n8n / avtr-1 / SkyReels) remains bundled.
 - [ ] Then flip: `gh repo edit coco-research/Mira --visibility public --accept-visibility-change-consequences`
 
 ---
 
 ### Recommended sequence
-1. §3 (delete Fable doc) + §4 (remove locally-uncensored) — quick wins.
-2. §1 license audit → decide keep/drop per engine.
-3. §2 convert kept engines to submodules; purge `repos/` + Fable from history (one `filter-repo` pass).
+1. §3 (delete Fable doc) — quick win.
+2. §1 license verify → §2 remove/externalize n8n, avtr-1, SkyReels, ltx-video-mac.
+3. Single `git filter-repo` pass: purge Fable doc + the removed engines from history.
 4. §5 secret scan on the rewritten history.
-5. §6 add LICENSE + NOTICE; §7 hygiene.
-6. §8 gate → flip public.
+5. §6 add AGPL-3.0 LICENSE + NOTICE/THIRD-PARTY + modification notices.
+6. §4 brand decision (locally-uncensored) · §7 hygiene.
+7. §8 gate → flip public.
 
 *Do this as its own focused session — it is a real refactor, not a doc edit.*
+*Note: the org now spans MIT (coco core), proprietary source-available (coco-loops, coco-fusion, Super Intelligence), and AGPL-3.0 (Mira). State this in the org bio.*
