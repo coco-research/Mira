@@ -1,7 +1,10 @@
 # Mira — Pre-Publication Cleanup Checklist
 
-**Status: 🔴 NOT CLEARED FOR PUBLIC.** Do not flip `coco-research/Mira` to public until
-every 🔴 blocker below is resolved and the final go/no-go gate passes.
+**Status: ✅ PUBLISHED (2026-07-18).** All blockers below were resolved and the go/no-go
+gate passed: AGPL-3.0 applied; `CLAUDE-FABLE-5.md` + AVTR-1/ltx-video-mac/n8n/SkyReels-V2
+purged from history; n8n + SkyReels-V2 externalized via `scripts/setup-engines.sh`;
+400/400 tests green; secret scan clean (only dummy test fixtures); no internal/confidential
+content. Retained below as the record of what was done.
 
 ## Decisions locked (owner, 2026-07-18)
 
