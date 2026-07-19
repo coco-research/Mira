@@ -1,0 +1,72 @@
+<svg width="1280" height="200" viewBox="0 0 1280 200" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Mira pipeline: topic to script to voice to visuals to assembly to human review">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1280" y2="200" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0b1220"/>
+      <stop offset="1" stop-color="#0f1d3a"/>
+    </linearGradient>
+    <linearGradient id="flow" x1="60" y1="0" x2="1220" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#EC4899"/>
+      <stop offset="0.5" stop-color="#F59E0B"/>
+      <stop offset="1" stop-color="#8B5CF6"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="200" rx="20" fill="url(#bg)"/>
+  <rect x="0.5" y="0.5" width="1279" height="199" rx="19.5" fill="none" stroke="#243252" stroke-opacity="0.6"/>
+
+  <!-- connector line -->
+  <line x1="120" y1="92" x2="1160" y2="92" stroke="url(#flow)" stroke-width="3" stroke-dasharray="2 10" stroke-linecap="round" opacity="0.7"/>
+
+  <!-- 6 stages -->
+  <g font-family="Segoe UI,Helvetica,Arial,sans-serif" text-anchor="middle">
+    <!-- helper: each node is a rounded square + label -->
+    <!-- 1 Topic -->
+    <g transform="translate(120,92)">
+      <circle r="34" fill="#111c34" stroke="#EC4899" stroke-width="2.5"/>
+      <text y="6" font-size="26">💡</text>
+    </g>
+    <text x="120" y="150" font-size="16" font-weight="600" fill="#E7ECF6">Topic</text>
+    <text x="120" y="170" font-size="12" fill="#8595B4">prompt or queue</text>
+
+    <!-- 2 Script -->
+    <g transform="translate(328,92)">
+      <circle r="34" fill="#111c34" stroke="#F472B6" stroke-width="2.5"/>
+      <text y="6" font-size="26">📝</text>
+    </g>
+    <text x="328" y="150" font-size="16" font-weight="600" fill="#E7ECF6">Script</text>
+    <text x="328" y="170" font-size="12" fill="#8595B4">LM Studio / local</text>
+
+    <!-- 3 Voice -->
+    <g transform="translate(536,92)">
+      <circle r="34" fill="#111c34" stroke="#F59E0B" stroke-width="2.5"/>
+      <text y="6" font-size="26">🎙️</text>
+    </g>
+    <text x="536" y="150" font-size="16" font-weight="600" fill="#E7ECF6">Voice</text>
+    <text x="536" y="170" font-size="12" fill="#8595B4">edge-tts · EN/हिन्दी</text>
+
+    <!-- 4 Visuals -->
+    <g transform="translate(744,92)">
+      <circle r="34" fill="#111c34" stroke="#FBBF24" stroke-width="2.5"/>
+      <text y="6" font-size="26">🎬</text>
+    </g>
+    <text x="744" y="150" font-size="16" font-weight="600" fill="#E7ECF6">Visuals</text>
+    <text x="744" y="170" font-size="12" fill="#8595B4">Remotion / HyperFrames</text>
+
+    <!-- 5 Assemble -->
+    <g transform="translate(952,92)">
+      <circle r="34" fill="#111c34" stroke="#A78BFA" stroke-width="2.5"/>
+      <text y="6" font-size="26">🧩</text>
+    </g>
+    <text x="952" y="150" font-size="16" font-weight="600" fill="#E7ECF6">Assemble</text>
+    <text x="952" y="170" font-size="12" fill="#8595B4">ffmpeg · captions</text>
+
+    <!-- 6 Review -->
+    <g transform="translate(1160,92)">
+      <circle r="34" fill="#16223f" stroke="#8B5CF6" stroke-width="3"/>
+      <text y="6" font-size="26">✅</text>
+    </g>
+    <text x="1160" y="150" font-size="16" font-weight="700" fill="#F8FAFC">You review</text>
+    <text x="1160" y="170" font-size="12" fill="#8595B4">human in the loop</text>
+  </g>
+
+  <text x="120" y="42" font-family="ui-monospace,Menlo,monospace" font-size="14" fill="#93A2C2">mira generate → .mp4 + captions + metadata</text>
+</svg>

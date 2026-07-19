@@ -1,0 +1,85 @@
+<svg width="1280" height="360" viewBox="0 0 1280 360" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Mira — the local-first AI engine for short-form video">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1280" y2="360" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0b1220"/>
+      <stop offset="1" stop-color="#0f1d3a"/>
+    </linearGradient>
+    <linearGradient id="creative" x1="820" y1="40" x2="1220" y2="320" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#EC4899"/>
+      <stop offset="0.55" stop-color="#F59E0B"/>
+      <stop offset="1" stop-color="#8B5CF6"/>
+    </linearGradient>
+    <linearGradient id="frameStroke" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#EC4899"/>
+      <stop offset="1" stop-color="#8B5CF6"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="1040" cy="180" r="240" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#EC4899" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#EC4899" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1280" height="360" rx="22" fill="url(#bg)"/>
+  <rect x="0.5" y="0.5" width="1279" height="359" rx="21.5" fill="none" stroke="#243252" stroke-opacity="0.6"/>
+  <circle cx="1040" cy="180" r="230" fill="url(#glow)"/>
+
+  <!-- Left: wordmark + tagline -->
+  <text x="72" y="132" font-family="Segoe UI,Helvetica,Arial,sans-serif" font-size="80" font-weight="800" fill="#F8FAFC" letter-spacing="1">Mira</text>
+  <rect x="74" y="150" width="132" height="5" rx="2.5" fill="url(#creative)"/>
+  <text x="74" y="196" font-family="Segoe UI,Helvetica,Arial,sans-serif" font-size="26" font-weight="600" fill="#E7ECF6">The local-first AI engine for short-form video</text>
+  <text x="74" y="230" font-family="Segoe UI,Helvetica,Arial,sans-serif" font-size="18" fill="#93A2C2">Instagram Reels + YouTube Shorts · English &amp; हिन्दी · you stay in the loop</text>
+
+  <!-- chips -->
+  <g font-family="ui-monospace,Menlo,monospace" font-size="14" fill="#C7D2E5">
+    <rect x="74" y="258" width="118" height="32" rx="16" fill="#16223f" stroke="#2b3c63"/>
+    <text x="133" y="279" text-anchor="middle">AGPL-3.0</text>
+    <rect x="202" y="258" width="120" height="32" rx="16" fill="#16223f" stroke="#2b3c63"/>
+    <text x="262" y="279" text-anchor="middle">100% local</text>
+    <rect x="332" y="258" width="150" height="32" rx="16" fill="#16223f" stroke="#2b3c63"/>
+    <text x="407" y="279" text-anchor="middle">zero keys to start</text>
+    <rect x="492" y="258" width="128" height="32" rx="16" fill="#16223f" stroke="#2b3c63"/>
+    <text x="556" y="279" text-anchor="middle">400 tests</text>
+  </g>
+
+  <!-- Right: three vertical Reels/Shorts frames, staggered -->
+  <g>
+    <!-- back-left frame -->
+    <g transform="translate(872,96) rotate(-6)">
+      <rect width="118" height="200" rx="16" fill="#111c34" stroke="#2b3c63" stroke-width="2"/>
+      <rect x="14" y="150" width="90" height="9" rx="4.5" fill="#31426b"/>
+      <rect x="14" y="166" width="64" height="9" rx="4.5" fill="#26355a"/>
+      <text x="59" y="30" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="12" fill="#93A2C2">EN</text>
+    </g>
+    <!-- back-right frame -->
+    <g transform="translate(1104,96) rotate(6)">
+      <rect width="118" height="200" rx="16" fill="#111c34" stroke="#2b3c63" stroke-width="2"/>
+      <rect x="14" y="150" width="90" height="9" rx="4.5" fill="#31426b"/>
+      <rect x="14" y="166" width="72" height="9" rx="4.5" fill="#26355a"/>
+      <text x="59" y="30" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="13" fill="#93A2C2">हिन्दी</text>
+    </g>
+    <!-- center hero frame -->
+    <g transform="translate(984,72)">
+      <rect width="136" height="228" rx="20" fill="#0d1730" stroke="url(#frameStroke)" stroke-width="3"/>
+      <!-- play button -->
+      <circle cx="68" cy="98" r="34" fill="#16223f" stroke="url(#creative)" stroke-width="3"/>
+      <path d="M 58 80 L 90 98 L 58 116 Z" fill="url(#creative)"/>
+      <!-- caption bars -->
+      <rect x="18" y="168" width="100" height="11" rx="5.5" fill="#3a4d78"/>
+      <rect x="18" y="187" width="74" height="11" rx="5.5" fill="#293a63"/>
+      <!-- waveform (voice) -->
+      <g stroke="url(#creative)" stroke-width="3" stroke-linecap="round">
+        <line x1="24" y1="212" x2="24" y2="212"/>
+        <line x1="34" y1="206" x2="34" y2="218"/>
+        <line x1="44" y1="200" x2="44" y2="224"/>
+        <line x1="54" y1="208" x2="54" y2="216"/>
+        <line x1="64" y1="198" x2="64" y2="226"/>
+        <line x1="74" y1="204" x2="74" y2="220"/>
+        <line x1="84" y1="209" x2="84" y2="215"/>
+        <line x1="94" y1="202" x2="94" y2="222"/>
+        <line x1="104" y1="207" x2="104" y2="217"/>
+      </g>
+    </g>
+  </g>
+
+  <text x="72" y="330" font-family="Segoe UI,Helvetica,Arial,sans-serif" font-size="15" fill="#5f6f92">part of CoCo Research · coco-research/Mira</text>
+</svg>
