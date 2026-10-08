@@ -1,3 +1,4 @@
+import hashlib
 import json
 import locale
 import os
@@ -392,23 +393,32 @@ def _current_umask() -> int:
 _UMASK_LOCK = threading.Lock()
 
 
-def _remove_stale_faces(out_dir: str, prefix: str, ext: str, keep: str) -> None:
+def _source_id(path: str) -> str:
+    """Short, stable id of a font file's location (its resolved real path)."""
+    real = os.path.realpath(path)
+    return hashlib.sha256(os.fsencode(real)).hexdigest()[:12]
+
+
+def _remove_stale_faces(out_dir: str, stem: str, src_id: str, index: int, keep: str) -> None:
     """
-    Delete older cached copies of the same face (same font file name and face
-    index, but an earlier size/mtime of the source font), so the cache does not
-    grow each time a system font is updated. Best effort: a copy another
-    process still has open, or cannot remove, is left alone.
+    Delete older cached copies of the same face of the same source file (same
+    resolved path and face index, but an earlier size/mtime), so the cache does
+    not grow each time a system font is updated. Copies extracted from another
+    file with the same name (e.g. NotoSansCJK-Regular.ttc in both
+    /usr/share/fonts and ~/.local/share/fonts) have a different source id and
+    are never touched. Copies in the old name format without a source id
+    ("<stem>-face<index>-<size>-<mtime>") are no longer used and are removed.
+    Best effort: a copy that cannot be removed is left alone.
     """
     try:
         names = os.listdir(out_dir)
     except OSError:
         return
     keep_name = os.path.basename(keep)
+    ours = re.compile(re.escape(f"{stem}-{src_id}-face{index}-") + r"\d+-\d+\.(?:ttf|otf)")
+    legacy = re.compile(re.escape(f"{stem}-face{index}-") + r"\d+-\d+\.(?:ttf|otf)")
     for name in names:
-        if name == keep_name or not name.startswith(prefix) or not name.endswith(ext):
-            continue
-        # only "<stem>-face<index>-<size>-<mtime_ns><ext>", not another face index
-        if not re.fullmatch(re.escape(prefix) + r"\d+-\d+" + re.escape(ext), name):
+        if name == keep_name or not (ours.fullmatch(name) or legacy.fullmatch(name)):
             continue
         try:
             os.unlink(os.path.join(out_dir, name))
@@ -424,6 +434,17 @@ def extract_collection_face(path: str, index: int, out_dir: str = "") -> str:
     file. Returns "" if `path` is not a collection or the index is invalid.
     """
     import struct
+
+    st = os.stat(path)
+    stem = os.path.splitext(os.path.basename(path))[0]
+    src_id = _source_id(path)
+    out_dir = out_dir or storage_dir("font_faces", create=True)
+    # cache key: source identity + face index + the source's size and mtime
+    key = f"{stem}-{src_id}-face{index}-{st.st_size}-{st.st_mtime_ns}"
+    for cached_ext in (".ttf", ".otf"):
+        cached = os.path.join(out_dir, key + cached_ext)
+        if os.path.isfile(cached):  # cache hit: no need to read the collection
+            return cached
 
     with open(path, "rb") as f:
         data = f.read()
@@ -442,14 +463,9 @@ def extract_collection_face(path: str, index: int, out_dir: str = "") -> str:
         records.append((tag, checksum, t_off, t_len))
     records.sort(key=lambda r: r[0])
 
-    st = os.stat(path)
     ext = ".otf" if sfnt_version == b"OTTO" else ".ttf"
-    stem = os.path.splitext(os.path.basename(path))[0]
-    out_dir = out_dir or storage_dir("font_faces", create=True)
     os.makedirs(out_dir, exist_ok=True)
-    out = os.path.join(out_dir, f"{stem}-face{index}-{st.st_size}-{st.st_mtime_ns}{ext}")
-    if os.path.isfile(out):
-        return out
+    out = os.path.join(out_dir, key + ext)
 
     header_len = 12 + 16 * num_tables
     head = bytearray(data[base : base + 12])
@@ -479,7 +495,7 @@ def extract_collection_face(path: str, index: int, out_dir: str = "") -> str:
         except OSError:
             pass
         raise
-    _remove_stale_faces(out_dir, f"{stem}-face{index}-", ext, keep=out)
+    _remove_stale_faces(out_dir, stem, src_id, index, keep=out)
     return out
 
 

@@ -356,6 +356,38 @@ class TestCachedFaceFiles(unittest.TestCase):
             self.assertTrue(os.path.exists(other_face))
             self.assertTrue(os.path.exists(other_font))
 
+    def test_same_named_sources_do_not_evict_each_other(self):
+        # Two different files called Charm.ttc (e.g. a system and a per-user
+        # install) each keep their cached face; only an older copy extracted
+        # from the SAME file is pruned when that file changes.
+        with tempfile.TemporaryDirectory() as tmp:
+            a_dir, b_dir = os.path.join(tmp, "a"), os.path.join(tmp, "b")
+            os.makedirs(a_dir)
+            os.makedirs(b_dir)
+            a, b = self._ttc(a_dir), self._ttc(b_dir)
+            faces = os.path.join(tmp, "faces")
+            pa = utils.extract_collection_face(a, 1, out_dir=faces)
+            pb = utils.extract_collection_face(b, 1, out_dir=faces)
+            self.assertNotEqual(pa, pb)
+            # alternate calls are cache hits that leave both copies in place
+            self.assertEqual(utils.extract_collection_face(a, 1, out_dir=faces), pa)
+            self.assertEqual(utils.extract_collection_face(b, 1, out_dir=faces), pb)
+            self.assertTrue(os.path.isfile(pa) and os.path.isfile(pb))
+            # the source path is resolved, so a symlink to `a` shares a's cache
+            if os.name != "nt":
+                link = os.path.join(tmp, "Charm.ttc")
+                os.symlink(a, link)
+                self.assertEqual(utils.extract_collection_face(link, 1, out_dir=faces), pa)
+            # `a` changes: its new copy replaces its old one; b's copy is untouched
+            st = os.stat(a)
+            os.utime(a, ns=(st.st_atime_ns, st.st_mtime_ns + 1_000_000_000))
+            pa2 = utils.extract_collection_face(a, 1, out_dir=faces)
+            self.assertNotEqual(pa2, pa)
+            self.assertFalse(os.path.exists(pa))
+            self.assertTrue(os.path.isfile(pa2))
+            self.assertTrue(os.path.isfile(pb))
+            self.assertEqual(sorted(os.listdir(faces)), sorted([os.path.basename(pa2), os.path.basename(pb)]))
+
 
 if __name__ == "__main__":
     unittest.main()
