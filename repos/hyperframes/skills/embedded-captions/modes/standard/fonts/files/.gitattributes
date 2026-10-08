@@ -1,0 +1,2 @@
+# Licence texts are kept byte for byte as upstream ships them (some use CRLF).
+*.txt -text
