@@ -5,20 +5,39 @@ Mira does not bundle any CJK font file. The default subtitle font is
 at render time:
 
 1. A file with the configured name in this folder (for example `Charm-Regular.ttf`,
-   or any `.ttf`/`.ttc`/`.otf` you add yourself).
+   or any `.ttf`/`.ttc`/`.otf`/`.otc` you add yourself). Only the bare file name
+   is used; it must be a regular font file inside this folder (symlinks that
+   point elsewhere are ignored).
 2. Otherwise the configured name is passed to fontconfig (`fc-match`), so a
    family name such as `Noto Sans CJK SC` or `Noto Sans CJK SC:style=Bold` works.
+   The match is used only if fontconfig reports the requested family (fc-match
+   otherwise prints its default font, which may have no CJK glyphs).
 3. Otherwise well-known Noto Sans CJK locations, then the operating system's own
-   CJK font (PingFang on macOS, Microsoft YaHei / SimHei on Windows), read from
-   your system and never shipped with Mira.
+   CJK font (PingFang / Hiragino Sans GB on macOS, Microsoft YaHei / SimHei on
+   Windows), read from your system and never shipped with Mira.
 4. As a last resort, the bundled `Charm-Regular.ttf` (OFL; Latin and Thai only).
+
+Font settings that look like paths or options (containing `/` or `\`, or
+starting with `-`) are ignored and the default font is used, because the
+setting can come from the API.
+
+Font collections (`.ttc`/`.otc`) hold several faces. moviepy and Pillow load
+face 0, which in `NotoSansCJK-*.ttc` is the Japanese face, so Mira writes the
+Simplified Chinese face (the one fontconfig picked, or the one named
+`Noto Sans CJK SC`) to its own file under `storage/font_faces/` and uses that.
+Single-language files such as `NotoSansCJKsc-Regular.otf` are used directly.
 
 Install Noto Sans CJK if you render Chinese, Japanese or Korean subtitles:
 
 - Debian/Ubuntu: `sudo apt install fonts-noto-cjk` (the Docker images do this)
 - Fedora: `sudo dnf install google-noto-sans-cjk-fonts`
-- macOS: `brew install --cask font-noto-sans-cjk`
+- macOS: `brew install --cask font-noto-sans-cjk-sc` (installs
+  `NotoSansCJKsc-*.otf` into `~/Library/Fonts`, Simplified Chinese only). The
+  all-regions cask `font-noto-sans-cjk` installs `~/Library/Fonts/NotoSansCJK.ttc`,
+  which also works. macOS has no fontconfig by default, so these paths are checked directly.
 - Windows: install Noto Sans SC from https://fonts.google.com/noto/specimen/Noto+Sans+SC
+  (`NotoSansSC-VariableFont_wght.ttf`, in `C:\Windows\Fonts` or, for a per-user
+  install, `%LOCALAPPDATA%\Microsoft\Windows\Fonts`)
 
 The logic lives in `app/utils/utils.py` (`resolve_font_path`).
 

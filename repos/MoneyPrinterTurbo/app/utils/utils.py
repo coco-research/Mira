@@ -109,19 +109,43 @@ def font_dir(sub_dir: str = ""):
 # can be found, so rendering never crashes. Charm covers Latin and Thai only.
 _FALLBACK_BUNDLED_FONTS = ["Charm-Regular.ttf"]
 
+# Only these files are ever handed to FreeType (PIL / moviepy).
+_FONT_SUFFIXES = (".ttf", ".ttc", ".otf", ".otc")
+
 # Well-known locations of Noto Sans CJK and of the platform's own CJK UI font.
 # These are read from the user's machine at runtime; Mira does not ship them.
+# Single-language "SC" files come first: they hold only Simplified Chinese
+# glyph forms, so no face selection is needed. For a collection (.ttc/.otc)
+# the Simplified Chinese face is picked by name (see _preferred_face_index).
+_LOCALAPPDATA_FONTS = os.path.join(
+    os.environ.get("LOCALAPPDATA", os.path.expanduser("~/AppData/Local")),
+    "Microsoft",
+    "Windows",
+    "Fonts",
+)
 _SYSTEM_CJK_FONT_CANDIDATES = [
-    # Noto Sans CJK (SIL OFL 1.1)
+    # Noto Sans CJK SC, single-language files (SIL OFL 1.1). macOS:
+    # `brew install --cask font-noto-sans-cjk-sc`; Linux: Noto SubsetOTF / -extra.
+    os.path.expanduser("~/Library/Fonts/NotoSansCJKsc-Regular.otf"),
+    "/Library/Fonts/NotoSansCJKsc-Regular.otf",
+    "/usr/share/fonts/opentype/noto/NotoSansCJKsc-Regular.otf",
+    "/usr/share/fonts/noto-cjk/NotoSansCJKsc-Regular.otf",
+    os.path.expanduser("~/.local/share/fonts/NotoSansCJKsc-Regular.otf"),
+    # Noto Sans SC from Google Fonts (Windows: system-wide or per-user install)
+    "C:/Windows/Fonts/NotoSansSC-VariableFont_wght.ttf",
+    os.path.join(_LOCALAPPDATA_FONTS, "NotoSansSC-VariableFont_wght.ttf"),
+    # Noto Sans CJK collections (all regions in one file)
     "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
     "/usr/share/fonts/noto-cjk/NotoSansCJK-Regular.ttc",
     "/usr/share/fonts/google-noto-cjk/NotoSansCJK-Regular.ttc",
     "/usr/share/fonts/OTF/NotoSansCJK-Regular.ttc",
     "/usr/local/share/fonts/NotoSansCJK-Regular.ttc",
-    "/Library/Fonts/NotoSansCJK-Regular.ttc",
-    os.path.expanduser("~/Library/Fonts/NotoSansCJK-Regular.ttc"),
     os.path.expanduser("~/.local/share/fonts/NotoSansCJK-Regular.ttc"),
-    "C:/Windows/Fonts/NotoSansSC-VF.ttf",
+    # macOS: `brew install --cask font-noto-sans-cjk` installs NotoSansCJK.ttc
+    os.path.expanduser("~/Library/Fonts/NotoSansCJK.ttc"),
+    "/Library/Fonts/NotoSansCJK.ttc",
+    os.path.expanduser("~/Library/Fonts/NotoSansCJK-Regular.ttc"),
+    "/Library/Fonts/NotoSansCJK-Regular.ttc",
     # The operating system's own CJK font, if Noto is not installed
     "/System/Library/Fonts/PingFang.ttc",
     "/System/Library/Fonts/Hiragino Sans GB.ttc",
@@ -130,61 +154,298 @@ _SYSTEM_CJK_FONT_CANDIDATES = [
 ]
 
 
-def _fc_match(pattern: str) -> str:
-    """Return the font file fontconfig picks for `pattern`, or "" if unavailable."""
-    fc_match = shutil.which("fc-match")
-    if not fc_match:
+def _font_file(path: str) -> str:
+    """Return `path` if it resolves to a regular font file, else ""."""
+    if not path:
         return ""
     try:
+        real = os.path.realpath(path)
+    except (OSError, ValueError):
+        return ""
+    if real.lower().endswith(_FONT_SUFFIXES) and os.path.isfile(real):
+        return path
+    return ""
+
+
+def _is_safe_font_name(name: str) -> bool:
+    """A font setting is a family pattern or a bare file name, never a path or option."""
+    return bool(name) and not (
+        name.startswith("-")
+        or "/" in name
+        or "\\" in name
+        or "\x00" in name
+        or name in (".", "..")
+    )
+
+
+def _bundled_font(name: str) -> str:
+    """A font file in resource/fonts/, looked up by base name and kept inside that dir."""
+    base = os.path.basename(name)
+    if not base:
+        return ""
+    root = os.path.realpath(font_dir())
+    path = os.path.join(root, base)
+    try:
+        real = os.path.realpath(path)
+    except (OSError, ValueError):
+        return ""
+    if not real.startswith(root + os.sep):
+        return ""
+    return path if _font_file(path) else ""
+
+
+def _requested_family(pattern: str) -> str:
+    return pattern.split(":", 1)[0].strip().replace("\\", "").lower()
+
+
+def _fc_match_face(pattern: str) -> tuple[str, int]:
+    """
+    Return (file, face index) that fontconfig picks for `pattern`, or ("", 0).
+
+    fc-match always prints *some* font (fontconfig's default) even for a
+    family that is not installed, so the match is accepted only when the
+    requested family is one of the families fontconfig reports.
+    """
+    if not _is_safe_font_name(pattern):
+        return "", 0
+    fc_match = shutil.which("fc-match")
+    if not fc_match:
+        return "", 0
+    try:
         result = subprocess.run(
-            [fc_match, "-f", "%{file}", pattern],
+            [fc_match, "-f", "%{family}\t%{index}\t%{file}", "--", pattern],
             capture_output=True,
             text=True,
             timeout=10,
         )
     except Exception as e:
         logger.warning(f"fc-match failed for {pattern!r}: {e}")
+        return "", 0
+    if result.returncode != 0:
+        return "", 0
+    parts = result.stdout.strip().split("\t")
+    if len(parts) != 3:
+        return "", 0
+    families, index, path = parts
+    wanted = _requested_family(pattern)
+    got = {f.strip().replace("\\", "").lower() for f in families.split(",")}
+    if not wanted or wanted not in got:
+        return "", 0
+    path = _font_file(path.strip())
+    if not path:
+        return "", 0
+    try:
+        face = int(index) & 0xFFFF  # high bits are variable-font instance numbers
+    except ValueError:
+        face = 0
+    return os.path.realpath(path), face
+
+
+def _fc_match(pattern: str) -> str:
+    """Return the font file fontconfig picks for `pattern`, or "" if unavailable."""
+    path, face = _fc_match_face(pattern)
+    return _face_file(path, face) if path else ""
+
+
+def _read_collection_offsets(data: bytes) -> list[int]:
+    import struct
+
+    if len(data) < 12 or data[:4] != b"ttcf":
+        return []
+    (count,) = struct.unpack(">I", data[8:12])
+    if count > 256 or len(data) < 12 + 4 * count:
+        return []
+    return list(struct.unpack(f">{count}I", data[12 : 12 + 4 * count]))
+
+
+def _face_names(data: bytes, offset: int) -> tuple[set[str], set[str]]:
+    """(family names, style names) of the sfnt face at `offset` (name IDs 1/16, 2/17)."""
+    import struct
+
+    families, styles = set(), set()
+    try:
+        (num_tables,) = struct.unpack(">H", data[offset + 4 : offset + 6])
+        for i in range(num_tables):
+            rec = offset + 12 + 16 * i
+            if data[rec : rec + 4] != b"name":
+                continue
+            (t_off,) = struct.unpack(">I", data[rec + 8 : rec + 12])
+            _, count, str_off = struct.unpack(">HHH", data[t_off : t_off + 6])
+            for j in range(count):
+                r = t_off + 6 + 12 * j
+                pid, eid, _lang, nid, length, n_off = struct.unpack(
+                    ">HHHHHH", data[r : r + 12]
+                )
+                if nid not in (1, 2, 16, 17):
+                    continue
+                raw = data[t_off + str_off + n_off : t_off + str_off + n_off + length]
+                if pid in (0, 3):
+                    text = raw.decode("utf-16-be", "ignore")
+                elif pid == 1 and eid == 0:
+                    text = raw.decode("latin-1", "ignore")
+                else:
+                    continue
+                text = text.strip().lower()
+                if text:
+                    (families if nid in (1, 16) else styles).add(text)
+    except struct.error:
+        pass
+    return families, styles
+
+
+def _requested_style(pattern: str) -> str:
+    m = re.search(r":style=([^:]+)", pattern, flags=re.IGNORECASE)
+    return m.group(1).strip().lower() if m else "regular"
+
+
+def _preferred_face_index(path: str, pattern: str) -> int:
+    """
+    Pick the face of a collection for a fontconfig-style `pattern`: the
+    requested family, else the default (Noto Sans CJK SC), else a Simplified
+    Chinese ("SC") face, else face 0; within a family, the requested style
+    (Regular unless ":style=..." says otherwise). Non-collections use face 0.
+    """
+    try:
+        with open(path, "rb") as f:
+            data = f.read()
+    except OSError:
+        return 0
+    offsets = _read_collection_offsets(data)
+    if len(offsets) < 2:
+        return 0
+    faces = [_face_names(data, o) for o in offsets]
+    style = _requested_style(pattern)
+
+    def best(matches):
+        for i in matches:
+            if style in faces[i][1]:
+                return i
+        return matches[0] if matches else None
+
+    for want in (_requested_family(pattern), const.DEFAULT_FONT_NAME.lower()):
+        hit = best([i for i, (fams, _) in enumerate(faces) if want in fams])
+        if hit is not None:
+            return hit
+    hit = best([i for i, (fams, _) in enumerate(faces) if any("sc" in n.split() for n in fams)])
+    return hit if hit is not None else 0
+
+
+def extract_collection_face(path: str, index: int, out_dir: str = "") -> str:
+    """
+    Write face `index` of a .ttc/.otc collection as a standalone font file and
+    return its path (cached). moviepy's TextClip and PIL's ImageFont.truetype
+    load face 0 unless told otherwise, so the requested face is given its own
+    file. Returns "" if `path` is not a collection or the index is invalid.
+    """
+    import struct
+
+    with open(path, "rb") as f:
+        data = f.read()
+    offsets = _read_collection_offsets(data)
+    if not 0 <= index < len(offsets):
         return ""
-    path = result.stdout.strip()
-    if result.returncode == 0 and path and os.path.isfile(path):
+    base = offsets[index]
+    sfnt_version = data[base : base + 4]
+    (num_tables,) = struct.unpack(">H", data[base + 4 : base + 6])
+    records = []
+    for i in range(num_tables):
+        rec = base + 12 + 16 * i
+        tag, checksum, t_off, t_len = struct.unpack(">4sIII", data[rec : rec + 16])
+        if t_off + t_len > len(data):
+            return ""
+        records.append((tag, checksum, t_off, t_len))
+    records.sort(key=lambda r: r[0])
+
+    st = os.stat(path)
+    ext = ".otf" if sfnt_version == b"OTTO" else ".ttf"
+    stem = os.path.splitext(os.path.basename(path))[0]
+    out_dir = out_dir or storage_dir("font_faces", create=True)
+    os.makedirs(out_dir, exist_ok=True)
+    out = os.path.join(out_dir, f"{stem}-face{index}-{st.st_size}-{st.st_mtime_ns}{ext}")
+    if os.path.isfile(out):
+        return out
+
+    header_len = 12 + 16 * num_tables
+    head = bytearray(data[base : base + 12])
+    table_dir = bytearray()
+    body = bytearray()
+    pos = header_len
+    for tag, checksum, t_off, t_len in records:
+        table_dir += struct.pack(">4sIII", tag, checksum, pos, t_len)
+        chunk = data[t_off : t_off + t_len]
+        chunk += b"\0" * (-len(chunk) % 4)
+        body += chunk
+        pos += len(chunk)
+    tmp = f"{out}.{os.getpid()}.tmp"
+    with open(tmp, "wb") as f:
+        f.write(bytes(head) + bytes(table_dir) + bytes(body))
+    os.replace(tmp, out)
+    return out
+
+
+def _face_file(path: str, index: int) -> str:
+    """`path` itself for face 0 / single fonts; else a standalone copy of that face."""
+    if index <= 0 or not path.lower().endswith((".ttc", ".otc")):
         return path
-    return ""
+    try:
+        out = extract_collection_face(path, index)
+    except Exception as e:
+        logger.warning(f"could not extract face {index} of {path}: {e}")
+        return path
+    return out or path
 
 
 def resolve_font_path(font_name: str = "") -> str:
     """
     Turn a subtitle font setting into a font file path at render time.
 
-    Order: a file in resource/fonts/ (or a path to a file), then the system
-    font named by `font_name` via fontconfig (default: Noto Sans CJK), then
+    `font_name` is a fontconfig family pattern (e.g. "Noto Sans CJK SC" or
+    "Noto Sans CJK SC:style=Bold") or the bare name of a file in
+    resource/fonts/. Paths, names with path separators and names that start
+    with "-" are rejected (they reach us from the API) and the default is
+    used instead.
+
+    Order: a file in resource/fonts/, then the system font named by
+    `font_name` via fontconfig (only if fontconfig reports that family), then
     well-known Noto Sans CJK / OS CJK font locations, then a bundled OFL font.
-    Names of the proprietary fonts removed from resource/fonts/ are mapped to
-    Noto Sans CJK, so older configs keep working.
+    For font collections the Simplified Chinese face is returned as its own
+    file, since moviepy and PIL otherwise load face 0 (Japanese forms in
+    Noto Sans CJK). Names of the proprietary fonts removed from
+    resource/fonts/ are mapped to Noto Sans CJK, so older configs keep working.
     """
     name = (font_name or "").strip() or const.DEFAULT_FONT_NAME
+    if not _is_safe_font_name(name):
+        logger.warning(f"ignoring unsafe font setting {name!r}; using {const.DEFAULT_FONT_NAME!r}")
+        name = const.DEFAULT_FONT_NAME
     if name in const.REMOVED_FONT_ALIASES:
         alias = const.REMOVED_FONT_ALIASES[name]
         logger.info(f"font {name!r} is no longer bundled; using system font {alias!r}")
         name = alias
 
-    bundled = os.path.join(font_dir(), name)
-    if os.path.isfile(bundled):
+    bundled = _bundled_font(name)
+    if bundled:
         return bundled
 
     path = _fc_match(name)
     if path:
         return path
 
+    bold = "bold" in name.lower()
+    candidates = []
     for candidate in _SYSTEM_CJK_FONT_CANDIDATES:
-        if os.path.isfile(candidate):
+        if bold and "Regular" in os.path.basename(candidate):
+            candidates.append(candidate.replace("Regular", "Bold"))
+        candidates.append(candidate)
+    for candidate in candidates:
+        if _font_file(candidate):
             logger.warning(
                 f"font {name!r} not found via fontconfig; using system font {candidate}"
             )
-            return candidate
+            return _face_file(candidate, _preferred_face_index(candidate, name))
 
     for fallback in _FALLBACK_BUNDLED_FONTS:
-        path = os.path.join(font_dir(), fallback)
-        if os.path.isfile(path):
+        path = _bundled_font(fallback)
+        if path:
             logger.warning(
                 f"font {name!r} not found and no CJK system font installed; "
                 f"falling back to bundled {fallback} (no CJK glyphs). "
@@ -193,7 +454,7 @@ def resolve_font_path(font_name: str = "") -> str:
             return path
 
     logger.error(f"no usable subtitle font found for {name!r}")
-    return bundled
+    return os.path.join(font_dir(), _FALLBACK_BUNDLED_FONTS[0])
 
 
 def song_dir(sub_dir: str = ""):

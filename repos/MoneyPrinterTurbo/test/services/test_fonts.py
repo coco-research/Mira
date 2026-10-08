@@ -1,7 +1,13 @@
 import os
+import shutil
+import stat
+import struct
+import sys
 import tempfile
 import unittest
 from unittest.mock import patch
+
+from PIL import ImageFont
 
 from app.models import const
 from app.utils import utils
@@ -47,6 +53,154 @@ class TestResolveFontPath(unittest.TestCase):
                 utils.resolve_font_path(const.DEFAULT_FONT_NAME),
                 os.path.join(utils.font_dir(), "Charm-Regular.ttf"),
             )
+
+
+def _build_collection(paths, out):
+    """Pack single-face sfnt files into a .ttc (test helper, no fontTools)."""
+    blobs = [open(p, "rb").read() for p in paths]
+    header_len = 12 + 4 * len(blobs)
+    offsets, body = [], bytearray()
+    for blob in blobs:
+        (num_tables,) = struct.unpack(">H", blob[4:6])
+        dir_len = 12 + 16 * num_tables
+        base = header_len + len(body)
+        offsets.append(base)
+        tables = bytearray()
+        records = bytearray()
+        data_start = base + dir_len
+        for i in range(num_tables):
+            tag, checksum, t_off, t_len = struct.unpack(">4sIII", blob[12 + 16 * i : 28 + 16 * i])
+            chunk = blob[t_off : t_off + t_len]
+            records += struct.pack(">4sIII", tag, checksum, data_start + len(tables), t_len)
+            tables += chunk + b"\0" * (-len(chunk) % 4)
+        body += blob[:12] + records + tables
+    with open(out, "wb") as f:
+        f.write(b"ttcf" + struct.pack(">HHI", 1, 0, len(blobs)))
+        f.write(struct.pack(f">{len(blobs)}I", *offsets))
+        f.write(body)
+
+
+@unittest.skipIf(sys.platform == "win32", "fake fc-match is a POSIX shell script")
+class TestFcMatch(unittest.TestCase):
+    """_fc_match against a fake fc-match binary on PATH (M1, M2)."""
+
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp()
+        self.argv_log = os.path.join(self.tmp, "argv")
+        self.font = os.path.join(self.tmp, "Real Font.ttf")
+        shutil.copy(os.path.join(utils.font_dir(), "Charm-Regular.ttf"), self.font)
+        self.addCleanup(shutil.rmtree, self.tmp)
+
+    def fake(self, stdout, rc=0):
+        script = os.path.join(self.tmp, "fc-match")
+        with open(script, "w") as f:
+            f.write("#!/bin/sh\n")
+            f.write(f'for a in "$@"; do printf "%s\\n" "$a"; done > "{self.argv_log}"\n')
+            f.write(f"printf '%s' '{stdout}'\nexit {rc}\n")
+        os.chmod(script, os.stat(script).st_mode | stat.S_IEXEC)
+        return patch.dict(os.environ, {"PATH": self.tmp + os.pathsep + os.environ.get("PATH", "")})
+
+    def argv(self):
+        with open(self.argv_log) as f:
+            return f.read().splitlines()
+
+    def test_accepts_requested_family_and_passes_double_dash(self):
+        with self.fake(f"Real Font,Real Font Regular\t0\t{self.font}"):
+            self.assertEqual(utils._fc_match("Real Font:style=Regular"), os.path.realpath(self.font))
+        argv = self.argv()
+        self.assertEqual(argv[-2:], ["--", "Real Font:style=Regular"])
+
+    def test_rejects_fontconfig_default_for_missing_family(self):
+        with self.fake(f"DejaVu Sans\t0\t{self.font}"):
+            self.assertEqual(utils._fc_match("Missing Family XYZ"), "")
+
+    def test_rejects_nonzero_exit_empty_output_and_missing_file(self):
+        with self.fake(f"Real Font\t0\t{self.font}", rc=1):
+            self.assertEqual(utils._fc_match("Real Font"), "")
+        with self.fake(""):
+            self.assertEqual(utils._fc_match("Real Font"), "")
+        with self.fake(f"Real Font\t0\t{self.tmp}/nope.ttf"):
+            self.assertEqual(utils._fc_match("Real Font"), "")
+
+    def test_rejects_non_font_files(self):
+        with self.fake("Real Font\t0\t/etc/passwd"):
+            self.assertEqual(utils._fc_match("Real Font"), "")
+
+    def test_option_like_names_never_reach_fc_match(self):
+        with self.fake("Real Font\t0\t/etc/passwd"):
+            for name in ("--format=/etc/passwd", "-s", "--help", "-V"):
+                self.assertEqual(utils._fc_match(name), "")
+            self.assertFalse(os.path.exists(self.argv_log))
+
+    def test_resolve_never_returns_injected_paths(self):
+        # Even if fc-match were fooled, nothing outside a font file comes back.
+        with self.fake("Real Font\t0\t/etc/passwd"):
+            for name in ("--format=/etc/passwd", "/etc/passwd", "../../../../etc/passwd",
+                         "../fonts/Charm-Regular.ttf", "..\\..\\etc\\passwd"):
+                path = utils.resolve_font_path(name)
+                self.assertNotEqual(os.path.realpath(path), "/etc/passwd")
+                self.assertTrue(path.lower().endswith((".ttf", ".ttc", ".otf", ".otc")), path)
+
+
+class TestBundledLookup(unittest.TestCase):
+    """Bundled fonts: base name only, kept inside resource/fonts, font suffixes only (M2)."""
+
+    def test_unsafe_names_fall_back_to_default(self):
+        seen = []
+        with patch.object(utils, "_fc_match", side_effect=lambda p: seen.append(p) or "/z.ttc"):
+            for name in ("/etc/passwd", "--format=/etc/passwd", "../", "../Charm-Regular.ttf"):
+                self.assertEqual(utils.resolve_font_path(name), "/z.ttc")
+        self.assertEqual(set(seen), {const.DEFAULT_FONT_NAME})
+
+    def test_symlink_out_of_font_dir_and_non_fonts_are_ignored(self):
+        with tempfile.TemporaryDirectory() as fonts, tempfile.TemporaryDirectory() as outside:
+            target = os.path.join(outside, "evil.ttf")
+            shutil.copy(os.path.join(utils.font_dir(), "Charm-Regular.ttf"), target)
+            os.symlink(target, os.path.join(fonts, "Linked.ttf"))
+            with open(os.path.join(fonts, "notes.txt"), "w") as f:
+                f.write("x")
+            with patch.object(utils, "font_dir", return_value=fonts):
+                self.assertEqual(utils._bundled_font("Linked.ttf"), "")
+                self.assertEqual(utils._bundled_font("notes.txt"), "")
+                self.assertEqual(utils._bundled_font("../" + os.path.basename(outside) + "/evil.ttf"), "")
+
+
+class TestCollectionFaces(unittest.TestCase):
+    """Collections: the requested (SC) face is handed to moviepy/PIL as face 0 (M3)."""
+
+    def test_extract_face_from_collection(self):
+        fonts = utils.font_dir()
+        with tempfile.TemporaryDirectory() as tmp:
+            ttc = os.path.join(tmp, "Charm.ttc")
+            _build_collection(
+                [os.path.join(fonts, "Charm-Regular.ttf"), os.path.join(fonts, "Charm-Bold.ttf")], ttc
+            )
+            self.assertEqual(ImageFont.truetype(ttc, 20).getname(), ("Charm", "Regular"))
+            out = utils.extract_collection_face(ttc, 1, out_dir=os.path.join(tmp, "faces"))
+            self.assertTrue(out.endswith(".ttf"))
+            self.assertEqual(ImageFont.truetype(out, 20).getname(), ("Charm", "Bold"))
+            self.assertEqual(utils.extract_collection_face(ttc, 2, out_dir=tmp), "")
+            self.assertEqual(utils._preferred_face_index(ttc, "Charm"), 0)
+            self.assertEqual(utils._preferred_face_index(ttc, "Charm:style=Bold"), 1)
+
+    def test_system_candidate_collection_uses_sc_face(self):
+        noto = "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc"
+        if not os.path.isfile(noto):
+            self.skipTest("Noto Sans CJK collection not installed")
+        self.assertNotEqual(ImageFont.truetype(noto, 20).getname()[0], "Noto Sans CJK SC")
+        with patch.object(utils, "_fc_match", return_value=""), \
+                patch.object(utils, "_SYSTEM_CJK_FONT_CANDIDATES", [noto]):
+            path = utils.resolve_font_path(const.DEFAULT_FONT_NAME)
+        self.assertEqual(ImageFont.truetype(path, 20).getname()[0], "Noto Sans CJK SC")
+
+    def test_default_font_renders_simplified_chinese_face(self):
+        if not shutil.which("fc-match") or not os.path.isfile(
+            "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc"
+        ):
+            self.skipTest("fontconfig with Noto Sans CJK not installed")
+        for name, style in ((const.DEFAULT_FONT_NAME, "Regular"), (const.DEFAULT_BOLD_FONT_NAME, "Bold")):
+            path = utils.resolve_font_path(name)
+            self.assertEqual(ImageFont.truetype(path, 20).getname(), ("Noto Sans CJK SC", style))
 
 
 if __name__ == "__main__":
