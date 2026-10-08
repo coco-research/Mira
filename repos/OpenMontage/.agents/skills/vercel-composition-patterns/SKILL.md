@@ -5,7 +5,7 @@ description: "Pointer to the upstream skill for React component composition (com
 
 # Vercel Composition Patterns
 
-Mira does not ship this skill because the upstream has no licence file, so this page points to the original instead.
+Mira does not ship this skill because the upstream ships no licence file or copyright notice (its README and SKILL.md frontmatter only say MIT), so this page points to the original instead.
 
 ## Install from upstream
 

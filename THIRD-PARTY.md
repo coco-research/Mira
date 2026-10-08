@@ -40,8 +40,31 @@ license). Their copyright and license notices are retained in-tree.
   `Charm-*.ttf` files are version 1.001 and embed the same copyright line.
 - **`repos/OpenMontage/.agents/skills/vercel-composition-patterns/`, `vercel-react-best-practices/` and
   `web-design-guidelines/`:** Vercel's skills from
-  [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills), which has no licence file, so
-  OpenMontage's AGPL-3.0 licence cannot cover them. Mira ships only a link-only stub `SKILL.md` for each.
+  [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills). Upstream declares MIT in its README
+  (and in the `license:` frontmatter of the first two skills) but ships no LICENSE file or copyright notice, so
+  the MIT terms cannot be complied with and OpenMontage's AGPL-3.0 licence cannot cover them. Mira ships only a
+  link-only stub `SKILL.md` for each.
+- **`repos/hyperframes/packages/producer/tests/heygen-promo-preview-assets/src/`:** `ABCSolarDisplay-Bold.woff2`
+  (ABC Solar Display, Dinamo) and `TT_Norms_Pro_{Normal,Medium,Bold}.woff2` (TT Norms Pro, TypeType) are
+  commercial fonts with no licence and were removed. The regression fixture's golden `output/compiled.html` no
+  longer declares them, so its text falls back to the existing Arial / sans-serif stacks.
+- **`repos/hyperframes/skills/embedded-captions/assets/brand/CyberpunkReplica.ttf`** (and the fan-kit's
+  `CDPR-fankit-terms.txt`): a fan replica of the Cyberpunk 2077 logo type whose terms say "not for commercial
+  usage", which conflicts with redistribution under AGPL-3.0. Removed. The theme compiler's `coverword` setpiece
+  uses a user-supplied copy at that path if present, otherwise a heavy system face (Arial Black / Impact).
+  `cyberpunk-widths.json` (advance widths and glyph bounds measured from the fan-kit SVG) stays.
+- **`repos/hyperframes/skills/graphic-overlays/assets/fonts/Virgil.woff2`:** removed because its licence could
+  not be confirmed. The upstream repository (excalidraw/virgil) says OFL, but the font's own name table says
+  "Freeware for personal use". The skill now suggests Caveat or the system `cursive` font.
+
+## Fonts and scripts bundled inside engines (lab-0062)
+
+| Path | Component | Licence | Licence text / source |
+|------|-----------|---------|-----------------------|
+| `repos/hyperframes/skills/graphic-overlays/assets/fonts/Caveat-{400,700}-latin.woff2` | Caveat | SIL OFL 1.1 | `OFL-caveat.txt` beside it, byte for byte from [google/fonts `ofl/caveat/OFL.txt` @ 2eb0b48d5f760f62e286216f0859a8c540dbc1bd](https://github.com/google/fonts/blob/2eb0b48d5f760f62e286216f0859a8c540dbc1bd/ofl/caveat/OFL.txt) |
+| `repos/hyperframes/skills/graphic-overlays/assets/fonts/Inter-{400,700}-latin.woff2` | Inter | SIL OFL 1.1 | `OFL-inter.txt` beside it, byte for byte from [google/fonts `ofl/inter/OFL.txt` @ 2eb0b48d5f760f62e286216f0859a8c540dbc1bd](https://github.com/google/fonts/blob/2eb0b48d5f760f62e286216f0859a8c540dbc1bd/ofl/inter/OFL.txt) |
+| `repos/hyperframes/skills/graphic-overlays/assets/fonts/LXGWWenKaiTC-400-latin.woff2` | LXGW WenKai TC | SIL OFL 1.1 | `OFL-lxgw-wenkai-tc.txt` beside it, byte for byte from [lxgw/LxgwWenkaiTC `OFL.txt` @ v1.330 (e161a32aeaf17666e0e14aca45ebcbf92ec4ba85)](https://github.com/lxgw/LxgwWenkaiTC/blob/e161a32aeaf17666e0e14aca45ebcbf92ec4ba85/OFL.txt) |
+| `repos/hyperframes/skills/graphic-overlays/assets/vendor/gsap.min.js` | GSAP 3.15.0 | GreenSock Standard License (https://gsap.com/standard-license) | Its notice: "Copyright 2026, GreenSock. All rights reserved. Subject to the terms at https://gsap.com/standard-license." Not covered by hyperframes' Apache-2.0 licence or by Mira's AGPL-3.0. |
 
 ## External engines (NOT bundled — fetch yourself)
 

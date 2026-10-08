@@ -5,7 +5,7 @@ description: "Pointer to the upstream skill for reviewing UI code against the We
 
 # Web Interface Guidelines
 
-Mira does not ship this skill because the upstream has no licence file, so this page points to the original instead.
+Mira does not ship this skill because the upstream ships no licence file or copyright notice (its README only says MIT), so this page points to the original instead.
 
 ## Install from upstream
 

@@ -1,6 +1,6 @@
 {
   "name": "heygen-promo-preview-assets",
-  "description": "Regression fixture using the HeyGen promo composition with sub-composition images and local brand fonts referenced via ../ paths. Guards against broken asset rewriting in compiled output and rendered snapshots.",
+  "description": "Regression fixture using the HeyGen promo composition with sub-composition images referenced via ../ paths. Guards against broken asset rewriting in compiled output and rendered snapshots. The commercial brand fonts (TT Norms Pro, ABC Solar Display) were removed in the lab-0062 legal review (Modified by Coco, 2026-10-08); the compositions fall back to their Arial / sans-serif stacks, so regenerate the baseline before relying on it.",
   "tags": ["regression", "sub-composition", "preview-assets", "prod-style", "slow"],
   "minPsnr": 30,
   "maxFrameFailures": 0,

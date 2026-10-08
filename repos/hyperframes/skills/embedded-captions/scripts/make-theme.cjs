@@ -5113,10 +5113,12 @@ function setpieceCpslam() {
 
 function setpieceCoverword() {
   // CP2077 COVER-LETTERFORM slam, precision pass: the spoken apex word set in
-  // the replica typeface of the official mark (assets/brand/CyberpunkReplica.ttf
-  // — lowercase glyphs carry the logo's actual brush chops, blade terminals and
-  // spikes), in logo case (First-upper). The setpiece adds only what the FONT
-  // does not carry: the solid cyan duplicate offset down-left, the baseline
+  // the replica typeface of the official mark, in logo case (First-upper).
+  // Modified by Coco, 2026-10-08 (lab-0062): CyberpunkReplica.ttf is no longer
+  // shipped (its fan-kit terms forbid commercial use). If you have your own
+  // copy, put it at assets/brand/CyberpunkReplica.ttf and it is used;
+  // otherwise the word is set in a heavy system face ("Arial Black", Impact).
+  // The setpiece adds only what the FONT does not carry: the solid cyan duplicate offset down-left, the baseline
   // streak + cyan pixel debris, the circuit trace off the tail, and the
   // tear-in/living-print/tear-out choreography. No synthetic letter surgery.
   const h = dna.hero,
@@ -5137,9 +5139,13 @@ function setpieceCoverword() {
   const CPM = JSON.parse(
     fs.readFileSync(path.join(SKILL, "assets/brand/cyberpunk-widths.json"), "utf8"),
   );
-  const fontB64 = fs
-    .readFileSync(path.join(SKILL, "assets/brand/CyberpunkReplica.ttf"))
-    .toString("base64");
+  const replicaTtf = path.join(SKILL, "assets/brand/CyberpunkReplica.ttf");
+  const fontB64 = fs.existsSync(replicaTtf) ? fs.readFileSync(replicaTtf).toString("base64") : "";
+  if (!fontB64)
+    console.warn(
+      "[make-theme] coverword: assets/brand/CyberpunkReplica.ttf is not shipped; using a system face (Arial Black / Impact)",
+    );
+  const CW_FAMILY = fontB64 ? "'CPReplica'" : "'Arial Black', Impact, sans-serif";
   const DISP = HG.coverDisp || heroText[0].toUpperCase() + heroText.slice(1).toLowerCase();
   const hpx = HG.fontPx;
   const em =
@@ -5219,7 +5225,7 @@ function setpieceCoverword() {
     `<rect x="0" y="0" width="${BW}" height="${BH}" fill="${fill}" mask="url(#cwm)"/>`;
   const EX = theme.hero.exitAt ?? Math.min(heroOut - 0.2, I + (p.hold ?? 2.6));
   const css = `
-  @font-face { font-family:'CPReplica'; src: url(data:font/ttf;base64,${fontB64}) format('truetype'); font-display: block; }
+  ${fontB64 ? `@font-face { font-family:'CPReplica'; src: url(data:font/ttf;base64,${fontB64}) format('truetype'); font-display: block; }` : ""}
   #cw { position:absolute; left:${CX}px; top:${CY}px; width:0; height:0; opacity:0; }
   #cwW { position:absolute; left:0; top:0; transform:translate(-50%,-50%);
          filter: drop-shadow(0 5px 20px rgba(0,0,0,0.5)); }`;
@@ -5227,7 +5233,7 @@ function setpieceCoverword() {
         <svg id="cwW" width="${BW}" height="${BH}" viewBox="0 0 ${BW} ${BH}" style="overflow:visible">
           <defs>
             <mask id="cwm">
-              <text x="${x0}" y="${baseY}" font-family="'CPReplica'" font-size="${hpx}"
+              <text x="${x0}" y="${baseY}" font-family="${CW_FAMILY}" font-size="${hpx}"
                     letter-spacing="${(hpx * 0.01).toFixed(1)}" fill="white">${esc(DISP)}</text>
               ${extras}
               ${cuts}

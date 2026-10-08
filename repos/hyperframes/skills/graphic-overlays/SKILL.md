@@ -3,6 +3,8 @@ name: graphic-overlays
 description: Package an existing talking-head / interview / podcast video by layering timed, designed GRAPHIC OVERLAY cards onto the playing video — titles, lower-thirds, data callouts, quotes, side panels, picture-in-picture — synced to the transcript. The source video plays in full; the agent designs and writes each card's HTML in conversation, then renders to MP4 via hyperframes. Use when the user asks for graphic overlays, on-screen graphics / lower-thirds / data callouts / kinetic titles on a video, "package / dress up my video", "add overlay cards / graphic cards", or AI-composed graphic packaging of an existing video. NOT for plain subtitles (→ embedded-captions) or building a video from scratch (→ the creation workflows); when unsure overlays-vs-captions, see /hyperframes.
 ---
 
+Modified by Coco, 2026-10-08: Virgil font removed (licence not confirmed). See repos/hyperframes/MODIFICATIONS.md.
+
 # Graphic Overlays
 
 Graphic Overlays takes a local video that **plays in full** and layers a sequence of
@@ -495,8 +497,9 @@ Pick from these `themeId` palettes (use them as `--accent-N` /
 | mono    | `#000 #555 #888 #aaa #ccc`                | `#fff`            | `#000`    |
 
 Available fonts (woff2 in `<SKILL_DIR>/assets/fonts/`, staged to work dir in Step 9): `Caveat` (handwriting),
-`LXGW WenKai TC` (Chinese hand-script), `Inter` (modern sans), `Virgil`
-(geometric hand). Reference via `@font-face` or `font-family` directly.
+`LXGW WenKai TC` (Chinese hand-script), `Inter` (modern sans). Each is SIL OFL 1.1 with its
+licence text beside it (`OFL-*.txt`). For a geometric hand look, use `Caveat` or the system
+`cursive` font (Virgil is no longer bundled). Reference via `@font-face` or `font-family` directly.
 
 For inspiration on visual patterns, `<SKILL_DIR>/references/styles/`
 ships 10 self-contained reference cards (academic / editorial / minimal
@@ -825,11 +828,6 @@ ffmpeg -y -i "$VIDEO_PATH" -c:v libx264 -crf 18 -g 30 -keyint_min 30 \
         font-family: "Inter";
         src: url("fonts/Inter-700-latin.woff2") format("woff2");
         font-weight: 700;
-        font-display: block;
-      }
-      @font-face {
-        font-family: "Virgil";
-        src: url("fonts/Virgil.woff2") format("woff2");
         font-display: block;
       }
 
