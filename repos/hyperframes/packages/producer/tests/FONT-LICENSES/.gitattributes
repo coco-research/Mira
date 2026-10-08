@@ -1,0 +1,2 @@
+# Keep the licence texts byte for byte as published upstream (some use CRLF line endings).
+*.txt -text
