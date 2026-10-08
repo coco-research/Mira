@@ -33,10 +33,15 @@ license). Their copyright and license notices are retained in-tree.
   `STHeitiLight.ttc`, `STHeitiMedium.ttc` and `UTM Kabel KT.ttf` were proprietary and are no longer in
   `repos/MoneyPrinterTurbo/resource/fonts/`. The default subtitle font is now Noto Sans CJK (SIL OFL 1.1),
   looked up on the host at runtime and never bundled; see `repos/MoneyPrinterTurbo/resource/fonts/README.md`.
-  Charm (SIL OFL 1.1) stays bundled.
-- **`repos/OpenMontage/.agents/skills/vercel-composition-patterns/`:** Vercel's skill from
+  Charm (SIL OFL 1.1) stays bundled. Its licence text sits beside it at
+  `repos/MoneyPrinterTurbo/resource/fonts/OFL-charm.txt`, copied byte for byte from
+  [google/fonts `ofl/charm/OFL.txt` @ 053f0ca635d11d8c76b7d584f7e70974932fc674](https://github.com/google/fonts/blob/053f0ca635d11d8c76b7d584f7e70974932fc674/ofl/charm/OFL.txt)
+  (Copyright 2018 The Charm Project Authors, https://github.com/cadsondemak/charm). The bundled
+  `Charm-*.ttf` files are version 1.001 and embed the same copyright line.
+- **`repos/OpenMontage/.agents/skills/vercel-composition-patterns/`, `vercel-react-best-practices/` and
+  `web-design-guidelines/`:** Vercel's skills from
   [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills), which has no licence file, so
-  OpenMontage's AGPL-3.0 licence cannot cover it. Mira ships only a link-only stub `SKILL.md`.
+  OpenMontage's AGPL-3.0 licence cannot cover them. Mira ships only a link-only stub `SKILL.md` for each.
 
 ## External engines (NOT bundled — fetch yourself)
 

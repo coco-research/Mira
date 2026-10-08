@@ -32,4 +32,5 @@ flags that still name them are mapped to Noto Sans CJK automatically (see
 
 ## Bundled
 
-- `Charm-Regular.ttf`, `Charm-Bold.ttf`: Charm (Google Fonts), SIL Open Font License 1.1.
+- `Charm-Regular.ttf`, `Charm-Bold.ttf`: Charm, Copyright 2018 The Charm Project Authors, SIL Open Font License 1.1.
+  Licence text: `OFL-charm.txt` (from google/fonts `ofl/charm/OFL.txt` @ 053f0ca6).
