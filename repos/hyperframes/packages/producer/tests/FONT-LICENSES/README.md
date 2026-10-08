@@ -8,6 +8,8 @@ Commercial system fonts that had been captured into eight baselines were removed
 
 IBM Plex Mono (Regular and Bold, 2 faces) was removed from `style-11-prod`. Its OFL text reserves the font name "Plex", and legal ruled that the trimmed web subset is a Modified Version, which may not keep that name. The fixture's CSS still asks for "IBM Plex Mono" by name (from Google Fonts at render time, or the host); no Plex font data is stored here. No IBM Plex file ships anywhere in Mira, so no upstream checksum applies.
 
+`packages/producer/scripts/check-golden-font-licences.mjs` (run by `bun run test`, after `bun run test:update`, or alone with `bun run test:font-licences`) fails if a golden embeds a font whose family isn't in the table below, or whose names use a Reserved Font Name declared in this folder. Add the licence text and a row here before committing a golden with a new family.
+
 | Family | Licence text | Upstream source | Notes | Fixtures that embed it |
 |---|---|---|---|---|
 | Archivo Black | `OFL-archivo-black.txt` | [google/fonts `ofl/archivoblack/OFL.txt`](https://github.com/google/fonts/blob/2eb0b48d5f760f62e286216f0859a8c540dbc1bd/ofl/archivoblack/OFL.txt) | | `style-13-prod` |

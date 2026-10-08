@@ -4,7 +4,7 @@ import { homedir, tmpdir } from "node:os";
 import { join } from "node:path";
 import { defaultLogger } from "../logger.js";
 
-import { FONT_ALIAS_MAP } from "@hyperframes/core/fonts/aliases";
+import { CANONICAL_FONT_DISPLAY_NAMES, FONT_ALIAS_MAP } from "@hyperframes/core/fonts/aliases";
 import {
   locateSystemFontVariants,
   SYSTEM_FONT_SIZE_LIMIT,
@@ -118,10 +118,9 @@ const CANONICAL_FONTS: Record<string, CanonicalFontSpec> = {
     packageName: "@fontsource/space-mono",
     faces: [{ weight: "400" }, { weight: "700" }],
   },
-  "ibm-plex-mono": {
-    packageName: "@fontsource/ibm-plex-mono",
-    faces: [{ weight: "400" }, { weight: "700" }],
-  },
+  // "ibm-plex-mono" removed by Coco, 2026-10-08 (lab-0062): the Fontsource face
+  // is a subset of a font whose OFL reserves the name "Plex", so it may not be
+  // embedded under that name. "ibm plex mono" now aliases to jetbrains-mono.
   "jetbrains-mono": {
     packageName: "@fontsource/jetbrains-mono",
     faces: [{ weight: "400" }, { weight: "700" }],
@@ -265,6 +264,15 @@ async function buildFontFaceCss(
       // already covered by the embedded bundle. This ensures that
       // compositions requesting e.g. wght@200 get that weight even
       // if the bundle only ships 400/700/900.
+      // Modified by Coco, 2026-10-08 (lab-0062): only when the request IS the
+      // canonical family. For an alias (e.g. "IBM Plex Mono" -> JetBrains Mono,
+      // "Helvetica" -> Inter) the bundle is a substitute, and fetching the
+      // requested name from Google would embed that other font (a reserved-name
+      // OFL subset, or a commercial face Google serves) under the alias.
+      // See repos/hyperframes/MODIFICATIONS.md.
+      if (CANONICAL_FONT_DISPLAY_NAMES[canonicalKey]?.toLowerCase() !== normalizedFamily) {
+        continue;
+      }
       const googleFaces = await fetchGoogleFont(originalCaseFamily, options);
       for (const face of googleFaces) {
         // A weight covered by the embedded bundle is already full-coverage —

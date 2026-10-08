@@ -54,10 +54,9 @@ const CANONICAL_FONTS: Record<string, CanonicalFontSpec> = {
     packageName: "@fontsource/space-mono",
     faces: [{ weight: "400" }, { weight: "700" }],
   },
-  "ibm-plex-mono": {
-    packageName: "@fontsource/ibm-plex-mono",
-    faces: [{ weight: "400" }, { weight: "700" }],
-  },
+  // "ibm-plex-mono" removed by Coco, 2026-10-08 (lab-0062): the Fontsource face
+  // is a subset of a font whose OFL reserves the name "Plex", so it may not be
+  // embedded under that name. "ibm plex mono" now aliases to jetbrains-mono.
   "jetbrains-mono": {
     packageName: "@fontsource/jetbrains-mono",
     faces: [{ weight: "400" }, { weight: "700" }],

@@ -16,7 +16,12 @@ export const FONT_ALIAS_MAP = {
   "league gothic": "league-gothic",
   "archivo black": "archivo-black",
   "space mono": "space-mono",
-  "ibm plex mono": "ibm-plex-mono",
+  // Modified by Coco, 2026-10-08 (lab-0062): IBM Plex's OFL reserves the name
+  // "Plex", and the bundled Fontsource face is a subset (an OFL Modified
+  // Version), so it may not be embedded under that name. Requests for IBM Plex
+  // Mono get the bundled JetBrains Mono (OFL, no Reserved Font Name) instead,
+  // like "courier new" below. See repos/hyperframes/MODIFICATIONS.md.
+  "ibm plex mono": "jetbrains-mono",
   "jetbrains mono": "jetbrains-mono",
   "eb garamond": "eb-garamond",
   "playfair display": "playfair-display",
@@ -106,7 +111,6 @@ export const CANONICAL_FONT_DISPLAY_NAMES: Readonly<Record<string, string>> = {
   "league-gothic": "League Gothic",
   "archivo-black": "Archivo Black",
   "space-mono": "Space Mono",
-  "ibm-plex-mono": "IBM Plex Mono",
   "jetbrains-mono": "JetBrains Mono",
   "eb-garamond": "EB Garamond",
   "playfair-display": "Playfair Display",
