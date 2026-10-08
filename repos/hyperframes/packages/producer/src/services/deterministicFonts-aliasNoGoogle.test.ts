@@ -57,6 +57,24 @@ describe("aliases do not pull the aliased name from Google Fonts", () => {
     expect(result).toContain(`font-family: "Helvetica"`);
   });
 
+  it("maps Lato, Playfair Display and Source Code Pro (reserved names) to bundled families", async () => {
+    const { FONT_ALIASES } = await import("./deterministicFonts.js");
+    expect(FONT_ALIASES["lato"]).toBe("inter");
+    expect(FONT_ALIASES["playfair display"]).toBe("eb-garamond");
+    expect(FONT_ALIASES["source code pro"]).toBe("jetbrains-mono");
+    const calls: string[] = [];
+    const { injectDeterministicFontFaces } = await import("./deterministicFonts.js");
+    const html = `<!doctype html><html><head><style>
+      p { font-family: Lato, sans-serif; } h2 { font-family: "Playfair Display", serif; }
+      code { font-family: "Source Code Pro", monospace; }
+    </style></head><body><h2>A</h2><p>b</p><code>c</code></body></html>`;
+    const result = await injectDeterministicFontFaces(html, { fetchImpl: recordingFetch(calls) });
+    expect(calls.filter((u) => /lato|playfair|source/i.test(decodeURIComponent(u)))).toEqual([]);
+    expect(result).toContain(`font-family: "Lato"`);
+    expect(result).toContain(`font-family: "Playfair Display"`);
+    expect(result).toContain(`font-family: "Source Code Pro"`);
+  });
+
   it("still fills missing weights from Google for a canonical family requested by name", async () => {
     const { injectDeterministicFontFaces } = await import("./deterministicFonts.js");
     const calls: string[] = [];

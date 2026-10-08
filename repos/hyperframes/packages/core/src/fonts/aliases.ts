@@ -24,12 +24,16 @@ export const FONT_ALIAS_MAP = {
   "ibm plex mono": "jetbrains-mono",
   "jetbrains mono": "jetbrains-mono",
   "eb garamond": "eb-garamond",
-  "playfair display": "playfair-display",
-  "source code pro": "source-code-pro",
+  // Modified by Coco, 2026-10-08 (lab-0062): Playfair Display ("Playfair
+  // Display"), Source Code Pro ("Source") and Lato ("Lato") also reserve their
+  // names in their OFL, so their Fontsource subsets are no longer bundled.
+  // Requests for them get the nearest bundled family with no Reserved Font Name.
+  "playfair display": "eb-garamond",
+  "source code pro": "jetbrains-mono",
   "noto sans jp": "noto-sans-jp",
   roboto: "roboto",
   "open sans": "open-sans",
-  lato: "lato",
+  lato: "inter",
   poppins: "poppins",
 
   // ── Common aliases → nearest canonical ────────────────────────────────
@@ -113,12 +117,9 @@ export const CANONICAL_FONT_DISPLAY_NAMES: Readonly<Record<string, string>> = {
   "space-mono": "Space Mono",
   "jetbrains-mono": "JetBrains Mono",
   "eb-garamond": "EB Garamond",
-  "playfair-display": "Playfair Display",
-  "source-code-pro": "Source Code Pro",
   "noto-sans-jp": "Noto Sans JP",
   roboto: "Roboto",
   "open-sans": "Open Sans",
-  lato: "Lato",
   poppins: "Poppins",
 };
 
