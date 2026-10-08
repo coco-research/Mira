@@ -567,7 +567,7 @@ class TestVideoService(unittest.TestCase):
     def test_wrap_text(self):
         """test text wrapping function"""
         try:
-            font_path = os.path.join(utils.font_dir(), "STHeitiMedium.ttc")
+            font_path = utils.resolve_font_path(const.DEFAULT_FONT_NAME)
             if not os.path.exists(font_path):
                 self.fail(f"font file not found: {font_path}")
                 

@@ -54,10 +54,9 @@ const CANONICAL_FONTS: Record<string, CanonicalFontSpec> = {
     packageName: "@fontsource/space-mono",
     faces: [{ weight: "400" }, { weight: "700" }],
   },
-  "ibm-plex-mono": {
-    packageName: "@fontsource/ibm-plex-mono",
-    faces: [{ weight: "400" }, { weight: "700" }],
-  },
+  // "ibm-plex-mono" removed by Coco, 2026-10-08 (lab-0062): the Fontsource face
+  // is a subset of a font whose OFL reserves the name "Plex", so it may not be
+  // embedded under that name. "ibm plex mono" now aliases to jetbrains-mono.
   "jetbrains-mono": {
     packageName: "@fontsource/jetbrains-mono",
     faces: [{ weight: "400" }, { weight: "700" }],
@@ -66,14 +65,12 @@ const CANONICAL_FONTS: Record<string, CanonicalFontSpec> = {
     packageName: "@fontsource/eb-garamond",
     faces: [{ weight: "400" }, { weight: "700" }],
   },
-  "playfair-display": {
-    packageName: "@fontsource/playfair-display",
-    faces: [{ weight: "400" }, { weight: "700" }, { weight: "900" }],
-  },
-  "source-code-pro": {
-    packageName: "@fontsource/source-code-pro",
-    faces: [{ weight: "400" }, { weight: "700" }],
-  },
+  // "playfair-display" removed by Coco, 2026-10-08 (lab-0062): Playfair Display's OFL reserves the
+  // name "Playfair Display" and the Fontsource face is a subset, so it is not bundled;
+  // aliases.ts maps the family to a bundled face with no Reserved Font Name.
+  // "source-code-pro" removed by Coco, 2026-10-08 (lab-0062): Source Code Pro's OFL reserves the
+  // name 'Source' and the Fontsource face is a subset, so it is not bundled;
+  // aliases.ts maps the family to a bundled face with no Reserved Font Name.
   "noto-sans-jp": {
     packageName: "@fontsource/noto-sans-jp",
     faces: [{ weight: "400" }, { weight: "700" }],
@@ -86,10 +83,9 @@ const CANONICAL_FONTS: Record<string, CanonicalFontSpec> = {
     packageName: "@fontsource/open-sans",
     faces: [{ weight: "400" }, { weight: "700" }],
   },
-  lato: {
-    packageName: "@fontsource/lato",
-    faces: [{ weight: "400" }, { weight: "700" }, { weight: "900" }],
-  },
+  // "lato" removed by Coco, 2026-10-08 (lab-0062): Lato's OFL reserves the
+  // name "Lato" and the Fontsource face is a subset, so it is not bundled;
+  // aliases.ts maps the family to a bundled face with no Reserved Font Name.
   poppins: {
     packageName: "@fontsource/poppins",
     faces: [{ weight: "400" }, { weight: "700" }, { weight: "900" }],

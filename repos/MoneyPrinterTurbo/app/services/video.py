@@ -917,8 +917,9 @@ def generate_video(
     font_path = ""
     if params.subtitle_enabled:
         if not params.font_name:
-            params.font_name = "STHeitiMedium.ttc"
-        font_path = os.path.join(utils.font_dir(), params.font_name)
+            params.font_name = const.DEFAULT_FONT_NAME
+        # Bundled file, or a system font (Noto Sans CJK by default) found at runtime.
+        font_path = utils.resolve_font_path(params.font_name)
         if os.name == "nt":
             font_path = font_path.replace("\\", "/")
 

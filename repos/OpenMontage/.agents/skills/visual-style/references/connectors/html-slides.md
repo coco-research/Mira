@@ -1,5 +1,7 @@
 # HTML Slides Connector (frontend-slides)
 
+<!-- Modified by Coco, 2026-10-08 (lab-0062): rule 5 and the Swiss example no longer load "Helvetica Neue" from Google Fonts (a commercial family); the example uses a system font stack. See repos/OpenMontage/MODIFICATIONS.md. -->
+
 Apply a `visual-style.md` to HTML slide presentations.
 
 ## Overview
@@ -74,7 +76,7 @@ When generating HTML slides, follow these rules:
 2. **Viewport units** — All sizes use `clamp()`, never fixed px/rem
 3. **No scrolling** — `height: 100vh; overflow: hidden;` per slide
 4. **Content overflow** — If content doesn't fit, split into multiple slides
-5. **Google Fonts** — Load via `<link>` tag in `<head>`
+5. **Web fonts** — Load open-licensed (OFL/Apache) families only, e.g. via a Google Fonts `<link>` tag in `<head>`. Never request a commercial family (Helvetica Neue, Futura, Gotham…) from a font CDN; use a system stack for those looks instead.
 
 ## Example: Swiss Style Slides
 
@@ -87,15 +89,15 @@ Given `mueller-brockmann-swiss.visual-style.md`:
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Presentation</title>
-  <link href="https://fonts.googleapis.com/css2?family=Helvetica+Neue:wght@300;400;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --color-bg: #000000;
       --color-text: #FFFFFF;
       --color-accent: #0066FF;
       --color-muted: #CCCCCC;
-      --font-display: "Helvetica Neue", Helvetica, Arial, sans-serif;
-      --font-body: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      /* Swiss grotesk feel from a system stack (Inter if installed); no webfont */
+      --font-display: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      --font-body: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }

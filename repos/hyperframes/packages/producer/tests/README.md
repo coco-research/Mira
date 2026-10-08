@@ -19,6 +19,8 @@ checked-in golden baseline.
     └── output.mp4      # golden rendered video
 ```
 
+Fonts embedded in the `output/compiled.html` baselines are listed, with their licence texts, in [`FONT-LICENSES/`](FONT-LICENSES/README.md); that folder is not a fixture. `bun run test` and `bun run test:update` run `scripts/check-golden-font-licences.mjs`, which fails if a golden embeds a family not listed there or any font using a Reserved Font Name; the Docker targets (`docker:test:update`) run the harness directly, so run `bun run --cwd packages/producer test:font-licences` after them. (Modified by Coco, 2026-10-08, lab-0062.)
+
 `meta.json` is validated by `validateMetadata` in
 `src/regression-harness.ts`. The required fields are:
 

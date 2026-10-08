@@ -181,6 +181,19 @@ const CHARW = (() => {
     return null;
   }
 })();
+// coverword face: Anton (SIL OFL 1.1), bundled at
+// modes/standard/fonts/files/anton-latin-400-normal.woff2 with OFL-anton.txt.
+// Advance widths + per-glyph ink bounds (em) generated from that same file by
+// scripts/gen-glyph-metrics.py <woff2> Anton --output assets/fonts/anton-glyph-metrics.json
+// (atomic UTF-8 write; the target is left untouched if generation fails).
+// Modified by Coco, 2026-10-08 (lab-0062): replaces the removed fan-kit
+// replica font and its measured widths. See repos/hyperframes/MODIFICATIONS.md.
+const COVERWORD_FAMILY = "Anton";
+function coverwordMetrics() {
+  return JSON.parse(
+    fs.readFileSync(path.join(SKILL, "assets/fonts/anton-glyph-metrics.json"), "utf8"),
+  );
+}
 function famMetrics(fam) {
   return (CHARW && CHARW[fam]) || null;
 }
@@ -511,16 +524,14 @@ if (!heroInline && !HEROLESS) {
     Object.assign(HG, sceneHeroXY("ransomnote", HG.fontPx));
     HG.halfW = (em1 * HG.fontPx + n * 6) / 2;
   } else if (dna.hero.setpiece === "coverword") {
-    // metric-exact fit from the replica font's advance widths (logo case:
-    // first letter upper, rest lower — the official mark's own arrangement)
-    const CPM = JSON.parse(
-      fs.readFileSync(path.join(SKILL, "assets/brand/cyberpunk-widths.json"), "utf8"),
-    );
+    // metric-exact fit from the bundled Anton face's advance widths (logo
+    // case: first letter upper, rest lower)
+    const CPM = coverwordMetrics();
     const disp = heroText[0].toUpperCase() + heroText.slice(1).toLowerCase();
     const bad = [...disp].filter((c) => !(c in CPM.widths));
     if (bad.length)
       throw new Error(
-        `[make-theme] coverword: no replica glyph for ${JSON.stringify(bad)} in "${heroText}" — pick a hero without digits/special chars or use hero.text`,
+        `[make-theme] coverword: no ${COVERWORD_FAMILY} glyph metrics for ${JSON.stringify(bad)} in "${heroText}" — pick a hero without special chars or use hero.text`,
       );
     const em = [...disp].reduce((a, c) => a + CPM.widths[c], 0) + 0.01 * (disp.length - 1);
     // glyph ink is small inside the em box (x-height ~0.3em) -> size by INK:
@@ -5112,13 +5123,14 @@ function setpieceCpslam() {
 }
 
 function setpieceCoverword() {
-  // CP2077 COVER-LETTERFORM slam, precision pass: the spoken apex word set in
-  // the replica typeface of the official mark (assets/brand/CyberpunkReplica.ttf
-  // — lowercase glyphs carry the logo's actual brush chops, blade terminals and
-  // spikes), in logo case (First-upper). The setpiece adds only what the FONT
-  // does not carry: the solid cyan duplicate offset down-left, the baseline
-  // streak + cyan pixel debris, the circuit trace off the tail, and the
-  // tear-in/living-print/tear-out choreography. No synthetic letter surgery.
+  // COVER-LETTERFORM slam, precision pass: the spoken apex word set big in the
+  // bundled Anton face (SIL OFL 1.1), in logo case (First-upper).
+  // Modified by Coco, 2026-10-08 (lab-0062): the fan-kit replica font and its
+  // measured widths were removed; layout now uses assets/fonts/anton-glyph-metrics.json.
+  // The setpiece adds only what the FONT does not carry: the solid cyan
+  // duplicate offset down-left, the baseline streak + cyan pixel debris, the
+  // circuit trace off the tail, and the tear-in/living-print/tear-out
+  // choreography. No synthetic letter surgery.
   const h = dna.hero,
     p = h.params || {},
     I = heroIn;
@@ -5134,12 +5146,14 @@ function setpieceCoverword() {
       return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
     };
   })();
-  const CPM = JSON.parse(
-    fs.readFileSync(path.join(SKILL, "assets/brand/cyberpunk-widths.json"), "utf8"),
-  );
-  const fontB64 = fs
-    .readFileSync(path.join(SKILL, "assets/brand/CyberpunkReplica.ttf"))
-    .toString("base64");
+  const CPM = coverwordMetrics();
+  // embed the bundled Anton @font-face here unless the DNA's own font list
+  // already pulls it in via fontCssFor (avoids a duplicate rule)
+  const dnaFams = Object.values(dna.fonts || {});
+  const cwFace = dnaFams.includes(COVERWORD_FAMILY)
+    ? ""
+    : (FONT_FACES || []).filter((b) => /font-family\s*:\s*['"]Anton['"]/.test(b)).join("\n");
+  const CW_FAMILY = `'${COVERWORD_FAMILY}', sans-serif`;
   const DISP = HG.coverDisp || heroText[0].toUpperCase() + heroText.slice(1).toLowerCase();
   const hpx = HG.fontPx;
   const em =
@@ -5219,7 +5233,7 @@ function setpieceCoverword() {
     `<rect x="0" y="0" width="${BW}" height="${BH}" fill="${fill}" mask="url(#cwm)"/>`;
   const EX = theme.hero.exitAt ?? Math.min(heroOut - 0.2, I + (p.hold ?? 2.6));
   const css = `
-  @font-face { font-family:'CPReplica'; src: url(data:font/ttf;base64,${fontB64}) format('truetype'); font-display: block; }
+  ${cwFace}
   #cw { position:absolute; left:${CX}px; top:${CY}px; width:0; height:0; opacity:0; }
   #cwW { position:absolute; left:0; top:0; transform:translate(-50%,-50%);
          filter: drop-shadow(0 5px 20px rgba(0,0,0,0.5)); }`;
@@ -5227,7 +5241,7 @@ function setpieceCoverword() {
         <svg id="cwW" width="${BW}" height="${BH}" viewBox="0 0 ${BW} ${BH}" style="overflow:visible">
           <defs>
             <mask id="cwm">
-              <text x="${x0}" y="${baseY}" font-family="'CPReplica'" font-size="${hpx}"
+              <text x="${x0}" y="${baseY}" font-family="${CW_FAMILY}" font-size="${hpx}"
                     letter-spacing="${(hpx * 0.01).toFixed(1)}" fill="white">${esc(DISP)}</text>
               ${extras}
               ${cuts}

@@ -7,3 +7,12 @@ end_of_line = lf
 charset = utf-8
 trim_trailing_whitespace = true
 insert_final_newline = true
+
+# Third-party licence texts stay byte for byte as published upstream (several
+# use CRLF line endings or trailing spaces), so editors must not rewrite them.
+# Modified by Coco, 2026-10-08 (lab-0062). See repos/hyperframes/MODIFICATIONS.md.
+[{**/FONT-LICENSES/*.txt,**/OFL-*.txt,**/Apache-2.0-*.txt}]
+end_of_line = unset
+charset = unset
+trim_trailing_whitespace = false
+insert_final_newline = unset

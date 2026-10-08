@@ -4,8 +4,10 @@ import unittest
 
 import numpy as np
 
+from app.models import const
 from app.models.schema import VideoParams
 from app.services import video
+from app.utils import utils
 
 
 class TestSubtitleBackgroundSettings(unittest.TestCase):
@@ -82,12 +84,8 @@ class TestSubtitleBackgroundSettings(unittest.TestCase):
         中文长句按字符换行时，句号等闭合标点不能独占一行，否则字幕背景
         会被一个单独的小点撑高。这里复现大字号中文长句的边界情况。
         """
-        font_path = (
-            Path(__file__).parent.parent.parent
-            / "resource"
-            / "fonts"
-            / "MicrosoftYaHeiBold.ttc"
-        )
+        # Noto Sans CJK, found on the system at runtime (no bundled CJK font).
+        font_path = utils.resolve_font_path(const.DEFAULT_BOLD_FONT_NAME)
 
         wrapped_text, _ = video.wrap_text(
             "如果你调整字号，中文笔画也不能被黑色背景遮挡。",
