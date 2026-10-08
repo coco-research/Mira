@@ -125,7 +125,7 @@ class TestCli(unittest.TestCase):
                 "--video-subject",
                 "test",
                 "--font-name",
-                "MicrosoftYaHeiBold.ttc",
+                "Noto Sans CJK SC:style=Bold",
                 "--subtitle-position",
                 "custom",
                 "--custom-position",
@@ -146,7 +146,7 @@ class TestCli(unittest.TestCase):
 
         params = cli.build_video_params(args)
 
-        self.assertEqual(params.font_name, "MicrosoftYaHeiBold.ttc")
+        self.assertEqual(params.font_name, "Noto Sans CJK SC:style=Bold")
         self.assertEqual(params.subtitle_position, "custom")
         self.assertEqual(params.custom_position, 42.5)
         self.assertEqual(params.text_fore_color, "#AABBCC")

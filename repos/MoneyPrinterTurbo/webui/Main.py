@@ -16,6 +16,7 @@ if root_dir not in sys.path:
     print("")
 
 from app.config import config
+from app.models import const
 from app.models.schema import (
     MaterialInfo,
     VideoAspect,
@@ -125,13 +126,15 @@ support_locales = [
 
 
 def get_all_fonts():
+    # System fonts (Noto Sans CJK, resolved at render time) come first, then
+    # any font files placed in resource/fonts/. Mira ships no CJK font file.
     fonts = []
     for root, dirs, files in os.walk(font_dir):
         for file in files:
-            if file.endswith(".ttf") or file.endswith(".ttc"):
+            if file.endswith(".ttf") or file.endswith(".ttc") or file.endswith(".otf"):
                 fonts.append(file)
     fonts.sort()
-    return fonts
+    return list(const.SYSTEM_FONT_CHOICES) + fonts
 
 
 def get_all_songs():
@@ -1227,7 +1230,9 @@ with right_panel:
         st.write(tr("Subtitle Settings"))
         params.subtitle_enabled = st.checkbox(tr("Enable Subtitles"), value=True)
         font_names = get_all_fonts()
-        saved_font_name = config.ui.get("font_name", "MicrosoftYaHeiBold.ttc")
+        saved_font_name = config.ui.get("font_name", const.DEFAULT_BOLD_FONT_NAME)
+        # Configs saved before the proprietary fonts were removed still name them.
+        saved_font_name = const.REMOVED_FONT_ALIASES.get(saved_font_name, saved_font_name)
         saved_font_name_index = 0
         if saved_font_name in font_names:
             saved_font_name_index = font_names.index(saved_font_name)

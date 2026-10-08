@@ -27,6 +27,17 @@ license). Their copyright and license notices are retained in-tree.
 > release, and record the pinned commit here. Placeholders marked "(upstream)"
 > must be filled in.
 
+## Removed or not redistributed (lab-0062 legal review)
+
+- **MoneyPrinterTurbo subtitle fonts:** `MicrosoftYaHeiBold.ttc`, `MicrosoftYaHeiNormal.ttc`,
+  `STHeitiLight.ttc`, `STHeitiMedium.ttc` and `UTM Kabel KT.ttf` were proprietary and are no longer in
+  `repos/MoneyPrinterTurbo/resource/fonts/`. The default subtitle font is now Noto Sans CJK (SIL OFL 1.1),
+  looked up on the host at runtime and never bundled; see `repos/MoneyPrinterTurbo/resource/fonts/README.md`.
+  Charm (SIL OFL 1.1) stays bundled.
+- **`repos/OpenMontage/.agents/skills/vercel-composition-patterns/`:** Vercel's skill from
+  [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills), which has no licence file, so
+  OpenMontage's AGPL-3.0 licence cannot cover it. Mira ships only a link-only stub `SKILL.md`.
+
 ## External engines (NOT bundled — fetch yourself)
 
 These are **not** redistributed with Mira because their licenses are incompatible

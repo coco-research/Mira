@@ -3,6 +3,7 @@ import locale
 import os
 import re
 import shutil
+import subprocess
 from functools import lru_cache
 from pathlib import Path
 import threading
@@ -102,6 +103,97 @@ def font_dir(sub_dir: str = ""):
     if not os.path.exists(d):
         os.makedirs(d)
     return d
+
+
+# Font files that ship with Mira (OFL) and are used when no system font
+# can be found, so rendering never crashes. Charm covers Latin and Thai only.
+_FALLBACK_BUNDLED_FONTS = ["Charm-Regular.ttf"]
+
+# Well-known locations of Noto Sans CJK and of the platform's own CJK UI font.
+# These are read from the user's machine at runtime; Mira does not ship them.
+_SYSTEM_CJK_FONT_CANDIDATES = [
+    # Noto Sans CJK (SIL OFL 1.1)
+    "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
+    "/usr/share/fonts/noto-cjk/NotoSansCJK-Regular.ttc",
+    "/usr/share/fonts/google-noto-cjk/NotoSansCJK-Regular.ttc",
+    "/usr/share/fonts/OTF/NotoSansCJK-Regular.ttc",
+    "/usr/local/share/fonts/NotoSansCJK-Regular.ttc",
+    "/Library/Fonts/NotoSansCJK-Regular.ttc",
+    os.path.expanduser("~/Library/Fonts/NotoSansCJK-Regular.ttc"),
+    os.path.expanduser("~/.local/share/fonts/NotoSansCJK-Regular.ttc"),
+    "C:/Windows/Fonts/NotoSansSC-VF.ttf",
+    # The operating system's own CJK font, if Noto is not installed
+    "/System/Library/Fonts/PingFang.ttc",
+    "/System/Library/Fonts/Hiragino Sans GB.ttc",
+    "C:/Windows/Fonts/msyh.ttc",
+    "C:/Windows/Fonts/simhei.ttf",
+]
+
+
+def _fc_match(pattern: str) -> str:
+    """Return the font file fontconfig picks for `pattern`, or "" if unavailable."""
+    fc_match = shutil.which("fc-match")
+    if not fc_match:
+        return ""
+    try:
+        result = subprocess.run(
+            [fc_match, "-f", "%{file}", pattern],
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+    except Exception as e:
+        logger.warning(f"fc-match failed for {pattern!r}: {e}")
+        return ""
+    path = result.stdout.strip()
+    if result.returncode == 0 and path and os.path.isfile(path):
+        return path
+    return ""
+
+
+def resolve_font_path(font_name: str = "") -> str:
+    """
+    Turn a subtitle font setting into a font file path at render time.
+
+    Order: a file in resource/fonts/ (or a path to a file), then the system
+    font named by `font_name` via fontconfig (default: Noto Sans CJK), then
+    well-known Noto Sans CJK / OS CJK font locations, then a bundled OFL font.
+    Names of the proprietary fonts removed from resource/fonts/ are mapped to
+    Noto Sans CJK, so older configs keep working.
+    """
+    name = (font_name or "").strip() or const.DEFAULT_FONT_NAME
+    if name in const.REMOVED_FONT_ALIASES:
+        alias = const.REMOVED_FONT_ALIASES[name]
+        logger.info(f"font {name!r} is no longer bundled; using system font {alias!r}")
+        name = alias
+
+    bundled = os.path.join(font_dir(), name)
+    if os.path.isfile(bundled):
+        return bundled
+
+    path = _fc_match(name)
+    if path:
+        return path
+
+    for candidate in _SYSTEM_CJK_FONT_CANDIDATES:
+        if os.path.isfile(candidate):
+            logger.warning(
+                f"font {name!r} not found via fontconfig; using system font {candidate}"
+            )
+            return candidate
+
+    for fallback in _FALLBACK_BUNDLED_FONTS:
+        path = os.path.join(font_dir(), fallback)
+        if os.path.isfile(path):
+            logger.warning(
+                f"font {name!r} not found and no CJK system font installed; "
+                f"falling back to bundled {fallback} (no CJK glyphs). "
+                "Install Noto Sans CJK (e.g. `apt install fonts-noto-cjk`)."
+            )
+            return path
+
+    logger.error(f"no usable subtitle font found for {name!r}")
+    return bundled
 
 
 def song_dir(sub_dir: str = ""):

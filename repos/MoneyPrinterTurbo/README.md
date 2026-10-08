@@ -374,6 +374,8 @@ MoneyPrinterTurbo
 
 用于视频字幕的渲染，位于项目的 `resource/fonts` 目录下，你也可以放进去自己的字体。
 
+项目不再内置任何中日韩字体文件。默认字幕字体为 Noto Sans CJK（SIL OFL 1.1），渲染时通过 fontconfig 在系统中查找；可用 `sudo apt install fonts-noto-cjk`（Debian/Ubuntu）安装，其他系统及完整查找顺序见 [`resource/fonts/README.md`](resource/fonts/README.md)。
+
 ## 常见问题 🤔
 
 ### ❓RuntimeError: No ffmpeg exe could be found

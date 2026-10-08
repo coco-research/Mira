@@ -14,7 +14,9 @@ ENV PYTHONPATH="/MoneyPrinterTurbo"
 ARG DOCKER_BUILD_MIRROR=china
 ARG PIP_USE_OFFICIAL=0
 
-# Install system dependencies with retry logic
+# Install system dependencies with retry logic.
+# fonts-noto-cjk (SIL OFL 1.1) is the default subtitle font, found at runtime via
+# fontconfig; no CJK font file is bundled in resource/fonts/.
 RUN if [ "$DOCKER_BUILD_MIRROR" = "china" ]; then \
         echo "deb http://mirrors.aliyun.com/debian bullseye main" > /etc/apt/sources.list && \
         echo "deb http://mirrors.aliyun.com/debian-security bullseye-security main" >> /etc/apt/sources.list; \
@@ -27,6 +29,8 @@ RUN if [ "$DOCKER_BUILD_MIRROR" = "china" ]; then \
             apt-get update && apt-get install -y --no-install-recommends \
                 git \
                 imagemagick \
+                fontconfig \
+                fonts-noto-cjk \
                 ffmpeg && break || \
             echo "Attempt $i failed, retrying..."; \
             if [ "$DOCKER_BUILD_MIRROR" = "china" ] && [ $i -eq 3 ]; then \
@@ -37,6 +41,8 @@ RUN if [ "$DOCKER_BUILD_MIRROR" = "china" ]; then \
                     apt-get update && apt-get install -y --no-install-recommends \
                         git \
                         imagemagick \
+                        fontconfig \
+                        fonts-noto-cjk \
                         ffmpeg || \
                     ( \
                         echo "Tsinghua mirror failed, switching to default Debian mirror"; \
@@ -45,6 +51,8 @@ RUN if [ "$DOCKER_BUILD_MIRROR" = "china" ]; then \
                         apt-get update && apt-get install -y --no-install-recommends \
                             git \
                             imagemagick \
+                            fontconfig \
+                            fonts-noto-cjk \
                             ffmpeg; \
                     ); \
                 ); \

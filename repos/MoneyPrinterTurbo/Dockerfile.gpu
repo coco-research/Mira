@@ -10,11 +10,15 @@ RUN chmod 777 /MoneyPrinterTurbo
 
 ENV PYTHONPATH="/MoneyPrinterTurbo"
 
-# Install Python 3.11 and system dependencies
+# Install Python 3.11 and system dependencies.
+# fonts-noto-cjk (SIL OFL 1.1) is the default subtitle font, found at runtime via
+# fontconfig; no CJK font file is bundled in resource/fonts/.
 RUN apt-get update && apt-get install -y --no-install-recommends \
         software-properties-common \
         git \
         imagemagick \
+        fontconfig \
+        fonts-noto-cjk \
         ffmpeg \
         curl \
         && add-apt-repository ppa:deadsnakes/ppa \

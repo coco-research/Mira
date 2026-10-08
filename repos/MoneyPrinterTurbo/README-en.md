@@ -372,6 +372,10 @@ Background music for videos is located in the project's `resource/songs` directo
 Fonts for rendering video subtitles are located in the project's `resource/fonts` directory, and you can also add your
 own fonts.
 
+No CJK font file is bundled. The default subtitle font is Noto Sans CJK (SIL OFL 1.1), found on your system at render
+time through fontconfig; install it with `sudo apt install fonts-noto-cjk` (Debian/Ubuntu) or see
+[`resource/fonts/README.md`](resource/fonts/README.md) for other systems and the full lookup order.
+
 ## Common Questions 🤔
 
 ### ❓RuntimeError: No ffmpeg exe could be found
