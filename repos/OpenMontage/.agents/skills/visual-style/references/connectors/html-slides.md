@@ -1,5 +1,7 @@
 # HTML Slides Connector (frontend-slides)
 
+<!-- Modified by Coco, 2026-10-08 (lab-0062): rule 5 and the Swiss example no longer load "Helvetica Neue" from Google Fonts (a commercial family); the example uses a system font stack. See repos/OpenMontage/MODIFICATIONS.md. -->
+
 Apply a `visual-style.md` to HTML slide presentations.
 
 ## Overview
