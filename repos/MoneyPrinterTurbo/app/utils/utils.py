@@ -4,6 +4,7 @@ import os
 import re
 import shutil
 import subprocess
+import tempfile
 from functools import lru_cache
 from pathlib import Path
 import threading
@@ -258,22 +259,36 @@ def _read_collection_offsets(data: bytes) -> list[int]:
     return list(struct.unpack(f">{count}I", data[12 : 12 + 4 * count]))
 
 
-def _face_names(data: bytes, offset: int) -> tuple[set[str], set[str]]:
-    """(family names, style names) of the sfnt face at `offset` (name IDs 1/16, 2/17)."""
+def _face_names(data: bytes, offset: int) -> tuple[set[str], str, int]:
+    """
+    (family names, style, weight) of the sfnt face at `offset`.
+
+    Families come from name IDs 1 and 16. The style is the typographic
+    subfamily (name ID 17) when present, else name ID 2: in the all-regions
+    Noto Sans CJK super-OTC every weight says "Regular" in ID 2 and the real
+    weight ("Thin", "Medium", ...) only in ID 17. The weight is OS/2
+    usWeightClass (0 if missing).
+    """
     import struct
 
-    families, styles = set(), set()
+    families: set[str] = set()
+    sub = {2: "", 17: ""}
+    weight = 0
     try:
         (num_tables,) = struct.unpack(">H", data[offset + 4 : offset + 6])
         for i in range(num_tables):
             rec = offset + 12 + 16 * i
-            if data[rec : rec + 4] != b"name":
-                continue
+            tag = data[rec : rec + 4]
             (t_off,) = struct.unpack(">I", data[rec + 8 : rec + 12])
+            if tag == b"OS/2":
+                (weight,) = struct.unpack(">H", data[t_off + 4 : t_off + 6])
+                continue
+            if tag != b"name":
+                continue
             _, count, str_off = struct.unpack(">HHH", data[t_off : t_off + 6])
             for j in range(count):
                 r = t_off + 6 + 12 * j
-                pid, eid, _lang, nid, length, n_off = struct.unpack(
+                pid, eid, lang, nid, length, n_off = struct.unpack(
                     ">HHHHHH", data[r : r + 12]
                 )
                 if nid not in (1, 2, 16, 17):
@@ -286,11 +301,25 @@ def _face_names(data: bytes, offset: int) -> tuple[set[str], set[str]]:
                 else:
                     continue
                 text = text.strip().lower()
-                if text:
-                    (families if nid in (1, 16) else styles).add(text)
+                if not text:
+                    continue
+                if nid in (1, 16):
+                    families.add(text)
+                elif not sub[nid] or (pid == 3 and lang == 0x409):
+                    sub[nid] = text
     except struct.error:
         pass
-    return families, styles
+    return families, sub[17] or sub[2], weight
+
+
+# CSS / OpenType weight for fontconfig style names
+_STYLE_WEIGHTS = {
+    "thin": 100, "hairline": 100, "extralight": 200, "ultralight": 200,
+    "light": 300, "demilight": 350, "semilight": 350, "regular": 400,
+    "normal": 400, "book": 400, "medium": 500, "semibold": 600,
+    "demibold": 600, "bold": 700, "extrabold": 800, "ultrabold": 800,
+    "black": 900, "heavy": 900,
+}
 
 
 def _requested_style(pattern: str) -> str:
@@ -302,8 +331,10 @@ def _preferred_face_index(path: str, pattern: str) -> int:
     """
     Pick the face of a collection for a fontconfig-style `pattern`: the
     requested family, else the default (Noto Sans CJK SC), else a Simplified
-    Chinese ("SC") face, else face 0; within a family, the requested style
-    (Regular unless ":style=..." says otherwise). Non-collections use face 0.
+    Chinese ("SC") face, else face 0. Within those faces, the requested style
+    wins (Regular unless ":style=..." says otherwise): an exact style-name
+    match, else the face whose weight is closest to the style's weight.
+    Non-collections use face 0.
     """
     try:
         with open(path, "rb") as f:
@@ -315,18 +346,27 @@ def _preferred_face_index(path: str, pattern: str) -> int:
         return 0
     faces = [_face_names(data, o) for o in offsets]
     style = _requested_style(pattern)
+    target = _STYLE_WEIGHTS.get(style.replace(" ", "").replace("-", ""), 400)
 
     def best(matches):
+        if not matches:
+            return None
         for i in matches:
-            if style in faces[i][1]:
+            if faces[i][1] == style:
                 return i
-        return matches[0] if matches else None
+        # nearest weight; ties go heavier for target >= 400, lighter below
+        # (the CSS font-matching rule)
+        sign = -1 if target >= 400 else 1
+        return min(
+            matches,
+            key=lambda i: (abs((faces[i][2] or 400) - target), sign * (faces[i][2] or 400), i),
+        )
 
     for want in (_requested_family(pattern), const.DEFAULT_FONT_NAME.lower()):
-        hit = best([i for i, (fams, _) in enumerate(faces) if want in fams])
+        hit = best([i for i, (fams, _, _) in enumerate(faces) if want in fams])
         if hit is not None:
             return hit
-    hit = best([i for i, (fams, _) in enumerate(faces) if any("sc" in n.split() for n in fams)])
+    hit = best([i for i, (fams, _, _) in enumerate(faces) if any("sc" in n.split() for n in fams)])
     return hit if hit is not None else 0
 
 
@@ -376,10 +416,20 @@ def extract_collection_face(path: str, index: int, out_dir: str = "") -> str:
         chunk += b"\0" * (-len(chunk) % 4)
         body += chunk
         pos += len(chunk)
-    tmp = f"{out}.{os.getpid()}.tmp"
-    with open(tmp, "wb") as f:
-        f.write(bytes(head) + bytes(table_dir) + bytes(body))
-    os.replace(tmp, out)
+    # A unique temp file per write (same directory, so os.replace is atomic):
+    # concurrent renders may extract the same face at once, and readers only
+    # ever see either no file or a complete one.
+    fd, tmp = tempfile.mkstemp(prefix=f".{stem}-face{index}-", suffix=".tmp", dir=out_dir)
+    try:
+        with os.fdopen(fd, "wb") as f:
+            f.write(bytes(head) + bytes(table_dir) + bytes(body))
+        os.replace(tmp, out)
+    except BaseException:
+        try:
+            os.unlink(tmp)
+        except OSError:
+            pass
+        raise
     return out
 
 

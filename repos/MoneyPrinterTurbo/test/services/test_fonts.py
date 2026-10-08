@@ -4,6 +4,7 @@ import stat
 import struct
 import sys
 import tempfile
+import threading
 import unittest
 from unittest.mock import patch
 
@@ -201,6 +202,117 @@ class TestCollectionFaces(unittest.TestCase):
         for name, style in ((const.DEFAULT_FONT_NAME, "Regular"), (const.DEFAULT_BOLD_FONT_NAME, "Bold")):
             path = utils.resolve_font_path(name)
             self.assertEqual(ImageFont.truetype(path, 20).getname(), ("Noto Sans CJK SC", style))
+
+
+def _name_os2_face(names, weight):
+    """A minimal sfnt with only 'name' (Windows, en-US) and 'OS/2' tables."""
+    recs, strings = [], b""
+    for nid, text in names.items():
+        raw = text.encode("utf-16-be")
+        recs.append(struct.pack(">HHHHHH", 3, 1, 0x409, nid, len(raw), len(strings)))
+        strings += raw
+    name = struct.pack(">HHH", 0, len(recs), 6 + 12 * len(recs)) + b"".join(recs) + strings
+    os2 = struct.pack(">HhH", 4, 500, weight) + b"\0" * 90
+    return [(b"OS/2", os2), (b"name", name)]
+
+
+def _build_name_collection(faces, out):
+    """A .ttc whose faces hold only name + OS/2 data (enough for face selection)."""
+    header_len = 12 + 4 * len(faces)
+    blobs, offsets, pos = [], [], header_len
+    for tables in faces:
+        dir_len = 12 + 16 * len(tables)
+        data_pos = pos + dir_len
+        head = struct.pack(">4sHHHH", b"\0\1\0\0", len(tables), 0, 0, 0)
+        recs, body = b"", b""
+        for tag, data in tables:
+            recs += struct.pack(">4sIII", tag, 0, data_pos + len(body), len(data))
+            body += data + b"\0" * (-len(data) % 4)
+        offsets.append(pos)
+        blobs.append(head + recs + body)
+        pos += dir_len + len(body)
+    with open(out, "wb") as f:
+        f.write(b"ttcf" + struct.pack(">HHI", 1, 0, len(faces)))
+        f.write(struct.pack(f">{len(faces)}I", *offsets))
+        f.write(b"".join(blobs))
+
+
+class TestSuperCollectionWeights(unittest.TestCase):
+    """M5: the all-regions NotoSansCJK.ttc says "Regular" in name ID 2 for every
+    weight; the face must be chosen by typographic style / weight too."""
+
+    def test_regular_and_bold_not_thin(self):
+        def face(region, style, weight):
+            fam = f"Noto Sans CJK {region}"
+            names = {1: fam if style in ("Regular", "Bold") else f"{fam} {style}",
+                     2: style if style in ("Regular", "Bold") else "Regular",
+                     16: fam, 17: style}
+            return _name_os2_face(names, weight)
+
+        layout = [("JP", "Thin", 100), ("JP", "Regular", 400), ("SC", "Thin", 100),
+                  ("SC", "Light", 300), ("SC", "Regular", 400), ("SC", "Medium", 500),
+                  ("SC", "Bold", 700), ("SC", "Black", 900)]
+        with tempfile.TemporaryDirectory() as tmp:
+            ttc = os.path.join(tmp, "NotoSansCJK.ttc")
+            _build_name_collection([face(*f) for f in layout], ttc)
+            pick = lambda pattern: layout[utils._preferred_face_index(ttc, pattern)]
+            self.assertEqual(pick("Noto Sans CJK SC"), ("SC", "Regular", 400))
+            self.assertEqual(pick(const.DEFAULT_FONT_NAME), ("SC", "Regular", 400))
+            self.assertEqual(pick(const.DEFAULT_BOLD_FONT_NAME), ("SC", "Bold", 700))
+            self.assertEqual(pick("Noto Sans CJK SC:style=Medium"), ("SC", "Medium", 500))
+            self.assertEqual(pick("Noto Sans CJK SC:style=Light"), ("SC", "Light", 300))
+            self.assertEqual(pick("Noto Sans CJK SC:style=SemiBold"), ("SC", "Bold", 700))
+            # unknown family -> default family, Regular weight
+            self.assertEqual(pick("Missing Family"), ("SC", "Regular", 400))
+
+
+    @unittest.skipUnless(
+        os.environ.get("MPT_NOTO_SUPER_OTC"),
+        "set MPT_NOTO_SUPER_OTC to the all-regions NotoSansCJK.ttc (Sans2.004) to run",
+    )
+    def test_real_super_otc(self):
+        ttc = os.environ["MPT_NOTO_SUPER_OTC"]
+        with tempfile.TemporaryDirectory() as tmp:
+            for pattern, want in (
+                ("Noto Sans CJK SC", ("Noto Sans CJK SC", "Regular")),
+                ("Noto Sans CJK SC:style=Bold", ("Noto Sans CJK SC", "Bold")),
+            ):
+                face = utils.extract_collection_face(ttc, utils._preferred_face_index(ttc, pattern), out_dir=tmp)
+                self.assertEqual(ImageFont.truetype(face, 20).getname(), want)
+
+class TestConcurrentFaceExtraction(unittest.TestCase):
+    """M4: concurrent extractions of the same face never see a partial file."""
+
+    def test_threads_extract_same_face(self):
+        fonts = utils.font_dir()
+        with tempfile.TemporaryDirectory() as tmp:
+            ttc = os.path.join(tmp, "Charm.ttc")
+            _build_collection(
+                [os.path.join(fonts, "Charm-Regular.ttf"), os.path.join(fonts, "Charm-Bold.ttf")], ttc
+            )
+            out_dir = os.path.join(tmp, "faces")
+            results, errors = [], []
+            barrier = threading.Barrier(16)
+
+            def work():
+                try:
+                    barrier.wait()
+                    path = utils.extract_collection_face(ttc, 1, out_dir=out_dir)
+                    results.append((path, ImageFont.truetype(path, 20).getname(), os.path.getsize(path)))
+                except Exception as e:  # noqa: BLE001
+                    errors.append(e)
+
+            threads = [threading.Thread(target=work) for _ in range(16)]
+            for t in threads:
+                t.start()
+            for t in threads:
+                t.join()
+            self.assertEqual(errors, [])
+            self.assertEqual(len(results), 16)
+            self.assertEqual({r[0] for r in results}.__len__(), 1)
+            self.assertEqual({r[1] for r in results}, {("Charm", "Bold")})
+            self.assertEqual(len({r[2] for r in results}), 1)
+            self.assertEqual([n for n in os.listdir(out_dir) if n.endswith(".tmp")], [])
 
 
 if __name__ == "__main__":
