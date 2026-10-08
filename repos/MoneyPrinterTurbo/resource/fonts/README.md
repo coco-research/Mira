@@ -13,7 +13,7 @@ at render time:
    The match is used only if fontconfig reports the requested family (fc-match
    otherwise prints its default font, which may have no CJK glyphs).
 3. Otherwise well-known Noto Sans CJK locations, then the operating system's own
-   CJK font (PingFang / Hiragino Sans GB on macOS, Microsoft YaHei / SimHei on
+   CJK font (PingFang on macOS 14 and earlier, Hiragino Sans GB on macOS, Microsoft YaHei / SimHei on
    Windows), read from your system and never shipped with Mira.
 4. As a last resort, the bundled `Charm-Regular.ttf` (OFL; Latin and Thai only).
 

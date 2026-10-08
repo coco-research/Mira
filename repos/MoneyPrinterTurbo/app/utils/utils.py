@@ -147,7 +147,10 @@ _SYSTEM_CJK_FONT_CANDIDATES = [
     "/Library/Fonts/NotoSansCJK.ttc",
     os.path.expanduser("~/Library/Fonts/NotoSansCJK-Regular.ttc"),
     "/Library/Fonts/NotoSansCJK-Regular.ttc",
-    # The operating system's own CJK font, if Noto is not installed
+    # The operating system's own CJK font, if Noto is not installed.
+    # PingFang is at this path on macOS 14 and earlier only; macOS 15 moved it
+    # into a versioned asset folder with no stable path (fc-match still finds it
+    # when fontconfig is installed).
     "/System/Library/Fonts/PingFang.ttc",
     "/System/Library/Fonts/Hiragino Sans GB.ttc",
     "C:/Windows/Fonts/msyh.ttc",
@@ -370,6 +373,49 @@ def _preferred_face_index(path: str, pattern: str) -> int:
     return hit if hit is not None else 0
 
 
+def _current_umask() -> int:
+    """The process umask. Read from /proc where available, because os.umask
+    can only be read by setting it, which briefly changes it for every thread."""
+    try:
+        with open("/proc/self/status", encoding="ascii") as f:
+            for line in f:
+                if line.startswith("Umask:"):
+                    return int(line.split()[1], 8)
+    except (OSError, ValueError, IndexError):
+        pass
+    with _UMASK_LOCK:
+        mask = os.umask(0o022)
+        os.umask(mask)
+    return mask
+
+
+_UMASK_LOCK = threading.Lock()
+
+
+def _remove_stale_faces(out_dir: str, prefix: str, ext: str, keep: str) -> None:
+    """
+    Delete older cached copies of the same face (same font file name and face
+    index, but an earlier size/mtime of the source font), so the cache does not
+    grow each time a system font is updated. Best effort: a copy another
+    process still has open, or cannot remove, is left alone.
+    """
+    try:
+        names = os.listdir(out_dir)
+    except OSError:
+        return
+    keep_name = os.path.basename(keep)
+    for name in names:
+        if name == keep_name or not name.startswith(prefix) or not name.endswith(ext):
+            continue
+        # only "<stem>-face<index>-<size>-<mtime_ns><ext>", not another face index
+        if not re.fullmatch(re.escape(prefix) + r"\d+-\d+" + re.escape(ext), name):
+            continue
+        try:
+            os.unlink(os.path.join(out_dir, name))
+        except OSError:
+            pass
+
+
 def extract_collection_face(path: str, index: int, out_dir: str = "") -> str:
     """
     Write face `index` of a .ttc/.otc collection as a standalone font file and
@@ -423,6 +469,9 @@ def extract_collection_face(path: str, index: int, out_dir: str = "") -> str:
     try:
         with os.fdopen(fd, "wb") as f:
             f.write(bytes(head) + bytes(table_dir) + bytes(body))
+        # mkstemp creates the file 0o600; give the cached face the usual
+        # 0o644 (less the umask), like any other file the app writes.
+        os.chmod(tmp, 0o644 & ~_current_umask())
         os.replace(tmp, out)
     except BaseException:
         try:
@@ -430,6 +479,7 @@ def extract_collection_face(path: str, index: int, out_dir: str = "") -> str:
         except OSError:
             pass
         raise
+    _remove_stale_faces(out_dir, f"{stem}-face{index}-", ext, keep=out)
     return out
 
 

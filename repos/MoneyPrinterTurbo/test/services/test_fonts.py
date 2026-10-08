@@ -315,5 +315,47 @@ class TestConcurrentFaceExtraction(unittest.TestCase):
             self.assertEqual([n for n in os.listdir(out_dir) if n.endswith(".tmp")], [])
 
 
+class TestCachedFaceFiles(unittest.TestCase):
+    """Cached faces get normal permissions, and older copies of a face are pruned."""
+
+    def _ttc(self, tmp):
+        fonts = utils.font_dir()
+        ttc = os.path.join(tmp, "Charm.ttc")
+        _build_collection(
+            [os.path.join(fonts, "Charm-Regular.ttf"), os.path.join(fonts, "Charm-Bold.ttf")], ttc
+        )
+        return ttc
+
+    @unittest.skipIf(os.name == "nt", "POSIX permissions")
+    def test_mode_is_0644_less_umask(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            ttc = self._ttc(tmp)
+            old = os.umask(0o027)
+            try:
+                path = utils.extract_collection_face(ttc, 1, out_dir=os.path.join(tmp, "faces"))
+            finally:
+                os.umask(old)
+            self.assertEqual(os.stat(path).st_mode & 0o777, 0o640)
+            path2 = utils.extract_collection_face(ttc, 0, out_dir=os.path.join(tmp, "faces2"))
+            self.assertEqual(os.stat(path2).st_mode & 0o777, 0o644 & ~old)
+
+    def test_older_copies_of_the_same_face_are_removed(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            ttc = self._ttc(tmp)
+            faces = os.path.join(tmp, "faces")
+            os.makedirs(faces)
+            stale = os.path.join(faces, "Charm-face1-123-456.ttf")
+            other_face = os.path.join(faces, "Charm-face0-123-456.ttf")
+            other_font = os.path.join(faces, "Other-face1-123-456.ttf")
+            for p in (stale, other_face, other_font):
+                with open(p, "wb") as f:
+                    f.write(b"x")
+            path = utils.extract_collection_face(ttc, 1, out_dir=faces)
+            self.assertTrue(os.path.isfile(path))
+            self.assertFalse(os.path.exists(stale))
+            self.assertTrue(os.path.exists(other_face))
+            self.assertTrue(os.path.exists(other_font))
+
+
 if __name__ == "__main__":
     unittest.main()
