@@ -171,7 +171,7 @@ Mira bundles several upstream engines under their own (compatible) licenses and 
 | Dashboard prototype | Shell + partials; wiring in progress |
 | Publish / pod / cloud GPU | Planned (DEV_PLAN phases 5–8) |
 
-**Known issue (fonts):** compiled output may embed Google Fonts faces that aren't licensed for redistribution. Check the fonts in your output before sharing it, until [#3](https://github.com/coco-research/Mira/issues/3) is fixed.
+**Known issue (fonts):** compiled output may embed web fonts that aren't licensed for redistribution: commercial faces that Google Fonts serves under a licence to Google only, and subsets of open fonts that keep a Reserved Font Name. Until [#3](https://github.com/coco-research/Mira/issues/3) is fixed, Coco doesn't publish or distribute Mira-compiled output that embeds web fonts; if you use Mira, check the fonts in your output before sharing it.
 
 ## Contributing
 
