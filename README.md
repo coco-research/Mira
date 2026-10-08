@@ -171,6 +171,8 @@ Mira bundles several upstream engines under their own (compatible) licenses and 
 | Dashboard prototype | Shell + partials; wiring in progress |
 | Publish / pod / cloud GPU | Planned (DEV_PLAN phases 5–8) |
 
+**Known issue (fonts):** compiled output may embed Google Fonts faces that aren't licensed for redistribution. Check the fonts in your output before sharing it, until [#3](https://github.com/coco-research/Mira/issues/3) is fixed.
+
 ## Contributing
 
 Open-source under AGPL-3.0; contributions welcome via PR to `main`. Please don't commit `.env`, `media/`, or generated video artifacts, and append context to [`mira/BUILD_LOG.md`](mira/BUILD_LOG.md) after meaningful changes.
