@@ -86,7 +86,9 @@ const header =
   `   ${faces.length} faces / ${seenFamilies.size} families, ${Math.round(raw / 1024)}KB raw woff2 (latin subset, base64-inlined).\n` +
   `   Families: ${[...seenFamilies].sort().join(", ")}.\n` +
   `   These are the template fonts NOT in hyperframes' auto-resolved set; inlining\n` +
-  `   them makes every render deterministic regardless of installed system fonts. */\n`;
+  `   them makes every render deterministic regardless of installed system fonts.\n` +
+  `   Licences: each face is a byte-identical copy of a woff2 in ./files/, and the\n` +
+  `   licence text for every family sits there (OFL-<family>.txt, Apache-2.0-<family>.txt). */\n`;
 
 fs.writeFileSync(OUT, header + "\n" + faces.join("\n\n") + "\n");
 const outKb = Math.round(fs.statSync(OUT).size / 1024);

@@ -2,7 +2,9 @@
    44 faces / 24 families, 875KB raw woff2 (latin subset, base64-inlined).
    Families: Anton, Audiowide, Baloo 2, Bangers, Bodoni Moda, Caveat, Chakra Petch, Cinzel, Cormorant Garamond, Creepster, Fredoka, Inter, Monoton, Orbitron, Permanent Marker, Press Start 2P, Rajdhani, Saira Stencil One, Shippori Mincho, Sora, Space Grotesk, Special Elite, Teko, VT323.
    These are the template fonts NOT in hyperframes' auto-resolved set; inlining
-   them makes every render deterministic regardless of installed system fonts. */
+   them makes every render deterministic regardless of installed system fonts.
+   Licences: each face is a byte-identical copy of a woff2 in ./files/, and the
+   licence text for every family sits there (OFL-<family>.txt, Apache-2.0-<family>.txt). */
 
 @font-face {
   font-family: "Anton";

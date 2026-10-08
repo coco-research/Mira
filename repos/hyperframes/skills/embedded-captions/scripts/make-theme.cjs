@@ -184,7 +184,8 @@ const CHARW = (() => {
 // coverword face: Anton (SIL OFL 1.1), bundled at
 // modes/standard/fonts/files/anton-latin-400-normal.woff2 with OFL-anton.txt.
 // Advance widths + per-glyph ink bounds (em) generated from that same file by
-// scripts/gen-glyph-metrics.py -> assets/fonts/anton-glyph-metrics.json.
+// scripts/gen-glyph-metrics.py <woff2> Anton --output assets/fonts/anton-glyph-metrics.json
+// (atomic UTF-8 write; the target is left untouched if generation fails).
 // Modified by Coco, 2026-10-08 (lab-0062): replaces the removed fan-kit
 // replica font and its measured widths. See repos/hyperframes/MODIFICATIONS.md.
 const COVERWORD_FAMILY = "Anton";

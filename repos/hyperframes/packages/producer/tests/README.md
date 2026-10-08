@@ -19,6 +19,8 @@ checked-in golden baseline.
     └── output.mp4      # golden rendered video
 ```
 
+Fonts embedded in the `output/compiled.html` baselines are listed, with their licence texts, in [`FONT-LICENSES/`](FONT-LICENSES/README.md); that folder is not a fixture. (Modified by Coco, 2026-10-08, lab-0062.)
+
 `meta.json` is validated by `validateMetadata` in
 `src/regression-harness.ts`. The required fields are:
 
